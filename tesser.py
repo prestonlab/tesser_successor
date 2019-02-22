@@ -2,8 +2,10 @@
 
 import numpy as np
 import pandas as pd
+import networkx as nx
+from networkx.algorithms.shortest_paths.generic import shortest_path
 
-def get_node_info():
+def node_info():
     """Return a dataframe with basic node information."""
 
     n_node = 21
@@ -31,7 +33,7 @@ def get_node_info():
     df.loc[[10,18],'connect'] = 3
     return df
 
-def get_adjacency(df):
+def adjacency(df):
     """Determine adjacency matrix from node information."""
 
     n_node = df.shape[0]
@@ -55,3 +57,15 @@ def get_adjacency(df):
         adj[node-1,:] = adj_row
         adj[:,node-1] = adj_row
     return adj
+
+def shortest_path(adj):
+    """Determine the shortest path between each pair of nodes."""
+    
+    G = nx.from_numpy_matrix(adj)
+    gpath = shortest_path(G)
+    n_node = adj.shape[0]
+    pathlen = np.zeros((n_node, n_node))
+    for source, pathdict in gpath.items():
+        for target, pathlist in pathdict.items():
+            pathlen[source,target] = len(pathlist) - 1            
+    return pathlen
