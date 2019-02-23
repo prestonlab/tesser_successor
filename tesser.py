@@ -58,12 +58,12 @@ def adjacency(df):
         adj[:,node-1] = adj_row
     return adj
 
-def shortest_path(adj):
+def path_length(adj):
     """Determine the shortest path between each pair of nodes."""
     
+    n_node = adj.shape[0]
     G = nx.from_numpy_matrix(adj)
     gpath = shortest_path(G)
-    n_node = adj.shape[0]
     pathlen = np.zeros((n_node, n_node))
     for source, pathdict in gpath.items():
         for target, pathlist in pathdict.items():
