@@ -73,8 +73,9 @@ def run_experiment(envstep, gamma, alpha, M):
             
         s_new = entry-1
         SR_agent.step (s, s_new)
+        
             
-        s = s_new
+        s = int(s_new)
 
 
     return SR_agent.M
