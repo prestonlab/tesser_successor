@@ -106,10 +106,6 @@ def explore_runs (OPTION, SUBJECT, GAMMA, ALPHA):
             
     return SR_matrices, part_run
 
-# Modify the OPTION in the following call to the main function in order to visualize the desired learning
-#     sequence.
-# explore_runs('track changes')
-
 def compute_limit_matrix (gamma, adjacency):
     num_states = 21
     identity = np.eye (num_states)
@@ -124,18 +120,6 @@ def correlate_rows (matrix):
 def correlate_columns (matrix):
     return np.dot(matrix.T, matrix) / (la.norm (matrix)**2)
 
-def pBGivenA (A, B, C, SR):
-    return SR[A][B] / (SR[A][B] + SR[A][C])
-
-def pCGivenA (A, B, C, SR):
-    return 1 - pBGivenA (A, B, C, SR)
-
-def likelihood (cue, opt1, opt2, response, SR):
-    if response == 0:
-        return pBGivenA (cue, opt1, opt2, SR)
-    if response == 1:
-        return pCGivenA (cue, opt1, opt2, SR)
-
 def compute_correlations(OPTION, SUBJECT, GAMMA, ALPHA):
     nodes = network.node_info()
     adjacency = network.adjacency(nodes)
@@ -144,8 +128,6 @@ def compute_correlations(OPTION, SUBJECT, GAMMA, ALPHA):
     L_vector = L.flatten()
     M = explore_runs ('once',SUBJECT, GAMMA, ALPHA)
     M_vector = M.flatten()
-    plt.matshow (M, vmin = 0, vmax = .5)
-    plt.colorbar()
 
     if OPTION == 'norm':
         print ('Norm of L - M: ')
@@ -155,28 +137,5 @@ def compute_correlations(OPTION, SUBJECT, GAMMA, ALPHA):
         print ('Correlation of L, M: ')
         print (np.dot (L_vector, M_vector) / (la.norm (L_vector) * la.norm (M_vector)))
         
-    plt.matshow (L, vmin = 0, vmax = .5)
-    plt.colorbar()
     
-# This function gives the probability of obtaining the choices in the run, given
-#     specific values for alpha, gamma.
-    
-# For obj_sequence_directory, enter the folder where the runs, which give the object sequence,
-#     are stored. Use tesser scan 100B. For induction_directory, enter the full path of the 
-#     induction data.
 
-def get_log_likelihood(SUBJECT, GAMMA, ALPHA):
-    SR = explore_runs ('once', SUBJECT, GAMMA, ALPHA)
-    data, keys = util.read_files(SUBJECT, 'induction')
-    cue_sequence, opt1_sequence, opt2_sequence, response_sequence = util.get_induction_data (data[keys[0]])
-    num_trials = len (cue_sequence)
-    log_likelihood = 0
-    for trial_num in range (num_trials):
-        try:
-            cue_num, opt1_num, opt2_num, response_num = int(cue_sequence[trial_num]) - 1, int(opt1_sequence[trial_num]) - 1, int(opt2_sequence[trial_num]) - 1, int(response_sequence[trial_num]) - 1
-            trial_probability = likelihood (cue_num, opt1_num, opt2_num, response_num, SR)
-            log_likelihood += np.log (trial_probability)
-        except ValueError:
-            pass
-    
-    return log_likelihood
