@@ -64,7 +64,7 @@ def get_objects(DFRAME):
 def get_induction_data(DFRAME):
     '''iNPUT DataFrame 
        OUTPUT four variable sequences for generalized induction'''
-    data = drop_nan(DFRAME)
+    data = DFRAME
     cue_sequence = np.array(data[[' CueNum']])
     opt1_sequence = np.array(data[[' Opt1Num']])
     opt2_sequence = np.array(data[[' Opt2Num']])
