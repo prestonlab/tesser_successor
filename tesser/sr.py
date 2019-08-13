@@ -31,6 +31,7 @@ def make_structured_data(SUBJECT):
     return runs
     
 def explore_runs (OPTION, SUBJECT, GAMMA, ALPHA):
+    ''' Computes an SR matrix or a list of SR matrices given an option, a subject and values for gamma, alpha.'''
 
     SR_matrices = []
     part_run = []
@@ -49,6 +50,9 @@ def explore_runs (OPTION, SUBJECT, GAMMA, ALPHA):
             M = np.array(learn.run_experiment(envstep, GAMMA, ALPHA, np.copy(M)))
             SR_matrices.append (M)
             part_run.append([part_num, run_num])
+    
+    # This option allows the SR Matrix to persist across all runs from Part 1 and Part 2, repeats
+    # this 100 times, and returns the final SR Matrix.
             
     if OPTION == 'repeat':
         M = np.zeros([21,21])
@@ -59,6 +63,7 @@ def explore_runs (OPTION, SUBJECT, GAMMA, ALPHA):
                 M = np.array (learn.run_experiment (envstep, GAMMA, ALPHA, np.copy(M)))
         return M
     
+    # This option is the same as persist, but only returns the last SR matrix.
     if OPTION == 'once':
         M = np.zeros([21,21])
         for run in runs:
@@ -107,7 +112,7 @@ def explore_runs (OPTION, SUBJECT, GAMMA, ALPHA):
     return SR_matrices, part_run
 
 def compute_limit_matrix (gamma, adjacency):
-    ''' Computes the matrix to which SR learning should converge.'''
+    ''' Computes the matrix to which SR learning should converge, by summing a geometric matrix series.'''
     num_states = 21
     identity = np.eye (num_states)
     return np.linalg.inv (identity - gamma*adjacency/6)
@@ -122,7 +127,11 @@ def correlate_columns (matrix):
     return np.dot(matrix.T, matrix) / (la.norm (matrix)**2)
 
 def compute_correlations(OPTION, SUBJECT, GAMMA, ALPHA):
-    ''' Computes the correlation between 
+    ''' Computes the norm or correlation between the SR matrix and the limit matrix, given a subject and values for gamma, alpha.
+    
+    The norm option computes the infinity norm between the SR Matrix and the limit matrix.
+    The correlation option computes the correlation between the SR Matrix and the limit matrix.'''
+    
     nodes = network.node_info()
     adjacency = network.adjacency(nodes)
     transition = adjacency / 6
