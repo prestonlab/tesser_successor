@@ -2,12 +2,15 @@ import numpy as np
 import sr
 
 def pBGivenA (A, B, C, SR):
+    ''' Computes the probability of B given A using the Luce choice rule.'''
     return SR[A][B] / (SR[A][B] + SR[A][C])
 
 def pCGivenA (A, B, C, SR):
+    ''' Computes the probability of C given A using the Luce choice rule.'''
     return 1 - pBGivenA (A, B, C, SR)
 
 def likelihood (cue, opt1, opt2, response, SR):
+    ''' Computes the likelihood of a subject's response given the SR matrix for this subject.'''
     if response == 0:
         return pBGivenA (cue, opt1, opt2, SR)
     if response == 1:
@@ -34,6 +37,8 @@ def get_log_likelihood(SUBJECT, GAMMA, ALPHA):
     return log_likelihood
 
 def maximize_likelihood (subject):
+    ''' Numerically maximizes the log likelihood function on the set of the subject's choices to find optimal values for
+    alpha, gamma.'''
     h = 10e-3
     alpha_max, gamma_max = 0.0, 0.0
     alpha, gamma = h, h

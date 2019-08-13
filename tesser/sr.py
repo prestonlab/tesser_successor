@@ -59,7 +59,7 @@ def explore_runs (OPTION, SUBJECT, GAMMA, ALPHA):
                 M = np.array (learn.run_experiment (envstep, GAMMA, ALPHA, np.copy(M)))
         return M
     
-        if OPTION == 'once':
+    if OPTION == 'once':
         M = np.zeros([21,21])
         for run in runs:
             part_num, run_num = run[1], run[2]
@@ -107,20 +107,22 @@ def explore_runs (OPTION, SUBJECT, GAMMA, ALPHA):
     return SR_matrices, part_run
 
 def compute_limit_matrix (gamma, adjacency):
+    ''' Computes the matrix to which SR learning should converge.'''
     num_states = 21
     identity = np.eye (num_states)
     return np.linalg.inv (identity - gamma*adjacency/6)
 
-def rda (matrix):
-    return dist.squareform (dist.pdist (matrix, 'correlation'))
 
 def correlate_rows (matrix):
+    ''' Computes the correlation matrix for a matrix's rows.'''
     return np.dot(matrix, matrix.T) / (la.norm (matrix)**2)
 
 def correlate_columns (matrix):
+    ''' Computes the correlation matrix for a matrix's columns.'''
     return np.dot(matrix.T, matrix) / (la.norm (matrix)**2)
 
 def compute_correlations(OPTION, SUBJECT, GAMMA, ALPHA):
+    ''' Computes the correlation between 
     nodes = network.node_info()
     adjacency = network.adjacency(nodes)
     transition = adjacency / 6

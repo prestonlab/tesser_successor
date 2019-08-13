@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 
-p = '/home/rodrigo/Dropbox/tesser_successor/Data/'
+p = '/Users/Zhonghou/Desktop/General/Preston Lab/tesserScan_100_B'
 
 
 def read_files(SUBJECT=0, TYPE='', PART=[1, 2], RUN=list(range(1, 7)), PATH=p):
