@@ -48,8 +48,8 @@ def load_struct(data_dir, subject):
     """Load all structured learning data for a subject."""
 
     # list of all runs to load
-    parts = (1,2)
-    part_runs = {1: range(1,6), 2: range(1,7)}
+    parts = (1, 2)
+    part_runs = {1: range(1, 6), 2: range(1, 7)}
 
     # load individual runs
     df_list = []
@@ -91,7 +91,7 @@ def read_files(PATH="", SUBJECT=None, TYPE="", PART=[1, 2], RUN=list(range(1, 7)
                         for run in RUN:
                             try:
                                 if file.startswith(s) and file.endswith(
-                                    "StructLearn_Part%s_Run_%s.txt" % (part, run)
+                                        "StructLearn_Part%s_Run_%s.txt" % (part, run)
                                 ):
                                     df = pd.read_csv(os.path.join(r, file), sep="\t")
                                     data[s + "_Part%s_Run_%s.txt" % (part, run)] = df
