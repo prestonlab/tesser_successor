@@ -19,7 +19,6 @@ def make_envstep(DATA):
             pass
     return envstep
 
-
 def make_structured_data(PATH, SUBJECT):
     """ Returns a 3 column list to execute explore_runs models
         based on the structured learning data from tesser

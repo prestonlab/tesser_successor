@@ -18,11 +18,10 @@ class SR_Matrix():
 
 	Ida Momennejad, 2019'''
 
-	def __init__(self, gamma, alpha, p_sample, NUM_STATES):
+	def __init__(self, gamma, alpha, NUM_STATES, M):
 		self.gamma = gamma # discount factor
 		self.alpha = alpha # learning rate
-		self.p_sample = p_sample # p(sampling options)		
-		self.M= np.zeros([NUM_STATES, NUM_STATES]) # M: state-state SR    	
+		self.M= M # M: state-state SR
 		self.onehot=np.eye(NUM_STATES) # onehot matrix, for updating M
 		
 	def step(self, s, s_new):
@@ -37,7 +36,7 @@ class SR_Matrix():
 	
         
         
-def run_experiment(envstep, gamma, alpha, p_sample=None, verbose=0):
+def run_experiment(envstep, gamma, alpha, M):
 
     ''' This function uses the reinfrocement learning agent class in 
         SR_no_action.py to learn.
@@ -64,21 +63,19 @@ def run_experiment(envstep, gamma, alpha, p_sample=None, verbose=0):
         episodies: # episodes it takes to reach convergence 
 
         Ida Momennejad, NYC, 2019'''
-
-    if p_sample==None:
-        p_sample= [.5,.5]
         
     num_states = 21
 
-    SR_agent = SR_Matrix(gamma, alpha, p_sample, num_states)
+    SR_agent = SR_Matrix(gamma, alpha, num_states, M)
     s = envstep[0]-1
     
     for entry in envstep[1:]: # go through trajectory till the end
             
         s_new = entry-1
         SR_agent.step (s, s_new)
+        
             
-        s = s_new
+        s = int(s_new)
 
 
     return SR_agent.M

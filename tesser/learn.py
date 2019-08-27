@@ -71,5 +71,3 @@ def run_experiment(envstep, gamma, alpha, M):
 
 
     return SR_agent.M
-
-    

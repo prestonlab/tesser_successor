@@ -83,5 +83,4 @@ def maximize_likelihood(PATH, SUBJECT):
                 alpha_max, gamma_max = alpha, gamma
             gamma += h
         alpha += h
-
     return alpha_max, gamma_max
