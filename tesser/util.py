@@ -20,7 +20,7 @@ def read_files(PATH="", SUBJECT=None, TYPE="", PART=[1, 2], RUN=list(range(1, 7)
 
 
     """
-    if PATH == None or SUBJECT == None or TYPE == None:
+    if PATH is None or SUBJECT is None or TYPE is None:
         print(
             "Please follow the correct input layout. For more help please use help() for more description."
         )

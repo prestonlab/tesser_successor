@@ -53,10 +53,10 @@ def input_user(PATH, SUBJECT, TYPE, MODEL, GAMMA, ALPHA):
 
     if TYPE == "induction":
         m1, m2 = fit.maximize_likelihood(SUBJECT)
-        l = fit.get_log_likelihood(SUBJECT, m2, m1)
+        logl = fit.get_log_likelihood(SUBJECT, m2, m1)
         print(
             "The log likelihood for SUBJECT: %s is %s and is maximized with gamma: %s and alpha: %s"
-            % (SUBJECT, l, m2, m1)
+            % (SUBJECT, logl, m2, m1)
         )
 
     else:

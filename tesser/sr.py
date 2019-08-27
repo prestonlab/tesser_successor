@@ -3,6 +3,7 @@ import numpy as np
 import learn
 import util
 import network
+import numpy.linalg as la
 
 
 def make_envstep(DATA):
@@ -19,6 +20,7 @@ def make_envstep(DATA):
             pass
     return envstep
 
+
 def make_structured_data(PATH, SUBJECT):
     """ Returns a 3 column list to execute explore_runs models
         based on the structured learning data from tesser
@@ -33,7 +35,6 @@ def make_structured_data(PATH, SUBJECT):
 
 
 def explore_runs(PATH, SUBJECT, OPTION, GAMMA, ALPHA):
-
     SR_matrices = []
     part_run = []
     """This loop adds the address, part number and run number to the runs array, so that the object
@@ -138,7 +139,7 @@ def correlate_columns(matrix):
 
 
 def compute_correlations(PATH, SUBJECT, OPTION, GAMMA, ALPHA):
-    ''' Computes the norm or correlation between the SR matrix and the limit matrix, given a subject and values for gamma, alpha.
+    """ Computes the norm or correlation between the SR matrix and the limit matrix, given a subject and values for gamma, alpha.
         The norm option computes the infinity norm between the SR Matrix and the limit matrix.
         The correlation option computes the correlation between the SR Matrix and the limit matrix.
         INPUT:
@@ -147,7 +148,7 @@ def compute_correlations(PATH, SUBJECT, OPTION, GAMMA, ALPHA):
         SUBJECT: Integer input representing a particular subject
         OPTION: String describing particular function ( 'norm' or 'correlation'))
         GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
-    '''
+    """
     nodes = network.node_info()
     adjacency = network.adjacency(nodes)
     transition = adjacency / 6
