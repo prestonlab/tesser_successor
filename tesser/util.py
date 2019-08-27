@@ -45,7 +45,7 @@ def load_struct_run(data_dir, subject, part, run):
     df = df.loc[np.logical_not(np.isnan(df.objnum)), :]
 
     # convert object labels to integer
-    df =df.astype({'objnum': 'int'})
+    df = df.astype({'objnum': 'int'})
 
     return df
 
