@@ -37,6 +37,10 @@ def load_struct_run(data_dir, subject, part, run):
 
     # read log, fixing problem with spaces in column names
     df = pd.read_csv(run_file, sep='\t', skipinitialspace=True)
+
+    # add a field indicating the experiment part
+    df['part'] = part
+
     return df
 
 
