@@ -41,6 +41,12 @@ def load_struct_run(data_dir, subject, part, run):
     # add a field indicating the experiment part
     df['part'] = part
 
+    # remove trials with no object (these are just filler trials)
+    df = df.loc[np.logical_not(np.isnan(df.objnum)), :]
+
+    # convert object labels to integer
+    df =df.astype({'objnum': 'int'})
+
     return df
 
 
