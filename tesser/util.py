@@ -4,6 +4,59 @@
 import numpy as np
 import pandas as pd
 import os
+from glob import glob
+
+
+def get_subj_dir(data_dir, subject):
+    """Get the data directory for a given subject number."""
+
+    # check that the base directory exists
+    if not os.path.exists(data_dir):
+        raise IOError(f'Directory does not exist: {data_dir}')
+
+    # look for directories with the correct pattern
+    dir_search = glob(os.path.join(data_dir, f'tesserScan_{subject}_*'))
+    if len(dir_search) != 1:
+        raise IOError(f'Problem finding subject directory for {subject}')
+
+    return dir_search[0]
+
+
+def load_struct_run(data_dir, subject, part, run):
+    """Load data for one structured learning run."""
+
+    # subject directory
+    subj_dir = get_subj_dir(data_dir, subject)
+
+    # search for a file with the correct name formatting
+    file_pattern = f'tesserScan_{subject}_*_StructLearn_Part{part}_Run_{run}.txt'
+    file_search = glob(os.path.join(subj_dir, file_pattern))
+    if len(file_search) != 1:
+        raise IOError(f'Problem finding data for {subject}, part {part}, run {run}.')
+    run_file = file_search[0]
+
+    # read log, fixing problem with spaces in column names
+    df = pd.read_csv(run_file, sep='\t', skipinitialspace=True)
+    return df
+
+
+def load_struct(data_dir, subject):
+    """Load all structured learning data for a subject."""
+
+    # list of all runs to load
+    parts = (1,2)
+    part_runs = {1: range(1,6), 2: range(1,7)}
+
+    # load individual runs
+    df_list = []
+    for part in parts:
+        for run in part_runs[part]:
+            run_df = load_struct_run(data_dir, subject, part, run)
+            df_list.append(run_df)
+
+    # concatenate into one data frame
+    df = pd.concat(df_list, sort=False)
+    return df
 
 
 def read_files(PATH="", SUBJECT=None, TYPE="", PART=[1, 2], RUN=list(range(1, 7))):
