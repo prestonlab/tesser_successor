@@ -1,6 +1,5 @@
 # core model functions for learning/running experiment phases
 import numpy as np
-import util
 
 
 class SR_Matrix:

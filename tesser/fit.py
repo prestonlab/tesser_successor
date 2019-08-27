@@ -1,10 +1,7 @@
 # model fitting/parameter optimization
 import numpy as np
-import numpy.linalg as la
-import scipy as sp
-import scipy.spatial.distance as dist
-import util
-import sr
+from . import util
+from . import sr
 
 
 def pBGivenA(A, B, C, SR):

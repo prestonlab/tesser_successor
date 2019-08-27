@@ -1,9 +1,9 @@
 # core model functions for learning/running experiment phases
 import numpy as np
-import learn
-import util
-import network
 import numpy.linalg as la
+from . import learn
+from . import util
+from . import network
 
 
 def make_envstep(DATA):
@@ -154,7 +154,7 @@ def compute_correlations(PATH, SUBJECT, OPTION, GAMMA, ALPHA):
     transition = adjacency / 6
     L = compute_limit_matrix(0.5, adjacency)
     L_vector = L.flatten()
-    M = sr.explore_runs(PATH, SUBJECT, "once", GAMMA, ALPHA)
+    M = explore_runs(PATH, SUBJECT, "once", GAMMA, ALPHA)
     M_vector = M.flatten()
 
     if OPTION == "norm":
