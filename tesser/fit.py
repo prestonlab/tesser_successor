@@ -26,14 +26,14 @@ def likelihood(cue, opt1, opt2, response, SR):
 
 
 def get_log_likelihood(PATH, SUBJECT, GAMMA, ALPHA):
-    ''' This function gives the probability of obtaining the choices in the run, given
+    """ This function gives the probability of obtaining the choices in the run, given
         specific values for alpha, gamma.
         INPUT:
 
         PATH: string describing the path taken to access tesser data
         SUBJECT: Integeger input representing a particular subject
         GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
-    '''
+    """
     SR = sr.explore_runs(PATH, SUBJECT, "once", GAMMA, ALPHA)
     data, keys = util.read_files(PATH, SUBJECT, "induction")
     cue_sequence, opt1_sequence, opt2_sequence, response_sequence = util.get_induction_data(
@@ -60,13 +60,13 @@ def get_log_likelihood(PATH, SUBJECT, GAMMA, ALPHA):
 
 
 def maximize_likelihood(PATH, SUBJECT):
-    ''' Numerically maximizes the log likelihood function on the set of the subject's choices
+    """ Numerically maximizes the log likelihood function on the set of the subject's choices
          to find optimal values for alpha, gamma
         INPUT:
 
         PATH: string describing the path taken to access tesser data
         SUBJECT: Integeger input representing a particular subject
-    '''
+    """
     h = 10e-3
     alpha_max, gamma_max = 0.0, 0.0
     alpha, gamma = h, h
