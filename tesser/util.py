@@ -68,6 +68,13 @@ def load_struct(data_dir, subject):
     df = pd.concat(df_list, sort=False)
     return df
 
+def load_induct(data_dir, subject):
+    ''' Loads a subject's induction data into a dataframe.'''
+    
+    df = pd.read_csv(data_dir, sep='\t')
+    df = df[df['SubjNum'] == str(subject)]
+    return df
+
 
 def read_files(PATH="", SUBJECT=None, TYPE="", PART=[1, 2], RUN=list(range(1, 7))):
     """

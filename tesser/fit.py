@@ -2,6 +2,7 @@
 import numpy as np
 from . import util
 from . import sr
+from scipy import optimize
 
 
 def pBGivenA(A, B, C, SR):
@@ -56,7 +57,7 @@ def get_log_likelihood(PATH, SUBJECT, GAMMA, ALPHA):
     return log_likelihood
 
 
-def maximize_likelihood(PATH, SUBJECT):
+def maximize_likelihood(PATH, SUBJECT, OPTION):
     """ Numerically maximizes the log likelihood function on the set of the subject's choices
          to find optimal values for alpha, gamma
         INPUT:
@@ -64,20 +65,16 @@ def maximize_likelihood(PATH, SUBJECT):
         PATH: string describing the path taken to access tesser data
         SUBJECT: Integeger input representing a particular subject
     """
-    h = 10e-3
-    alpha_max, gamma_max = 0.0, 0.0
-    alpha, gamma = h, h
-    log_likelihood_max = get_log_likelihood(PATH, SUBJECT, gamma, alpha)
-    log_likelihoods = []
-
-    while alpha <= 1:
-        gamma = h
-        while gamma <= 1:
-            log_likelihood = get_log_likelihood(PATH, SUBJECT, gamma, alpha)
-            log_likelihoods.append(log_likelihood)
-            if log_likelihood > log_likelihood_max:
-                log_likelihood_max = log_likelihood
-                alpha_max, gamma_max = alpha, gamma
-            gamma += h
-        alpha += h
+    def ll(x):
+        ALPHA = x[0]
+        GAMMA = x[1]
+        return -get_log_likelihood (PATH, SUBJECT, ALPHA, GAMMA)
+    
+    if OPTION == 'basinhopping':
+        alpha_max, gamma_max = optimize.basinhopping (ll, [1,1]).x
+    if OPTION == 'differential evolution':
+        alpha_max, gamma_max = optimize.differential_evolution (ll, [(0,1), (0,1)]).x
+    if OPTION == 'brute':
+        alpha_max, gamma_max = optimize.brute (ll, [(0,1), (0,1)])[0]
+    
     return alpha_max, gamma_max
