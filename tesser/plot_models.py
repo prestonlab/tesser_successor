@@ -6,59 +6,89 @@ from . import fit
 from . import network
 
 
-def plot_explore_runs(PATH, SUBJECT, OPTION, GAMMA, ALPHA):
+def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA):
     """ Program which creates plots for learning models in explore runs:
         INPUT:
 
-        PATH: string describing the path taken to access tesser data
+        SR: Dictionary of SR matricies
         SUBJECT: Integeger input representing a particular subject
         OPTION: String descrbing particular models to run. 
         ('persist', 'reset', 'independent', 'track', 'changes')
         GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
     """
-    figsize = (70, 30)
-    size = 50
-    fig, axs = plt.subplots(2, 6, figsize=figsize, sharex="col", sharey="row")
+    fig, ax = plt.subplots(2, 6, figsize=(14, 6))
     plt.suptitle(
         "Learning: " + OPTION + "  SUBJECT: " + str(SUBJECT) + " with "
         r"$\gamma$ : " + str(GAMMA) + " and "
-        r"$\alpha$ : " + str(ALPHA),
-        size=80,
+        r"$\alpha$ : " + str(ALPHA)
     )
-    M, pr = sr.explore_runs(PATH, SUBJECT, OPTION, GAMMA, ALPHA)
-    for i in range(len(M)):
-        part = int(pr[i][0])
-        run = int(pr[i][1])
-        axs[part - 1, run - 1].matshow(M[i], cmap="viridis", vmin=0, vmax=1)
-        axs[part - 1, run - 1].set_title(
-            "Part_%s Run_%s" % (pr[i][0], pr[i][1]), size=size
-        )
+    for i, part in enumerate((1, 2)):
+        for j, run in enumerate(range(1, 7)):
+            if (part, run) not in SR:
+                fig.delaxes(ax[i, j])
+                continue
+            im = ax[i,j].matshow(SR[(part, run)], vmin=0, vmax=.5)
+            ax[i,j].set_title("Part_%s Run_%s \n" % (part, run))
 
-    fig.delaxes(axs[0][5])
-    return plt.show()
+    cbar = fig.colorbar(im, ax=ax.ravel().tolist(), shrink=0.95)
 
+    cbar.set_ticks(np.arange(0, 0.5, 0.01))
+    cbar.set_ticklabels(['low', 'medium', 'high'])
+
+    plt.show()
+    
+def plot_rdms(rdms, SUBJECT,  GAMMA, ALPHA):
+    """ Program which creates plots for learning models in explore runs:
+        INPUT:
+
+
+        SUBJECT: Integeger input representing a particular subject
+        OPTION: String descrbing particular models to run. 
+        ('persist', 'reset', 'independent', 'track', 'changes')
+        GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
+    """
+    fig, ax = plt.subplots(2, 6, figsize=(14, 6))
+    plt.suptitle(
+         "  SUBJECT: " + str(SUBJECT) + " with "
+        r"$\gamma$ : " + str(GAMMA) + " and "
+        r"$\alpha$ : " + str(ALPHA)
+    )
+    for i, part in enumerate((1, 2)):
+        for j, run in enumerate(range(1, 7)):
+            if (part, run) not in rdms:
+                fig.delaxes(ax[i, j])
+                continue
+            im = ax[i,j].matshow(rdms[(part, run)], vmin=0, vmax=.5)
+            ax[i,j].set_title("Part_%s Run_%s \n" % (part, run))
+
+    cbar = fig.colorbar(im, ax=ax.ravel().tolist(), shrink=0.95)
+
+    cbar.set_ticks(np.arange(0, 0.5, 0.01))
+    cbar.set_ticklabels(['low', 'medium', 'high'])
+
+    plt.show()
 
 def plot_adjecncy_matrix():
     nodes = network.node_info()
     adjacency = network.adjacency(nodes)
     transition = adjacency / 6
-    L = sr.compute_limit_matrix(0.5, adjacency)
+    L = sr.compute_limit_matrix(0.5, adjacency, 21)
     plt.matshow(L, vmin=0, vmax=0.5)
     plt.colorbar()
 
 
-def input_user(PATH, SUBJECT, TYPE, MODEL, GAMMA, ALPHA):
-    if TYPE == "structured":
+# def input_user(DATAFRAME, SUBJECT, TYPE, MODEL, GAMMA, ALPHA):
+#     if TYPE == "structured":
         
-        plot_explore_runs(MODEL, SUBJECT, GAMMA, ALPHA, PATH)
+#         plot_explore_runs(MODEL, SUBJECT, GAMMA, ALPHA, PATH)
 
-    if TYPE == "induction":
-        m1, m2 = fit.maximize_likelihood(SUBJECT)
-        logl = fit.get_log_likelihood(SUBJECT, m2, m1)
-        print(
-            "The log likelihood for SUBJECT: %s is %s and is maximized with gamma: %s and alpha: %s"
-            % (SUBJECT, logl, m2, m1)
-        )
+#     if TYPE == "induction":
+#         m1, m2 = fit.maximize_likelihood(SUBJECT)
+#         logl = fit.get_log_likelihood(SUBJECT, m2, m1)
+#         print(
+#             "The log likelihood for SUBJECT: %s is %s and is maximized with gamma: %s and alpha: %s"
+#             % (SUBJECT, logl, m2, m1)
+#         )
 
-    else:
-        print('Value Error TYPE == "structured" or "induction"')
+#     else:
+#         print('Value Error TYPE == "structured" or "induction"')

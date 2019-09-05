@@ -8,9 +8,13 @@ def rdm(matrix):
     return dist.squareform(dist.pdist(matrix, 'correlation'))
 
 
-def multiple_rdm(matrices):
+def mutiple_rdm(SR_matrices):
     """ Computes the representational dissimilarity matrix for a list of matrices. """
-    rda_matrices = []
-    for matrix in matrices:
-        rdm_matrices.append(rdm(matrix))
+    rdm_matrices = {}
+    for part in [1, 2]:
+        for run in range(1, 7):
+            try:
+                rdm_matrices[(part, run)] = rdm(SR_matrices[(part, run)])
+            except KeyError:
+                pass
     return rdm_matrices

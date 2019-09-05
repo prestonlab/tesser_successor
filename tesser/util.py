@@ -68,6 +68,26 @@ def load_struct(data_dir, subject):
     df = pd.concat(df_list, sort=False)
     return df
 
+
+def load_induction(data_dir, subject):
+    """Load data generalized induction data by subject."""
+
+    # subject directory
+    subj_dir = get_subj_dir(data_dir, subject)
+
+    # search for a file with the correct name formatting
+    file_pattern = f'tesserScan_{subject}_*_InductGen.txt'
+    file_search = glob(os.path.join(subj_dir, file_pattern))
+    if len(file_search) != 1:
+        raise IOError(f'Problem finding data for {subject}.')
+    run_file = file_search[0]
+
+    # read log, fixing problem with spaces in column names
+    df = pd.read_csv(run_file, sep='\t', skipinitialspace=True)
+
+    return df
+
+
 def load_induct(data_dir, subject):
     ''' Loads a subject's induction data into a dataframe.'''
     
@@ -76,53 +96,9 @@ def load_induct(data_dir, subject):
     return df
 
 
-def read_files(PATH="", SUBJECT=None, TYPE="", PART=[1, 2], RUN=list(range(1, 7))):
-    """
-        Simple for loop to obtain all data from .txt files in a given directory
-        Inputs:
-
-        PATH: string describing the path taken to access tesser data
-        SUBJECT: Integer representing subject # for tesser behavioral studies
-        TYPE: String describing the type of experimental data;
-        'structured' for structured learning or 'induction' for gen induction
-        PART: list containing the part numbers of the structured learning exp.
-        RUN: list containing the run numbers of the structured learning exp.
-
-
-    """
-    if PATH is None or SUBJECT is None or TYPE is None:
-        print(
-            "Please follow the correct input layout. For more help please use help() for more description."
-        )
-    else:
-        data = {}
-        s = "tesserScan_" + str(100 + SUBJECT)
-        for r, d, f in os.walk(PATH):  # r=root, d=directories, f = files
-            for file in f:
-                if TYPE == "structured":
-                    for part in PART:
-                        for run in RUN:
-                            try:
-                                if file.startswith(s) and file.endswith(
-                                        "StructLearn_Part%s_Run_%s.txt" % (part, run)
-                                ):
-                                    df = pd.read_csv(os.path.join(r, file), sep="\t")
-                                    data[s + "_Part%s_Run_%s.txt" % (part, run)] = df
-                            except ValueError:
-                                pass
-                if TYPE == "induction":
-                    if file.startswith(s) and file.endswith("InductGen.txt"):
-                        df = pd.read_csv(os.path.join(r, file), sep="\t")
-                        data[s + "_InductGen.txt"] = df
-            key = []
-            for i in sorted(data.keys()):
-                key.append(i)
-        return data, key
-
-
 def drop_nan(DATA):
     """  Drops NaN values from DataFrame """
-    DATA.replace([" NaN"], np.nan, inplace=True)
+    DATA.replace(["NaN"], np.nan, inplace=True)
     DATA = DATA.dropna()
     DATA = DATA.reset_index(drop=True)  # Resets the index to start at 0
     return DATA
@@ -132,7 +108,7 @@ def get_objects(DFRAME):
     """ INPUT DataFrame 
        OUTPUT object sequence numbers for successor representation """
     data = drop_nan(DFRAME)
-    obj_sequence = data[" objnum"]
+    obj_sequence = data["objnum"]
     return obj_sequence
 
 
@@ -140,15 +116,9 @@ def get_induction_data(DFRAME):
     """ INPUT DataFrame 
        OUTPUT four variable sequences for generalized induction """
     data = DFRAME
-    cue_sequence = np.array(data[[" CueNum"]])
-    opt1_sequence = np.array(data[[" Opt1Num"]])
-    opt2_sequence = np.array(data[[" Opt2Num"]])
-    response_sequence = np.array(data[[" Resp"]])
+    cue_sequence = data["CueNum"].values
+    opt1_sequence = data["Opt1Num"].values
+    opt2_sequence = data["Opt2Num"].values
+    response_sequence = data["Resp"].values
     return cue_sequence, opt1_sequence, opt2_sequence, response_sequence
 
-
-def print_keys(KEYS):
-    """ Prints keys from the dictionary format read files creates """
-    print("Subject %s has %s keys for this data set" % (int(KEYS[0][11:14]), len(KEYS)))
-    for i in KEYS:
-        print(i)

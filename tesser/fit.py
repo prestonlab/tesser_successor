@@ -3,6 +3,7 @@ import numpy as np
 from . import util
 from . import sr
 from scipy import optimize
+import time
 
 
 def pBGivenA(A, B, C, SR):
@@ -23,19 +24,19 @@ def likelihood(cue, opt1, opt2, response, SR):
         return pCGivenA(cue, opt1, opt2, SR)
 
 
-def get_log_likelihood(PATH, SUBJECT, GAMMA, ALPHA):
+def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA):
     """ This function gives the probability of obtaining the choices in the run, given
         specific values for alpha, gamma.
         INPUT:
 
-        PATH: string describing the path taken to access tesser data
-        SUBJECT: Integeger input representing a particular subject
+        STRUC_DF: Structured learning data in DataFrame format.
+        INDUC_DF: Generalized induction data in DataFrame format.
+        SUBJECT: Integeger input representing a particular subject.
         GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
     """
-    SR = sr.explore_runs(PATH, SUBJECT, "once", GAMMA, ALPHA)
-    data, keys = util.read_files(PATH, SUBJECT, "induction")
+    SR = sr.explore_runs(STRUC_DF, "once", GAMMA, ALPHA)
     cue_sequence, opt1_sequence, opt2_sequence, response_sequence = util.get_induction_data(
-        data[keys[0]]
+        INDUC_DF
     )
     num_trials = len(cue_sequence)
     log_likelihood = 0
@@ -57,24 +58,28 @@ def get_log_likelihood(PATH, SUBJECT, GAMMA, ALPHA):
     return log_likelihood
 
 
-def maximize_likelihood(PATH, SUBJECT, OPTION):
+def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION, GAMMA, ALPHA):
     """ Numerically maximizes the log likelihood function on the set of the subject's choices
          to find optimal values for alpha, gamma
         INPUT:
 
-        PATH: string describing the path taken to access tesser data
-        SUBJECT: Integeger input representing a particular subject
+        STRUC_DF: Structured learning data in DataFrame format.
+        INDUC_DF: Generalized induction data in DataFrame format.
+        OPTION: scipy optimization functions:'basinhopping','differential evolution', 'brute'
+        SUBJECT: Integeger input representing a particular subject.
+        GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
     """
     def ll(x):
         ALPHA = x[0]
         GAMMA = x[1]
-        return -get_log_likelihood (PATH, SUBJECT, ALPHA, GAMMA)
+        return -get_log_likelihood (STRUC_DF, INDUC_DF, GAMMA, ALPHA)
     
+    start_time = time.time()
     if OPTION == 'basinhopping':
         alpha_max, gamma_max = optimize.basinhopping (ll, [1,1]).x
     if OPTION == 'differential evolution':
         alpha_max, gamma_max = optimize.differential_evolution (ll, [(0,1), (0,1)]).x
     if OPTION == 'brute':
         alpha_max, gamma_max = optimize.brute (ll, [(0,1), (0,1)])[0]
-    
+    print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max
