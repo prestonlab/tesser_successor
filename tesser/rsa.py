@@ -8,7 +8,7 @@ def rdm(matrix):
     return dist.squareform(dist.pdist(matrix, 'correlation'))
 
 
-def mutiple_rdm(SR_matrices):
+def multiple_rdm(SR_matrices):
     """ Computes the representational dissimilarity matrix for a list of matrices. """
 
     rdm_matrices = {}
