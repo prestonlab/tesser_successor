@@ -10,6 +10,7 @@ def rdm(matrix):
 
 def mutiple_rdm(SR_matrices):
     """ Computes the representational dissimilarity matrix for a list of matrices. """
+
     rdm_matrices = {}
     for part in [1, 2]:
         for run in range(1, 7):
@@ -18,3 +19,9 @@ def mutiple_rdm(SR_matrices):
             except KeyError:
                 pass
     return rdm_matrices
+
+    rdm_matrices = []
+    for matrix in matrices:
+        rdm_matrices.append(rdm(matrix))
+    return rdm_matrices
+
