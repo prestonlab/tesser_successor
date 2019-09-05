@@ -20,8 +20,3 @@ def mutiple_rdm(SR_matrices):
                 pass
     return rdm_matrices
 
-    rdm_matrices = []
-    for matrix in matrices:
-        rdm_matrices.append(rdm(matrix))
-    return rdm_matrices
-
