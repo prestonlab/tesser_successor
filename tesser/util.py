@@ -88,14 +88,6 @@ def load_induction(data_dir, subject):
     return df
 
 
-def load_induct(data_dir, subject):
-    ''' Loads a subject's induction data into a dataframe.'''
-    
-    df = pd.read_csv(data_dir, sep='\t')
-    df = df[df['SubjNum'] == str(subject)]
-    return df
-
-
 def drop_nan(DATA):
     """  Drops NaN values from DataFrame """
     DATA.replace(["NaN"], np.nan, inplace=True)
@@ -121,4 +113,3 @@ def get_induction_data(DFRAME):
     opt2_sequence = data["Opt2Num"].values
     response_sequence = data["Resp"].values
     return cue_sequence, opt1_sequence, opt2_sequence, response_sequence
-
