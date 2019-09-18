@@ -57,7 +57,7 @@ def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, RETURN_TRIAL=False):
             )
             eps = 0.000001
             if np.isnan(trial_probability):
-                # probability undefined; can occur is SR is zeros
+                # probability undefined; can occur if SR has zeros
                 trial_probability = eps
             elif trial_probability < eps:
                 # probability too close to zero; set to minimal value
