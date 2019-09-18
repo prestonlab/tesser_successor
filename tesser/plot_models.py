@@ -6,7 +6,7 @@ from . import fit
 from . import network
 
 
-def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA):
+def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA, vmin=0, vmax=1):
     """ Program which creates plots for learning models in explore runs:
         INPUT:
 
@@ -27,7 +27,7 @@ def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA):
             if (part, run) not in SR:
                 fig.delaxes(ax[i, j])
                 continue
-            im = ax[i,j].matshow(SR[(part, run)], vmin=0, vmax=.5)
+            im = ax[i,j].matshow(SR[(part, run)], vmin=vmin, vmax=vmax)
             ax[i,j].set_title("Part_%s Run_%s \n" % (part, run))
 
     cbar = fig.colorbar(im, ax=ax.ravel().tolist(), shrink=0.95)
