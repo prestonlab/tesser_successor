@@ -8,6 +8,9 @@ import time
 
 def pBGivenA(A, B, C, SR):
     """ Computes the probability of B given A using the Luce choice rule."""
+    if SR[A, B] == 0 and SR[A, C] == 0:
+        # if SR is zero for both, probability is undefined
+        return np.nan
     return SR[A][B] / (SR[A][B] + SR[A][C])
 
 
@@ -53,7 +56,11 @@ def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, RETURN_TRIAL=False):
                 cue_num, opt1_num, opt2_num, response_num, SR
             )
             eps = 0.000001
-            if trial_probability < eps:
+            if np.isnan(trial_probability):
+                # probability undefined; can occur is SR is zeros
+                trial_probability = eps
+            elif trial_probability < eps:
+                # probability too close to zero; set to minimal value
                 trial_probability = eps
             log_likelihood += np.log(trial_probability)
             all_trial_prob[trial_num] = trial_probability
