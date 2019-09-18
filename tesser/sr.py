@@ -77,8 +77,8 @@ def learn_sr(df, GAMMA, ALPHA):
         for run in np.unique(df.loc[df.part == part, 'run']):
             envstep = df.loc[(df.part == part) & (df.run == run),
                              'objnum'].values
-            M = np.array(
-                run_experiment(envstep, GAMMA, ALPHA, np.copy(M), n_states))
+            M = np.array(run_experiment(envstep, GAMMA, ALPHA,
+                                        np.copy(M), n_states))
             SR_matrices[(part, run)] = M
     return SR_matrices
 
