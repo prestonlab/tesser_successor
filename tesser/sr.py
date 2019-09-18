@@ -67,6 +67,22 @@ def run_experiment(envstep, gamma, alpha, M, N_STATES):
     return SR_agent.M
 
 
+def learn_sr(df, GAMMA, ALPHA):
+    """Train an SR matrix on the structure-learning task."""
+
+    n_states = len(np.unique(df.objnum))
+    SR_matrices = {}
+    M = np.zeros([n_states, n_states])
+    for part in np.unique(df.part):
+        for run in np.unique(df.loc[df.part == part, 'run']):
+            envstep = df.loc[(df.part == part) & (df.run == run),
+                             'objnum'].values
+            M = np.array(
+                run_experiment(envstep, GAMMA, ALPHA, np.copy(M), n_states))
+        SR_matrices[(part, run)] = M
+    return SR_matrices
+
+
 def explore_runs(df, OPTION, GAMMA, ALPHA):
     """This loop adds the address, part number and run number to the runs array, so that the object
          sequence in each run can be inputted to the learning agent.
