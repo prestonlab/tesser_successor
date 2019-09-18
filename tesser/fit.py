@@ -24,7 +24,7 @@ def likelihood(cue, opt1, opt2, response, SR):
         return pCGivenA(cue, opt1, opt2, SR)
 
 
-def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA):
+def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, RETURN_TRIAL=False):
     """ This function gives the probability of obtaining the choices in the run, given
         specific values for alpha, gamma.
         INPUT:
@@ -40,6 +40,7 @@ def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA):
     )
     num_trials = len(cue_sequence)
     log_likelihood = 0
+    all_trial_prob = np.zeros(num_trials)
     for trial_num in range(num_trials):
         try:
             cue_num, opt1_num, opt2_num, response_num = (
@@ -52,10 +53,14 @@ def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA):
                 cue_num, opt1_num, opt2_num, response_num, SR
             )
             log_likelihood += np.log(trial_probability)
+            all_trial_prob[trial_num] = trial_probability
         except ValueError:
             pass
 
-    return log_likelihood
+    if RETURN_TRIAL:
+        return log_likelihood, all_trial_prob
+    else:
+        return log_likelihood
 
 
 def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION):
