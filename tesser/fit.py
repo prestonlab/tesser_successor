@@ -52,6 +52,9 @@ def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, RETURN_TRIAL=False):
             trial_probability = likelihood(
                 cue_num, opt1_num, opt2_num, response_num, SR
             )
+            eps = 0.000001
+            if trial_probability < eps:
+                trial_probability = eps
             log_likelihood += np.log(trial_probability)
             all_trial_prob[trial_num] = trial_probability
         except ValueError:
