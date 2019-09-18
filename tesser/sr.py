@@ -164,8 +164,8 @@ def explore_runs(df, OPTION, GAMMA, ALPHA):
             part_num, run_num = data[run][1], data[run][2]
             envstep = data[run][0]
             M_new = np.copy(M)
-            M_new += np.array(run_experiment(envstep, GAMMA, ALPHA, M_new, n_states))
-            SR_matrices[(part_num, run_num)] = M_new
+            M_new = np.array(run_experiment(envstep, GAMMA, ALPHA, M_new, n_states))
+            SR_matrices[(part_num, run_num)] = M_new - M
             M = M_new
 
 
