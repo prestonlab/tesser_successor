@@ -193,7 +193,6 @@ def compute_correlations(DF, OPTION, GAMMA, ALPHA):
     n_states = len(np.unique(DF.objnum))
     nodes = network.node_info()
     adjacency = network.adjacency(nodes)
-    transition = adjacency / 6
     L = compute_limit_matrix(0.5, adjacency, n_states)
     L_vector = L.flatten()
     M = explore_runs(DF, "once", GAMMA, ALPHA)
