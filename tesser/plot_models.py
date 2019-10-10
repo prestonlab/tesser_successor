@@ -13,7 +13,7 @@ def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA, vmin=0, vmax=1):
         SR: Dictionary of SR matricies
         SUBJECT: Integeger input representing a particular subject
         OPTION: String descrbing particular models to run. 
-        ('persist', 'reset', 'independent', 'track', 'changes')
+        ('persist', 'reset', 'independent', 'track changes')
         GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
     """
     fig, ax = plt.subplots(2, 6, figsize=(14, 6))
@@ -41,10 +41,8 @@ def plot_rdms(rdms, SUBJECT,  GAMMA, ALPHA):
     """ Program which creates plots for learning models in explore runs:
         INPUT:
 
-
+        rdms: representational dissimilarity matrix for a list of matrices
         SUBJECT: Integeger input representing a particular subject
-        OPTION: String descrbing particular models to run. 
-        ('persist', 'reset', 'independent', 'track', 'changes')
         GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
     """
     fig, ax = plt.subplots(2, 6, figsize=(14, 6))
@@ -76,19 +74,3 @@ def plot_adjecncy_matrix():
     plt.matshow(L, vmin=0, vmax=0.5)
     plt.colorbar()
 
-
-# def input_user(DATAFRAME, SUBJECT, TYPE, MODEL, GAMMA, ALPHA):
-#     if TYPE == "structured":
-        
-#         plot_explore_runs(MODEL, SUBJECT, GAMMA, ALPHA, PATH)
-
-#     if TYPE == "induction":
-#         m1, m2 = fit.maximize_likelihood(SUBJECT)
-#         logl = fit.get_log_likelihood(SUBJECT, m2, m1)
-#         print(
-#             "The log likelihood for SUBJECT: %s is %s and is maximized with gamma: %s and alpha: %s"
-#             % (SUBJECT, logl, m2, m1)
-#         )
-
-#     else:
-#         print('Value Error TYPE == "structured" or "induction"')

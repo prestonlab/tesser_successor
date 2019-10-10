@@ -90,8 +90,7 @@ def explore_runs(df, OPTION, GAMMA, ALPHA):
 
         df: Structured learning data in DataFrame form.
         OPTION: String describing particular models to run. 
-        ('persist', 'repeat', 'once', 'reset', 'independent', 'track', 'changes')
-        SUBJECT: Integer input representing a particular subject
+        ('persist', 'repeat', 'once', 'reset', 'independent', 'track changes')
         GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
     """
 
@@ -202,7 +201,6 @@ def compute_correlations(DF, OPTION, GAMMA, ALPHA):
         INPUT:
 
         DF: Structured learning data in DataFrame format.
-        SUBJECT: Integer input representing a particular subject
         OPTION: String describing particular function ( 'norm' or 'correlation'))
         GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
     """
