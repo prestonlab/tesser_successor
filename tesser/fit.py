@@ -49,6 +49,7 @@ def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, tau, RETURN_TRIAL=False
         GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
     """
     SR = sr.explore_runs(STRUC_DF, "once", GAMMA, ALPHA)
+    SR_norm = SR / np.sum(SR)
     cue_sequence, opt1_sequence, opt2_sequence, response_sequence = util.get_induction_data(
         INDUC_DF
     )
@@ -68,7 +69,7 @@ def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, tau, RETURN_TRIAL=False
             int(response_sequence[trial_num]) - 1,
         )
         trial_probability = likelihood(
-            cue_num, opt1_num, opt2_num, response_num, SR, tau
+            cue_num, opt1_num, opt2_num, response_num, SR_norm, tau
         )
         eps = 0.000001
         if np.isnan(trial_probability):
@@ -104,7 +105,7 @@ def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION,tau):
     if OPTION == 'basinhopping':
         alpha_max, gamma_max = optimize.basinhopping (ll, [0.5,0.5]).x
     elif OPTION == 'differential evolution':
-        alpha_max, gamma_max = optimize.differential_evolution (ll, [(.1,0.99), (0.1,0.99)]).x
+        alpha_max, gamma_max = optimize.differential_evolution (ll, [(.000001,0.99), (0.1,0.99)]).x
     elif OPTION == 'brute':
         alpha_max, gamma_max = optimize.brute (ll, [(0,1), (0,1)])[0]
     else:
