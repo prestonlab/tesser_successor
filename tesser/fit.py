@@ -87,7 +87,7 @@ def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, tau, RETURN_TRIAL=False
         return log_likelihood
 
 
-def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION,tau):
+def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION):
     """ Numerically maximizes the log likelihood function on the set of the subject's choices
          to find optimal values for alpha, gamma
         INPUT:
@@ -99,16 +99,17 @@ def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION,tau):
     def ll(x):
         ALPHA = x[0]
         GAMMA = x[1]
-        return -get_log_likelihood (STRUC_DF, INDUC_DF, GAMMA, ALPHA, tau)
+        TAU = x[2]
+        return -get_log_likelihood (STRUC_DF, INDUC_DF, GAMMA, ALPHA, TAU)
     
     start_time = time.time()
     if OPTION == 'basinhopping':
-        alpha_max, gamma_max = optimize.basinhopping (ll, [0.5,0.5]).x
+        alpha_max, gamma_max, tau_max = optimize.basinhopping (ll, [0.5,0.5,0.5]).x
     elif OPTION == 'differential evolution':
-        alpha_max, gamma_max = optimize.differential_evolution (ll, [(.000001,0.99), (0.1,0.99)]).x
+        alpha_max, gamma_max, tau_max = optimize.differential_evolution (ll, [(.000001,0.99), (0.1,0.99), (.00001, .99)]).x
     elif OPTION == 'brute':
-        alpha_max, gamma_max = optimize.brute (ll, [(0,1), (0,1)])[0]
+        alpha_max, gamma_max, tau_max = optimize.brute (ll, [(0,1), (0,1), (0,1)])[0]
     else:
         raise ValueError('Unknown option: {OPTION}')
     #print("--- %s seconds ---" % (time.time() - start_time))
-    return alpha_max, gamma_max
+    return alpha_max, gamma_max, tau_max
