@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# functions to read behavioral data (structured learning, induction)
+# functions to read behavioral data (structured learning, induction, grouping data)
 import numpy as np
 import pandas as pd
 import os
 from glob import glob
 
-
+#load subject directory  
 def get_subj_dir(data_dir, subject):
     """Get the data directory for a given subject number."""
 
@@ -21,7 +21,7 @@ def get_subj_dir(data_dir, subject):
 
     return dir_search[0]
 
-
+#load structured learning by a subject, part (1: non-scanned, 2: scanned), particular run  
 def load_struct_run(data_dir, subject, part, run):
     """Load data for one structured learning run."""
 
@@ -49,7 +49,7 @@ def load_struct_run(data_dir, subject, part, run):
 
     return df
 
-
+#load structured learning in entirety  
 def load_struct(data_dir, subject):
     """Load all structured learning data for a subject."""
 
@@ -68,7 +68,7 @@ def load_struct(data_dir, subject):
     df = pd.concat(df_list, sort=False)
     return df
 
-
+#load inductive generalization data by subject 
 def load_induction(data_dir, subject):
     """Load data generalized induction data by subject."""
 
@@ -87,23 +87,7 @@ def load_induction(data_dir, subject):
 
     return df
 
-
-def drop_nan(DATA):
-    """  Drops NaN values from DataFrame """
-    DATA.replace(["NaN"], np.nan, inplace=True)
-    DATA = DATA.dropna()
-    DATA = DATA.reset_index(drop=True)  # Resets the index to start at 0
-    return DATA
-
-
-def get_objects(DFRAME):
-    """ INPUT DataFrame 
-       OUTPUT object sequence numbers for successor representation """
-    data = drop_nan(DFRAME)
-    obj_sequence = data["objnum"]
-    return obj_sequence
-
-
+#load inductive generalization by trial by trial questions
 def get_induction_data(DFRAME):
     """ INPUT DataFrame 
        OUTPUT four variable sequences for generalized induction """
@@ -113,3 +97,38 @@ def get_induction_data(DFRAME):
     opt2_sequence = data["Opt2Num"].values
     response_sequence = data["Resp"].values
     return cue_sequence, opt1_sequence, opt2_sequence, response_sequence
+
+#drop the NaN values from inductive generalization questions 
+def drop_nan(DATA):
+    """  Drops NaN values from DataFrame """
+    DATA.replace(["NaN"], np.nan, inplace=True)
+    DATA = DATA.dropna()
+    DATA = DATA.reset_index(drop=True)  # Resets the index to start at 0
+    return DATA
+
+#load grouping data by subject 
+def load_group(data_dir, subject):
+    """Load data generalized induction data by subject."""
+
+    # subject directory
+    subj_dir = get_subj_dir(data_dir, subject)
+
+    # search for a file with the correct name formatting
+    file_pattern = f'{subject}_FinalGraph.txt'
+    file_search = glob(os.path.join(subj_dir, file_pattern))
+    if len(file_search) != 1:
+        raise IOError(f'Problem finding data for {subject}.')
+    run_file = file_search[0]
+
+    # read log, fixing problem with spaces in column names
+    df = np.loadtxt(run_file)
+
+    return df
+
+#not sure what this is
+def get_objects(DFRAME):
+    """ INPUT DataFrame 
+       OUTPUT object sequence numbers for successor representation """
+    data = drop_nan(DFRAME)
+    obj_sequence = data["objnum"]
+    return obj_sequence
