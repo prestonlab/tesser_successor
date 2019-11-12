@@ -14,7 +14,8 @@ def node_info():
     # node number
     node = np.arange(1, n_node + 1, dtype=int)
     df = pd.DataFrame(index=node)
-
+    df['node'] = node
+    
     # communities
     df['comm'] = 0
     comm = {1: [1, 2, 3, 18, 19, 20, 21],
