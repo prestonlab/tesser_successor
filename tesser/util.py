@@ -114,7 +114,7 @@ def get_induction_data(DFRAME):
     response_sequence = data["Resp"].values
     return cue_sequence, opt1_sequence, opt2_sequence, response_sequence
 
-#load grouping data by subject 
+
 def load_group(data_dir, subject):
     """Load data generalized induction data by subject."""
 
@@ -129,6 +129,5 @@ def load_group(data_dir, subject):
     run_file = file_search[0]
 
     # read log, fixing problem with spaces in column names
-    df = np.loadtxt(run_file)
-
-    return df
+    mat = np.loadtxt(run_file)
+    return mat.astype(int)
