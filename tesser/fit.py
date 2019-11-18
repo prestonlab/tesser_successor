@@ -4,6 +4,7 @@ from . import util
 from . import sr
 from scipy.spatial import distance
 from scipy import optimize
+from scipy.stats import linregress
 import time
 
 
@@ -113,3 +114,31 @@ def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION):
         raise ValueError('Unknown option: {OPTION}')
     #print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max, tau_max
+
+def grouping_error (struc_df, group_df, alpha, gamma):
+    SR = sr.explore_runs (struc_df, "once", gamma, alpha)
+    
+    euclid_matrix = np.array (group_df)
+    euclid_vector = np.matrix.flatten(euclid_matrix)
+    
+    sr_vector = np.matrix.flatten (sr)
+    
+    slope, intercept, r_value, p_value, std_err = linregress(sr_vector, euclid_vector)
+    return std_err
+
+def minimize_grouping_error (struc_df, group_df, option):
+    def ge (x):
+        alpha = x[0]
+        gamma = x[1]
+        return grouping_error (struc_df, group_df, alpha, gamma)
+    
+    if option == 'basinhopping':
+        alpha_max, gamma_max = optimize.basinhopping (ge, [.5,.5]).x
+    elif OPTION == 'differential evolution':
+        alpha_max, gamma_max = optimize.differential_evolution (ge, [(.000001,0.99), (0.1,0.99)]).x
+    elif OPTION == 'brute':
+        alpha_max, gamma_max = optimize.brute (ge, [(0,1), (0,1)])[0]
+    else:
+        raise ValueError('Unknown option: {OPTION}')
+    #print("--- %s seconds ---" % (time.time() - start_time))
+    return alpha_max, gamma_max
