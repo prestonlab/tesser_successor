@@ -113,3 +113,21 @@ def get_induction_data(DFRAME):
     opt2_sequence = data["Opt2Num"].values
     response_sequence = data["Resp"].values
     return cue_sequence, opt1_sequence, opt2_sequence, response_sequence
+
+
+def load_group(data_dir, subject):
+    """Load data generalized induction data by subject."""
+
+    # subject directory
+    subj_dir = get_subj_dir(data_dir, subject)
+
+    # search for a file with the correct name formatting
+    file_pattern = f'{subject}_FinalGraph.txt'
+    file_search = glob(os.path.join(subj_dir, file_pattern))
+    if len(file_search) != 1:
+        raise IOError(f'Problem finding data for {subject}.')
+    run_file = file_search[0]
+
+    # read log, fixing problem with spaces in column names
+    mat = np.loadtxt(run_file)
+    return mat.astype(int)
