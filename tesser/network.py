@@ -5,7 +5,6 @@ import pandas as pd
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import shortest_path
 
-
 def node_info():
     """Return a dataframe with basic node information."""
 
@@ -14,7 +13,8 @@ def node_info():
     # node number
     node = np.arange(1, n_node + 1, dtype=int)
     df = pd.DataFrame(index=node)
-
+    df['node'] = node
+    
     # communities
     df['comm'] = 0
     comm = {1: [1, 2, 3, 18, 19, 20, 21],
@@ -33,7 +33,6 @@ def node_info():
     df.loc[[3, 11], 'connect'] = 2
     df.loc[[10, 18], 'connect'] = 3
     return df
-
 
 def adjacency(df):
     """Determine adjacency matrix from node information."""
@@ -60,7 +59,6 @@ def adjacency(df):
         adj[:, node - 1] = adj_row
     return adj
 
-
 def path_length(adj):
     """Determine the shortest path between each pair of nodes."""
 
@@ -72,3 +70,23 @@ def path_length(adj):
         for target, pathlist in pathdict.items():
             pathlen[source, target] = len(pathlist) - 1
     return pathlen
+
+def community(df):
+    """Determine community matrix (i.e. isolated, unconnected) from node information."""
+
+    n_node = df.shape[0]
+    comm = np.zeros((n_node, n_node), dtype=int)
+    for node in df.index:
+        comm_row = np.zeros(n_node)
+        if df.loc[node, 'nodetype'] == 0:
+            # connected to all items in the community
+            comm_row[df.comm == df.loc[node, 'comm']] = 1
+        else:
+            # connected to all community nodes except the other boundary
+            samecomm = df.comm == df.loc[node, 'comm']
+            isprim = df.nodetype == 0
+            comm_row[samecomm & isprim] = 1
+        comm_row[node - 1] = 0
+        comm[node - 1, :] = comm_row
+        comm[:, node - 1] = comm_row
+    return comm
