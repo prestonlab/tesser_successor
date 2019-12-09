@@ -116,12 +116,12 @@ def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION):
     return alpha_max, gamma_max, tau_max
 
 def grouping_error (struc_df, group_df, alpha, gamma):
-    sr = sr.explore_runs (struc_df, "once", gamma, alpha)
+    SR = sr.explore_runs (struc_df, "once", gamma, alpha)
     
     euclid_matrix = np.array (group_df)
     euclid_vector = np.matrix.flatten(euclid_matrix)
     
-    sr_vector = np.matrix.flatten (sr)
+    sr_vector = np.matrix.flatten (SR)
     
     slope, intercept, r_value, p_value, std_err = linregress(sr_vector, euclid_vector)
     return std_err
