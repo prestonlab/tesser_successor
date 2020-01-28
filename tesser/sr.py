@@ -27,7 +27,7 @@ class SR_Matrix:
 
     def update_SR(self, s, s_new):
         self.M[s] = (1 - self.alpha) * self.M[s] + self.alpha * (
-            self.onehot[s] + self.gamma * self.M[s_new]
+                self.onehot[s] + self.gamma * self.M[s_new]
         )
 
 
@@ -79,7 +79,7 @@ def learn_sr(df, GAMMA, ALPHA):
                              'objnum'].values
             M = np.array(run_experiment(envstep, GAMMA, ALPHA,
                                         np.copy(M), n_states))
-            M = M/np.sum(M)
+            M = M / np.sum(M)
             SR_matrices[(part, run)] = M
     return SR_matrices
 
@@ -97,7 +97,6 @@ def explore_runs(df, OPTION, GAMMA, ALPHA):
 
     n_states = len(np.unique(df.objnum))
     SR_matrices = {}
-    num_runs = df.shape[0]
     data = []
     for part in (1, 2):
         runs = np.unique(df.loc[df.part == part, 'run'])
@@ -105,51 +104,48 @@ def explore_runs(df, OPTION, GAMMA, ALPHA):
             # get data for this run
             df_run = df.loc[(df.part == part) & (df.run == run), :]
             obj = df_run.objnum.values
-            data.append([obj,part, run])
+            data.append([obj, part, run])
     # This OPTION allows the SR matrix to persist across all runs from Part 1 and Part 2
     #     without ever resetting.
     if OPTION == "persist":
         M = np.zeros([n_states, n_states])
-        for run in (range(0,11)):
+        for run in (range(0, 11)):
             part_num, run_num = data[run][1], data[run][2]
             envstep = data[run][0]
-            M = np.array(run_experiment(envstep, GAMMA, ALPHA, np.copy(M),n_states))
+            M = np.array(run_experiment(envstep, GAMMA, ALPHA, np.copy(M), n_states))
             SR_matrices[(part_num, run_num)] = M
-
 
     if OPTION == "repeat":
         M = np.zeros([n_states, n_states])
         for time in range(100):
             for run in runs:
-                part_num, run_num = data[run][1], data[run][2]
                 envstep = data[run][0]
-                M = np.array(run_experiment(envstep, GAMMA, ALPHA, np.copy(M),n_states))
+                M = np.array(run_experiment(envstep, GAMMA, ALPHA, np.copy(M), n_states))
         return M
 
     if OPTION == "once":
         M = np.zeros([n_states, n_states])
-        for run in (range(0,11)):
-            part_num, run_num = data[run][1], data[run][2]
+        for run in (range(0, 11)):
             envstep = data[run][0]
-            M = np.array(run_experiment(envstep, GAMMA, ALPHA, np.copy(M),n_states))
+            M = np.array(run_experiment(envstep, GAMMA, ALPHA, np.copy(M), n_states))
         return M
 
     # This OPTION allows the SR matrix to persist in Part 1 and Part 2, but resets it between them.
     if OPTION == "reset":
         M = np.zeros([n_states, n_states])
         is_reset = False
-        for run in (range(0,11)):
+        for run in (range(0, 11)):
             part_num, run_num = data[run][1], data[run][2]
             if not is_reset and part_num == 2:
                 M = np.zeros([n_states, n_states])
                 is_reset = True
             envstep = data[run][0]
-            M = np.array(run_experiment(envstep, GAMMA, ALPHA, np.copy(M),n_states))
+            M = np.array(run_experiment(envstep, GAMMA, ALPHA, np.copy(M), n_states))
             SR_matrices[(part_num, run_num)] = M
 
     # This OPTION resets the SR matrix between each run.
     if OPTION == "independent":
-        for run in (range(0,11)):
+        for run in (range(0, 11)):
             part_num, run_num = data[run][1], data[run][2]
             M = np.zeros([n_states, n_states])
             envstep = data[run][0]
@@ -160,14 +156,13 @@ def explore_runs(df, OPTION, GAMMA, ALPHA):
     #     after each run, it plots the changes made to it after learning each object sequence.
     if OPTION == "track changes":
         M = np.zeros([n_states, n_states])
-        for run in (range(0,11)):
+        for run in (range(0, 11)):
             part_num, run_num = data[run][1], data[run][2]
             envstep = data[run][0]
             M_new = np.copy(M)
             M_new = np.array(run_experiment(envstep, GAMMA, ALPHA, M_new, n_states))
             SR_matrices[(part_num, run_num)] = M_new - M
             M = M_new
-
 
     return SR_matrices
 

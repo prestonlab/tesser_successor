@@ -27,8 +27,8 @@ def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA, vmin=0, vmax=1):
             if (part, run) not in SR:
                 fig.delaxes(ax[i, j])
                 continue
-            im = ax[i,j].matshow(SR[(part, run)], vmin=vmin, vmax=vmax)
-            ax[i,j].set_title("Part_%s Run_%s \n" % (part, run))
+            im = ax[i, j].matshow(SR[(part, run)], vmin=vmin, vmax=vmax)
+            ax[i, j].set_title("Part_%s Run_%s \n" % (part, run))
 
     cbar = fig.colorbar(im, ax=ax.ravel().tolist(), shrink=0.95)
 
@@ -36,8 +36,9 @@ def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA, vmin=0, vmax=1):
     cbar.set_ticklabels(['low', 'medium', 'high'])
 
     plt.show()
-    
-def plot_rdms(rdms, SUBJECT,  GAMMA, ALPHA):
+
+
+def plot_rdms(rdms, SUBJECT, GAMMA, ALPHA):
     """ Program which creates plots for learning models in explore runs:
         INPUT:
 
@@ -56,8 +57,8 @@ def plot_rdms(rdms, SUBJECT,  GAMMA, ALPHA):
             if (part, run) not in rdms:
                 fig.delaxes(ax[i, j])
                 continue
-            im = ax[i,j].matshow(rdms[(part, run)], vmin=0, vmax=.5)
-            ax[i,j].set_title("Part_%s Run_%s \n" % (part, run))
+            im = ax[i, j].matshow(rdms[(part, run)], vmin=0, vmax=.5)
+            ax[i, j].set_title("Part_%s Run_%s \n" % (part, run))
 
     cbar = fig.colorbar(im, ax=ax.ravel().tolist(), shrink=0.95)
 
@@ -66,11 +67,10 @@ def plot_rdms(rdms, SUBJECT,  GAMMA, ALPHA):
 
     plt.show()
 
+
 def plot_adjecncy_matrix():
     nodes = network.node_info()
     adjacency = network.adjacency(nodes)
-    transition = adjacency / 6
     L = sr.compute_limit_matrix(0.5, adjacency, 21)
     plt.matshow(L, vmin=0, vmax=0.5)
     plt.colorbar()
-

@@ -5,6 +5,7 @@ import pandas as pd
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import shortest_path
 
+
 def node_info():
     """Return a dataframe with basic node information."""
 
@@ -14,7 +15,7 @@ def node_info():
     node = np.arange(1, n_node + 1, dtype=int)
     df = pd.DataFrame(index=node)
     df['node'] = node
-    
+
     # communities
     df['comm'] = 0
     comm = {1: [1, 2, 3, 18, 19, 20, 21],
@@ -33,6 +34,7 @@ def node_info():
     df.loc[[3, 11], 'connect'] = 2
     df.loc[[10, 18], 'connect'] = 3
     return df
+
 
 def adjacency(df):
     """Determine adjacency matrix from node information."""
@@ -59,6 +61,7 @@ def adjacency(df):
         adj[:, node - 1] = adj_row
     return adj
 
+
 def path_length(adj):
     """Determine the shortest path between each pair of nodes."""
 
@@ -70,6 +73,7 @@ def path_length(adj):
         for target, pathlist in pathdict.items():
             pathlen[source, target] = len(pathlist) - 1
     return pathlen
+
 
 def community(df):
     """Determine community matrix (i.e. isolated, unconnected) from node information."""

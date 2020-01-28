@@ -11,6 +11,7 @@ import time
 def eu_dist(a, b, SR):
     return distance.euclidean(SR[a], SR[b])
 
+
 # def pBGivenA(A, B, C, SR, tau):
 #     """ Computes the probability of B given A using the Luce choice rule."""
 #     if SR[A, B] == 0 and SR[A, C] == 0:
@@ -23,7 +24,7 @@ def pBGivenA(A, B, C, SR, tau):
     if SR[A, B] == 0 and SR[A, C] == 0:
         # if SR is zero for both, probability is undefined
         return np.nan
-    return SR[A][B]**tau / (SR[A][B]**tau + SR[A][C]**tau)
+    return SR[A][B] ** tau / (SR[A][B] ** tau + SR[A][C] ** tau)
 
 
 def pCGivenA(A, B, C, SR, tau):
@@ -37,7 +38,6 @@ def likelihood(cue, opt1, opt2, response, SR, tau):
         return pBGivenA(cue, opt1, opt2, SR, tau)
     if response == 1:
         return pCGivenA(cue, opt1, opt2, SR, tau)
-
 
 
 def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, tau, RETURN_TRIAL=False):
@@ -97,48 +97,52 @@ def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION):
         INDUC_DF: Generalized induction data in DataFrame format.
         OPTION: scipy optimization functions:'basinhopping','differential evolution', 'brute'
     """
+
     def ll(x):
         ALPHA = x[0]
         GAMMA = x[1]
         TAU = x[2]
-        return -get_log_likelihood (STRUC_DF, INDUC_DF, GAMMA, ALPHA, TAU)
-    
+        return -get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, TAU)
+
     start_time = time.time()
     if OPTION == 'basinhopping':
-        alpha_max, gamma_max, tau_max = optimize.basinhopping (ll, [0.5,0.5,0.5]).x
+        alpha_max, gamma_max, tau_max = optimize.basinhopping(ll, [0.5, 0.5, 0.5]).x
     elif OPTION == 'differential evolution':
-        alpha_max, gamma_max, tau_max = optimize.differential_evolution (ll, [(.000001,0.99), (0.1,0.99), (.00001, .99)]).x
+        alpha_max, gamma_max, tau_max = optimize.differential_evolution(ll,
+                                                                        [(.000001, 0.99), (0.1, 0.99), (.00001, .99)]).x
     elif OPTION == 'brute':
-        alpha_max, gamma_max, tau_max = optimize.brute (ll, [(0,1), (0,1), (0,1)])[0]
+        alpha_max, gamma_max, tau_max = optimize.brute(ll, [(0, 1), (0, 1), (0, 1)])[0]
     else:
         raise ValueError('Unknown option: {OPTION}')
-    #print("--- %s seconds ---" % (time.time() - start_time))
+    # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max, tau_max
 
-def grouping_error (struc_df, group_df, alpha, gamma):
-    SR = sr.explore_runs (struc_df, "once", gamma, alpha)
-    
-    euclid_matrix = np.array (group_df)
+
+def grouping_error(struc_df, group_df, alpha, gamma):
+    SR = sr.explore_runs(struc_df, "once", gamma, alpha)
+
+    euclid_matrix = np.array(group_df)
     euclid_vector = np.matrix.flatten(euclid_matrix)
-    
-    sr_vector = np.matrix.flatten (SR)
-    
+
+    sr_vector = np.matrix.flatten(SR)
+
     slope, intercept, r_value, p_value, std_err = linregress(sr_vector, euclid_vector)
     return std_err
 
-def minimize_grouping_error (struc_df, group_df, option):
-    def ge (x):
+
+def minimize_grouping_error(struc_df, group_df, option):
+    def ge(x):
         alpha = x[0]
         gamma = x[1]
-        return grouping_error (struc_df, group_df, alpha, gamma)
-    
+        return grouping_error(struc_df, group_df, alpha, gamma)
+
     if option == 'basinhopping':
-        alpha_max, gamma_max = optimize.basinhopping (ge, [.5,.5]).x
+        alpha_max, gamma_max = optimize.basinhopping(ge, [.5, .5]).x
     elif OPTION == 'differential evolution':
-        alpha_max, gamma_max = optimize.differential_evolution (ge, [(.000001,0.99), (0.1,0.99)]).x
+        alpha_max, gamma_max = optimize.differential_evolution(ge, [(.000001, 0.99), (0.1, 0.99)]).x
     elif OPTION == 'brute':
-        alpha_max, gamma_max = optimize.brute (ge, [(0,1), (0,1)])[0]
+        alpha_max, gamma_max = optimize.brute(ge, [(0, 1), (0, 1)])[0]
     else:
         raise ValueError('Unknown option: {OPTION}')
-    #print("--- %s seconds ---" % (time.time() - start_time))
+    # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max
