@@ -1,9 +1,9 @@
 # module that plots models in fit, sr and rsa
-import numpy as np
 import matplotlib.pyplot as plt
-from . import sr
-from . import fit
+import numpy as np
+
 from . import network
+from . import sr
 
 
 def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA, vmin=0, vmax=1):

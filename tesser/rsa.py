@@ -1,5 +1,4 @@
 # creating and testing model RDMs
-import scipy as sp
 import scipy.spatial.distance as dist
 
 

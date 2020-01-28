@@ -1,7 +1,7 @@
 # core model functions for learning/running experiment phases
 import numpy as np
 import numpy.linalg as la
-from . import util
+
 from . import network
 
 
