@@ -40,19 +40,19 @@ def likelihood(cue, opt1, opt2, response, SR, tau):
         return pCGivenA(cue, opt1, opt2, SR, tau)
 
 
-def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, tau, RETURN_TRIAL=False):
+def get_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_trial=False):
     """ This function gives the probability of obtaining the choices in the run, given
         specific values for alpha, gamma.
         INPUT:
 
-        STRUC_DF: Structured learning data in DataFrame format.
-        INDUC_DF: Generalized induction data in DataFrame format.
-        GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
+        struc_df: Structured learning data in DataFrame format.
+        induc_df: Generalized induction data in DataFrame format.
+        gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
-    SR = sr.explore_runs(STRUC_DF, "once", GAMMA, ALPHA)
+    SR = sr.explore_runs(struc_df, "once", gamma, alpha)
     SR_norm = SR / np.sum(SR)
     cue_sequence, opt1_sequence, opt2_sequence, response_sequence = util.get_induction_data(
-        INDUC_DF
+        induc_df
     )
     num_trials = len(cue_sequence)
     log_likelihood = 0
@@ -82,38 +82,38 @@ def get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, tau, RETURN_TRIAL=False
         log_likelihood += np.log(trial_probability)
         all_trial_prob[trial_num] = trial_probability
 
-    if RETURN_TRIAL:
+    if return_trial:
         return log_likelihood, all_trial_prob
     else:
         return log_likelihood
 
 
-def maximize_likelihood(STRUC_DF, INDUC_DF, OPTION):
+def maximize_likelihood(struc_df, induc_df, option):
     """ Numerically maximizes the log likelihood function on the set of the subject's choices
          to find optimal values for alpha, gamma
         INPUT:
 
-        STRUC_DF: Structured learning data in DataFrame format.
-        INDUC_DF: Generalized induction data in DataFrame format.
-        OPTION: scipy optimization functions:'basinhopping','differential evolution', 'brute'
+        struc_df: Structured learning data in DataFrame format.
+        induc_df: Generalized induction data in DataFrame format.
+        option: scipy optimization functions:'basinhopping','differential evolution', 'brute'
     """
 
     def ll(x):
-        ALPHA = x[0]
-        GAMMA = x[1]
-        TAU = x[2]
-        return -get_log_likelihood(STRUC_DF, INDUC_DF, GAMMA, ALPHA, TAU)
+        alpha = x[0]
+        gamma = x[1]
+        tau = x[2]
+        return -get_log_likelihood(struc_df, induc_df, gamma, alpha, tau)
 
     start_time = time.time()
-    if OPTION == 'basinhopping':
+    if option == 'basinhopping':
         alpha_max, gamma_max, tau_max = optimize.basinhopping(ll, [0.5, 0.5, 0.5]).x
-    elif OPTION == 'differential evolution':
+    elif option == 'differential evolution':
         alpha_max, gamma_max, tau_max = optimize.differential_evolution(ll,
                                                                         [(.000001, 0.99), (0.1, 0.99), (.00001, .99)]).x
-    elif OPTION == 'brute':
+    elif option == 'brute':
         alpha_max, gamma_max, tau_max = optimize.brute(ll, [(0, 1), (0, 1), (0, 1)])[0]
     else:
-        raise ValueError('Unknown option: {OPTION}')
+        raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max, tau_max
 
@@ -138,11 +138,11 @@ def minimize_grouping_error(struc_df, group_df, option):
 
     if option == 'basinhopping':
         alpha_max, gamma_max = optimize.basinhopping(ge, [.5, .5]).x
-    elif OPTION == 'differential evolution':
+    elif option == 'differential evolution':
         alpha_max, gamma_max = optimize.differential_evolution(ge, [(.000001, 0.99), (0.1, 0.99)]).x
-    elif OPTION == 'brute':
+    elif option == 'brute':
         alpha_max, gamma_max = optimize.brute(ge, [(0, 1), (0, 1)])[0]
     else:
-        raise ValueError('Unknown option: {OPTION}')
+        raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max

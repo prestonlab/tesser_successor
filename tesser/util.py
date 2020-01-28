@@ -88,26 +88,26 @@ def load_induction(data_dir, subject):
     return df
 
 
-def drop_nan(DATA):
+def drop_nan(data):
     """  Drops NaN values from DataFrame """
-    DATA.replace(["NaN"], np.nan, inplace=True)
-    DATA = DATA.dropna()
-    DATA = DATA.reset_index(drop=True)  # Resets the index to start at 0
-    return DATA
+    data.replace(["NaN"], np.nan, inplace=True)
+    data = data.dropna()
+    data = data.reset_index(drop=True)  # Resets the index to start at 0
+    return data
 
 
-def get_objects(DFRAME):
+def get_objects(dframe):
     """ INPUT DataFrame 
        OUTPUT object sequence numbers for successor representation """
-    data = drop_nan(DFRAME)
+    data = drop_nan(dframe)
     obj_sequence = data["objnum"]
     return obj_sequence
 
 
-def get_induction_data(DFRAME):
+def get_induction_data(dframe):
     """ INPUT DataFrame 
        OUTPUT four variable sequences for generalized induction """
-    data = DFRAME
+    data = dframe
     cue_sequence = data["CueNum"].values
     opt1_sequence = data["Opt1Num"].values
     opt2_sequence = data["Opt2Num"].values

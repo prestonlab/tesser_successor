@@ -6,21 +6,21 @@ from . import network
 from . import sr
 
 
-def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA, vmin=0, vmax=1):
+def plot_explore_runs(SR, subject, option, gamma, alpha, vmin=0, vmax=1):
     """ Program which creates plots for learning models in explore runs:
         INPUT:
 
         SR: Dictionary of SR matricies
-        SUBJECT: Integeger input representing a particular subject
-        OPTION: String descrbing particular models to run. 
+        subject: Integeger input representing a particular subject
+        option: String descrbing particular models to run. 
         ('persist', 'reset', 'independent', 'track changes')
-        GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
+        gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
     fig, ax = plt.subplots(2, 6, figsize=(14, 6))
     plt.suptitle(
-        "Learning: " + OPTION + "  SUBJECT: " + str(SUBJECT) + " with "
-        r"$\gamma$ : " + str(GAMMA) + " and "
-        r"$\alpha$ : " + str(ALPHA)
+        "Learning: " + option + "  subject: " + str(subject) + " with "
+        r"$\gamma$ : " + str(gamma) + " and "
+        r"$\alpha$ : " + str(alpha)
     )
     for i, part in enumerate((1, 2)):
         for j, run in enumerate(range(1, 7)):
@@ -38,19 +38,19 @@ def plot_explore_runs(SR, SUBJECT, OPTION, GAMMA, ALPHA, vmin=0, vmax=1):
     plt.show()
 
 
-def plot_rdms(rdms, SUBJECT, GAMMA, ALPHA):
+def plot_rdms(rdms, subject, gamma, alpha):
     """ Program which creates plots for learning models in explore runs:
         INPUT:
 
         rdms: representational dissimilarity matrix for a list of matrices
-        SUBJECT: Integeger input representing a particular subject
-        GAMMA & ALPHA: discount and learning rate parameters. From 0.0 to 1.0.
+        subject: Integeger input representing a particular subject
+        gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
     fig, ax = plt.subplots(2, 6, figsize=(14, 6))
     plt.suptitle(
-         "  SUBJECT: " + str(SUBJECT) + " with "
-        r"$\gamma$ : " + str(GAMMA) + " and "
-        r"$\alpha$ : " + str(ALPHA)
+         "  subject: " + str(subject) + " with "
+        r"$\gamma$ : " + str(gamma) + " and "
+        r"$\alpha$ : " + str(alpha)
     )
     for i, part in enumerate((1, 2)):
         for j, run in enumerate(range(1, 7)):
