@@ -189,23 +189,23 @@ def correlate_columns(matrix):
     return np.dot(matrix.T, matrix) / (la.norm(matrix) ** 2)
 
 
-def compute_correlations(DF, option, gamma, alpha):
+def compute_correlations(df, option, gamma, alpha):
     """ Computes the norm or correlation between the SR matrix and the limit matrix, 
         given a subject and values for gamma, alpha.
         The norm option computes the infinity norm between the SR Matrix and the limit matrix.
         The correlation option computes the correlation between the SR Matrix and the limit matrix.
         INPUT:
 
-        DF: Structured learning data in DataFrame format.
+        df: Structured learning data in DataFrame format.
         option: String describing particular function ( 'norm' or 'correlation'))
         gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
-    n_states = len(np.unique(DF.objnum))
+    n_states = len(np.unique(df.objnum))
     nodes = network.node_info()
     adjacency = network.adjacency(nodes)
     L = compute_limit_matrix(0.5, adjacency, n_states)
     L_vector = L.flatten()
-    M = explore_runs(DF, "once", gamma, alpha)
+    M = explore_runs(df, "once", gamma, alpha)
     M_vector = M.flatten()
 
     if option == "norm":
