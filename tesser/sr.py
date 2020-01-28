@@ -5,7 +5,7 @@ import numpy.linalg as la
 from . import network
 
 
-class SR_Matrix:
+class SRMatrix:
     """ This class defines a reinforcement learning agent that
     learns the state-state successor representation without taking actions.
     Thus, the resulting SR matrix is in the service of prediction.
@@ -54,7 +54,7 @@ def run_experiment(envstep, gamma, alpha, M, n_states):
 
     num_states = n_states
 
-    SR_agent = SR_Matrix(gamma, alpha, num_states, M)
+    SR_agent = SRMatrix(gamma, alpha, num_states, M)
     s = envstep[0] - 1
 
     for entry in envstep[1:]:  # go through trajectory till the end
