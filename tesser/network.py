@@ -1,13 +1,28 @@
-"""Module for tesser-related utilities."""
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+This network function is used to showcase the temporal community structure network used in Tesser
+- 21-node temporal community structure in a dataframe
+    temp_node_info()
 
+- adjacency matrix for the temporal community structure (i.e. connected nodes)
+    adjacency_mat(node_df)
+
+- path legnth between the connected nodes
+    path_length(adj_matrix)
+
+- community matrix for the temporal community structure (i.e. assuming just unconnected groups)
+    community_mat(node_df)
+"""
 import numpy as np
 import pandas as pd
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import shortest_path
 
 
-def node_info():
-    """Return a dataframe with basic node information."""
+def temp_node_info():
+    """ INPUT [none]
+        OUTPUT node dataframe detailing the community type (1, 2, 3), node type (boundary = 1, non-boundary = 0), and connectedness (1 = connected, 0 = not) of the 21 nodes in temporal community structure  """
 
     n_node = 21
 
@@ -36,25 +51,48 @@ def node_info():
     return df
 
 
-def adjacency(df):
-    """Determine adjacency matrix from node information."""
+def community_mat(node_df):
+    """ INPUT node_df
+        OUTPUT commmunity matrix (i.e. isolated, unconnected) temporal community structure  """
 
-    n_node = df.shape[0]
-    adj = np.zeros((n_node, n_node), dtype=int)
-    for node in df.index:
-        adj_row = np.zeros(n_node)
-        if df.loc[node, 'nodetype'] == 0:
+    n_node = node_df.shape[0]
+    comm = np.zeros((n_node, n_node), dtype=int)
+    for node in node_df.index:
+        comm_row = np.zeros(n_node)
+        if node_df.loc[node, 'nodetype'] == 0:
             # connected to all items in the community
-            adj_row[df.comm == df.loc[node, 'comm']] = 1
+            comm_row[node_df.comm == node_df.loc[node, 'comm']] = 1
+        else:
+            # connected to all community nodes except the other boundary
+            samecomm = node_df.comm == node_df.loc[node, 'comm']
+            isprim = node_df.nodetype == 0
+            comm_row[samecomm & isprim] = 1
+        comm_row[node - 1] = 0
+        comm[node - 1, :] = comm_row
+        comm[:, node - 1] = comm_row
+    return comm
+
+
+def adjacency_mat(node_df):
+    """ INPUT node_df
+        OUTPUT adjacency matrix of temporal community structure  """
+
+    n_node = node_df.shape[0]
+    adj = np.zeros((n_node, n_node), dtype=int)
+    for node in node_df.index:
+        adj_row = np.zeros(n_node)
+        if node_df.loc[node, 'nodetype'] == 0:
+            # connected to all items in the community
+            adj_row[node_df.comm == node_df.loc[node, 'comm']] = 1
         else:
             # connected to boundary node of connected community
-            outcon = df.comm == df.loc[node, 'connect']
-            incon = df.connect == df.loc[node, 'comm']
+            outcon = node_df.comm == node_df.loc[node, 'connect']
+            incon = node_df.connect == node_df.loc[node, 'comm']
             adj_row[outcon & incon] = 1
 
             # connected to all community nodes except the other boundary
-            samecomm = df.comm == df.loc[node, 'comm']
-            isprim = df.nodetype == 0
+            samecomm = node_df.comm == node_df.loc[node, 'comm']
+            isprim = node_df.nodetype == 0
             adj_row[samecomm & isprim] = 1
         adj_row[node - 1] = 0
         adj[node - 1, :] = adj_row
@@ -62,35 +100,15 @@ def adjacency(df):
     return adj
 
 
-def path_length(adj):
-    """Determine the shortest path between each pair of nodes."""
+def path_length(adj_mat):
+    """ INPUT adjacency matrix of temporal community structure
+        OUTPUT shortest path length  """
 
-    n_node = adj.shape[0]
-    G = nx.from_numpy_matrix(adj)
+    n_node = adj_mat.shape[0]
+    G = nx.from_numpy_matrix(adj_mat)
     gpath = shortest_path(G)
     pathlen = np.zeros((n_node, n_node))
     for source, pathdict in gpath.items():
         for target, pathlist in pathdict.items():
             pathlen[source, target] = len(pathlist) - 1
     return pathlen
-
-
-def community(df):
-    """Determine community matrix (i.e. isolated, unconnected) from node information."""
-
-    n_node = df.shape[0]
-    comm = np.zeros((n_node, n_node), dtype=int)
-    for node in df.index:
-        comm_row = np.zeros(n_node)
-        if df.loc[node, 'nodetype'] == 0:
-            # connected to all items in the community
-            comm_row[df.comm == df.loc[node, 'comm']] = 1
-        else:
-            # connected to all community nodes except the other boundary
-            samecomm = df.comm == df.loc[node, 'comm']
-            isprim = df.nodetype == 0
-            comm_row[samecomm & isprim] = 1
-        comm_row[node - 1] = 0
-        comm[node - 1, :] = comm_row
-        comm[:, node - 1] = comm_row
-    return comm

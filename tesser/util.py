@@ -28,7 +28,7 @@ from glob import glob
 def get_subj_dir(data_dir, subject_num):
     """ INPUT data_dir, subject_num
        OUTPUT subject directory for a participant  """
-    
+
     # check that the base directory exists
     if not os.path.exists(data_dir):
         raise IOError(f'Directory does not exist: {data_dir}')
@@ -97,6 +97,7 @@ def load_struct_df_all(data_dir, subject_num):
 #    data = struct_dframe.dropna()
 #    data = data.reset_index(drop=True)  # Resets the index to start at 0
 #    return data
+
 
 #should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
 def drop_struct_df_nan(struct_dframe):
