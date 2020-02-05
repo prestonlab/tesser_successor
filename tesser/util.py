@@ -2,21 +2,22 @@
 # -*- coding: utf-8 -*-
 """
 This util function is used to read in the behavioral data associated with TesserScan.
-It gets the associated data directories for a given participant
+It gets the associated data directories for a given participant:
     get_subj_dir(data_dir, subject_num)
 
-It reads in the files associated with the following tasks:
-- structured learning task
+It reads in the files associated with the following tasks
+- structured learning task:
     load_struct_all(data_dir, subject_num)
     load_struct_run(data_dir, subject_num, part_num, run_num)
     drop_struct_nan(struct_data)
     get_struct_objects(struct_data)
 
-- inductive inference task
-    load_induct_
+- inductive inference task:
+    load_induct_df_all(data_dir, subject_num)
+    load_induct_array_all(induct_dframe)
 
-- grouping task
-
+- grouping task:
+    load_group(data_dir, subject_num)
 """
 import numpy as np
 import pandas as pd
@@ -27,6 +28,7 @@ from glob import glob
 def get_subj_dir(data_dir, subject_num):
     """ INPUT data_dir, subject_num
        OUTPUT subject directory for a participant  """
+    
     # check that the base directory exists
     if not os.path.exists(data_dir):
         raise IOError(f'Directory does not exist: {data_dir}')
@@ -37,26 +39,6 @@ def get_subj_dir(data_dir, subject_num):
         raise IOError(f'Problem finding subject directory for {subject_num}')
 
     return dir_search[0]
-
-
-def load_struct_df_all(data_dir, subject_num):
-    """ INPUT data_dir, subject_num
-       OUTPUT dataframe of all the structured learning  """
-
-    # list of all runs to load
-    parts = (1, 2)
-    part_runs = {1: range(1, 6), 2: range(1, 7)}
-
-    # load individual runs
-    df_list = []
-    for part in parts:
-        for run in part_runs[part]:
-            run_df = load_struct_run(data_dir, subject_num, part, run)
-            df_list.append(run_df)
-
-    # concatenate into one data frame
-    df = pd.concat(df_list, sort=False)
-    return df
 
 
 def load_struct_df_run(data_dir, subject_num, part_num, run_num):
@@ -79,34 +61,65 @@ def load_struct_df_run(data_dir, subject_num, part_num, run_num):
     # add a field indicating the experiment part
     df['part'] = part_num
 
-    # remove trials with no object (these are just filler trials)
-    df = df.loc[np.logical_not(np.isnan(df.objnum)), :]
+    # remove the fixation trials in the runs (these are just filler trials)
+    df = df[pd.notnull(df['objnum'])]
 
     # convert object labels to integer
     df = df.astype({'objnum': 'int'})
     return df
 
 
+def load_struct_df_all(data_dir, subject_num):
+    """ INPUT data_dir, subject_num
+       OUTPUT dataframe of all the structured learning  """
+
+    # list of all runs to load
+    parts = (1, 2)
+    part_runs = {1: range(1, 6), 2: range(1, 7)}
+
+    # load individual runs
+    df_list = []
+    for part in parts:
+        for run in part_runs[part]:
+            run_df = load_struct_df_run(data_dir, subject_num, part, run)
+            df_list.append(run_df)
+
+    # concatenate into one data frame
+    df = pd.concat(df_list, sort=False)
+    return df
+
+
+#should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
+#def drop_struct_df_nan(struct_dframe):
+#    """ INPUT struct_dframe
+#       OUTPUT struct_dframe without from the null trials (NaNs) at the beginning of scans """
+#    struct_dframe.replace(["NaN"], np.nan, inplace=True)
+#    data = struct_dframe.dropna()
+#    data = data.reset_index(drop=True)  # Resets the index to start at 0
+#    return data
+
+#should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
 def drop_struct_df_nan(struct_dframe):
     """ INPUT struct_dframe
-       OUTPUT struct_dframe without NaNs """
-    struct_dframe.replace(["NaN"], np.nan, inplace=True)
-    data = struct_dframe.dropna()
+       OUTPUT struct_dframe without from the null trials (NaNs) at the beginning of scans """
+
+    data = struct_dframe[pd.notnull(struct_dframe['obj'])]
     data = data.reset_index(drop=True)  # Resets the index to start at 0
     return data
 
 
 def get_struct_objects(struct_dframe):
     """ INPUT struct_dframe
-       OUTPUT just objects of struct_dframe """
-    data = drop_nan(struct_dframe)
-    obj_sequence = data["objnum"]
+       OUTPUT datafraome of just objects of from structured learning  """
+
+#    data = drop_struct_df_nan(struct_dframe)
+    obj_sequence = struct_dframe["objnum"]
     return obj_sequence
 
 
 def load_induct_df_all(data_dir, subject_num):
     """ INPUT data_dir, subject_num
-       OUTPUT inductive generalization dataframe """
+       OUTPUT dataframe of inductive generalization  """
 
     # subject directory
     subj_dir = get_subj_dir(data_dir, subject_num)
@@ -125,7 +138,8 @@ def load_induct_df_all(data_dir, subject_num):
 
 def load_induct_array_all(induct_dframe):
     """ INPUT induct_dframe
-       OUTPUT four variable sequences for generalized induction """
+       OUTPUT array of cue_num, opt1_num, opt2_num, participant_resp """
+
     data = induct_dframe
     cue_sequence = data["CueNum"].values
     opt1_sequence = data["Opt1Num"].values
