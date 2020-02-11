@@ -1,7 +1,37 @@
-# core model functions for learning/running experiment phases
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Learning module for tesser simulations. Functions for learning/running experiment phases
+are based on Ida Momennejad's state-state successor representation learning agent.
+
+These include:
+
+- Class that defines a reinforcement learning agent which learns the state-state successor representation
+without taking actions.
+    SRMatrix()
+- Function uses the reinforcement learning agent class in SRMatrix to learn.
+    run_experiment(envstep, gamma, alpha, M, n_states)
+
+- Train an SR matrix on the structure-learning task.
+    learn_sr(df, gamma, alpha)
+
+- Computes the matrix to which SR learning should converge, by summing a geometric matrix series.
+    compute_limit_matrix(gamma, adjacency, n_states)
+
+- Computes the correlation matrix for a matrix's rows.
+    correlate_rows(matrix)
+
+- Computes the correlation matrix for a matrix's columns.
+    correlate_columns(matrix)
+
+- Computes the norm or correlation between the SR matrix and the limit matrix, given a subject & values for gamma, alpha
+    compute_correlations(df, option, gamma, alpha)
+
+"""
 import numpy as np
 import numpy.linalg as la
-
+import matplotlib.pyplot as plt
+from matplotlib import colors
 from . import network
 
 
@@ -33,7 +63,7 @@ class SRMatrix:
 
 def run_experiment(envstep, gamma, alpha, M, n_states):
     """ This function uses the reinforcement learning agent class in
-        SR_no_action.py to learn.
+        SRMatrix to learn.
         Here the function takes the environment from Experiment 1 in our
         Nat Hum Beh paper & learns predictive representations with the
         specified learning rate and scale.
@@ -45,7 +75,7 @@ def run_experiment(envstep, gamma, alpha, M, n_states):
         gamma: discount parameter, determines scale of predictive representations
         alpha: learning rate
         M: prob sampling each of the two sequences
-        num_states: the number of states in the environment to initialize matrices
+        n_states: the number of states in the environment to initialize matrices
 
         Outputs:
         M: SR matrix
@@ -85,84 +115,85 @@ def learn_sr(df, gamma, alpha):
 
 
 def explore_runs(df, option, gamma, alpha):
-    """This loop adds the address, part number and run number to the runs array, so that the object
-         sequence in each run can be inputted to the learning agent.
+    """Function that takes in structured data and returns a dictionary or array that contains learned data.
+        User has the ability to set learning parameters and how much data the learning agent can use in any given
+        sequence.
         INPUT:
-
         df: Structured learning data in DataFrame form.
         option: String describing particular models to run. 
-        ('persist', 'repeat', 'once', 'reset', 'independent', 'track changes')
+        ('repeat', 'once', 'reset', 'independent', 'track changes')
         gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
+         OUTPUT:
+        For 'repeat' and 'once' an array will be given.
+        For 'reset', 'independent' and 'track changes', a dictionary containing a DataFrame for
+        each run and part combination given in the initial DataFrame.
     """
 
     n_states = len(np.unique(df.objnum))
     SR_matrices = {}
-    data = []
-    for part in (1, 2):
-        runs = np.unique(df.loc[df.part == part, 'run'])
-        for run in runs:
-            # get data for this run
-            df_run = df.loc[(df.part == part) & (df.run == run), :]
-            obj = df_run.objnum.values
-            data.append([obj, part, run])
-    # This option allows the SR matrix to persist across all runs from Part 1 and Part 2
-    #     without ever resetting.
-    if option == "persist":
-        M = np.zeros([n_states, n_states])
-        for run in (range(0, 11)):
-            part_num, run_num = data[run][1], data[run][2]
-            envstep = data[run][0]
-            M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
-            SR_matrices[(part_num, run_num)] = M
+    M = np.zeros([n_states, n_states])
 
     if option == "repeat":
-        M = np.zeros([n_states, n_states])
         for time in range(100):
-            for run in runs:
-                envstep = data[run][0]
-                M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+            for part in np.unique(df.part):
+                for run in np.unique(df.loc[df.part == part, 'run']):
+                    envstep = df.loc[(df.part == part) & (df.run == run),
+                                     'objnum'].values
+                    M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+                    M = M / np.sum(M)
         return M
 
     if option == "once":
-        M = np.zeros([n_states, n_states])
-        for run in (range(0, 11)):
-            envstep = data[run][0]
-            M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+        for part in np.unique(df.part):
+            for run in np.unique(df.loc[df.part == part, 'run']):
+                envstep = df.loc[(df.part == part) & (df.run == run),
+                                 'objnum'].values
+                M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+                M = M / np.sum(M)
         return M
 
     # This option allows the SR matrix to persist in Part 1 and Part 2, but resets it between them.
     if option == "reset":
-        M = np.zeros([n_states, n_states])
-        is_reset = False
-        for run in (range(0, 11)):
-            part_num, run_num = data[run][1], data[run][2]
-            if not is_reset and part_num == 2:
+        for part in np.unique(df.part):
+            if part == 2:
                 M = np.zeros([n_states, n_states])
-                is_reset = True
-            envstep = data[run][0]
-            M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
-            SR_matrices[(part_num, run_num)] = M
+                for run in np.unique(df.loc[df.part == part, 'run']):
+                    envstep = df.loc[(df.part == part) & (df.run == run),
+                                     'objnum'].values
+                    M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+                    M = M / np.sum(M)
+                    SR_matrices[(part, run)] = M
+            else:
+                for run in np.unique(df.loc[df.part == part, 'run']):
+                    envstep = df.loc[(df.part == part) & (df.run == run),
+                                     'objnum'].values
+                    M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+                    M = M / np.sum(M)
+                    SR_matrices[(part, run)] = M
 
     # This option resets the SR matrix between each run.
     if option == "independent":
-        for run in (range(0, 11)):
-            part_num, run_num = data[run][1], data[run][2]
-            M = np.zeros([n_states, n_states])
-            envstep = data[run][0]
-            M = np.array(run_experiment(envstep, gamma, alpha, M, n_states))
-            SR_matrices[(part_num, run_num)] = M
+        for part in np.unique(df.part):
+            for run in np.unique(df.loc[df.part == part, 'run']):
+                M = np.zeros([n_states, n_states])
+                envstep = df.loc[(df.part == part) & (df.run == run),
+                                 'objnum'].values
+                M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+                M = M / np.sum(M)
+                SR_matrices[(part, run)] = M
 
     # This option forces the SR matrix to persist across all runs, but instead of plotting the SR matrix
     #     after each run, it plots the changes made to it after learning each object sequence.
     if option == "track changes":
-        M = np.zeros([n_states, n_states])
-        for run in (range(0, 11)):
-            part_num, run_num = data[run][1], data[run][2]
-            envstep = data[run][0]
-            M_new = np.copy(M)
-            M_new = np.array(run_experiment(envstep, gamma, alpha, M_new, n_states))
-            SR_matrices[(part_num, run_num)] = M_new - M
-            M = M_new
+        for part in np.unique(df.part):
+            for run in np.unique(df.loc[df.part == part, 'run']):
+                envstep = df.loc[(df.part == part) & (df.run == run),
+                                 'objnum'].values
+                M_new = np.copy(M)
+                M_new = np.array(run_experiment(envstep, gamma, alpha, M_new, n_states))
+            
+                SR_matrices[(part, run)] = M_new - M
+                M = M_new
 
     return SR_matrices
 
@@ -201,8 +232,8 @@ def compute_correlations(df, option, gamma, alpha):
         gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
     n_states = len(np.unique(df.objnum))
-    nodes = network.node_info()
-    adjacency = network.adjacency(nodes)
+    nodes = network.temp_node_info()
+    adjacency = network.adjacency_mat(nodes)
     L = compute_limit_matrix(0.5, adjacency, n_states)
     L_vector = L.flatten()
     M = explore_runs(df, "once", gamma, alpha)
@@ -215,3 +246,33 @@ def compute_correlations(df, option, gamma, alpha):
     if option == "correlation":
         print("Correlation of L, M: ")
         print(np.dot(L_vector, M_vector) / (la.norm(L_vector) * la.norm(M_vector)))
+
+
+def plot_sr(SR, subject, option="Standard", gamma=0.5, alpha=0.5):
+    fig, ax = plt.subplots(2, 6, figsize=(14, 6))
+    plt.suptitle(
+        "Learning: " + option + "  subject: " + str(subject) + " with "
+                                                               "gamma : " + str(gamma) + " and "
+                                                                                         "alpha : " + str(alpha)
+    )
+    images = []
+    for i, part in enumerate((1, 2)):
+        for j, run in enumerate(range(1, 7)):
+            if (part, run) not in SR:
+                fig.delaxes(ax[i, j])
+                continue
+            images.append(ax[i, j].matshow(SR[(part, run)]))
+            ax[i, j].set_title("Part_%s Run_%s \n" % (part, run))
+            ax[i, j].label_outer()
+
+    vmin = min(image.get_array().min() for image in images)
+    vmax = max(image.get_array().max() for image in images)
+    norm = colors.Normalize(vmin=vmin, vmax=vmax)
+    for im in images:
+        im.set_norm(norm)
+    cbar = fig.colorbar(images[1], ax=ax.ravel().tolist(), shrink=0.95)
+
+    cbar.set_ticks(np.arange(0, 0.5, 0.01))
+    # cbar.set_ticklabels()
+
+    plt.show()

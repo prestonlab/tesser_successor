@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 from networkx.algorithms.shortest_paths.generic import shortest_path
+import matplotlib.pyplot as plt
 
 
 def temp_node_info():
@@ -112,3 +113,10 @@ def path_length(adj_mat):
         for target, pathlist in pathdict.items():
             pathlen[source, target] = len(pathlist) - 1
     return pathlen
+
+def plot_adjecncy_matrix():
+    nodes = temp_node_info()
+    adjacency = adjacency_mat(nodes)
+    L = sr.compute_limit_matrix(0.5, adjacency, 21)
+    plt.matshow(L, vmin=0, vmax=0.5)
+    plt.colorbar()
