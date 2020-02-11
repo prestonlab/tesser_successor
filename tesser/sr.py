@@ -211,11 +211,7 @@ def compute_correlations(df, option, gamma, alpha):
 
 def plot_sr(SR, subject, option="Standard", gamma=0.5, alpha=0.5):
     fig, ax = plt.subplots(2, 6, figsize=(14, 6))
-    plt.suptitle(
-        "Learning: " + option + "  subject: " + str(subject) + " with "
-                                                               "gamma : " + str(gamma) + " and "
-                                                                                         "alpha : " + str(alpha)
-    )
+    plt.suptitle(f'Learning: {option}, subject: {subject}; gamma={gamma:.2f}, alpha={alpha:.2f}')
     images = []
     for i, part in enumerate((1, 2)):
         for j, run in enumerate(range(1, 7)):
