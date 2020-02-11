@@ -157,19 +157,12 @@ def explore_runs(df, option, gamma, alpha):
         for part in np.unique(df.part):
             if part == 2:
                 M = np.zeros([n_states, n_states])
-                for run in np.unique(df.loc[df.part == part, 'run']):
-                    envstep = df.loc[(df.part == part) & (df.run == run),
-                                     'objnum'].values
-                    M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
-                    M = M / np.sum(M)
-                    SR_matrices[(part, run)] = M
-            else:
-                for run in np.unique(df.loc[df.part == part, 'run']):
-                    envstep = df.loc[(df.part == part) & (df.run == run),
-                                     'objnum'].values
-                    M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
-                    M = M / np.sum(M)
-                    SR_matrices[(part, run)] = M
+            for run in np.unique(df.loc[df.part == part, 'run']):
+                envstep = df.loc[(df.part == part) & (df.run == run),
+                                 'objnum'].values
+                M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+                M = M / np.sum(M)
+                SR_matrices[(part, run)] = M
 
     # This option resets the SR matrix between each run.
     if option == "independent":
