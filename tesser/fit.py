@@ -1,3 +1,26 @@
+'''
+Provides a set of functions designed to fit the parameters of the Successor
+Representation learning agent to the induction and grouping data via maximum
+likelihood.
+
+pBGivenA computes the probability of choosing image B given a prompt image A,
+using a learned SR matrix and Luce's choice rule.
+
+pCGivenA computes the probability of the alternative choice.
+
+probability_induction_choice combines these two functions to give a probability
+of one of the agent's choices in the induction data.
+
+get_induction_log_likelihood computes the joint probability of all of the subject's
+choices present in the induction data given a learned SR matrix.
+
+maximize_induction_likelihood finds parameters of the SR agent which maximize
+the joint probability of all of the subject's choices under the SR matrix learned
+by the agent.
+
+'''
+
+
 # model fitting/parameter optimization
 import numpy as np
 from . import util
@@ -32,7 +55,7 @@ def pCGivenA(A, B, C, SR, tau):
     return 1 - pBGivenA(A, B, C, SR, tau)
 
 
-def likelihood(cue, opt1, opt2, response, SR, tau):
+def probability_induction_choice(cue, opt1, opt2, response, SR, tau):
     """ Computes the likelihood of a subject's response given the SR matrix for this subject."""
     if response == 0:
         return pBGivenA(cue, opt1, opt2, SR, tau)
@@ -40,7 +63,7 @@ def likelihood(cue, opt1, opt2, response, SR, tau):
         return pCGivenA(cue, opt1, opt2, SR, tau)
 
 
-def get_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_trial=False):
+def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_trial=False):
     """ This function gives the probability of obtaining the choices in the run, given
         specific values for alpha, gamma.
         INPUT:
@@ -69,7 +92,7 @@ def get_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_trial=False
             int(opt2_sequence[trial_num]) - 1,
             int(response_sequence[trial_num]) - 1,
         )
-        trial_probability = likelihood(
+        trial_probability = probability_induction_choice(
             cue_num, opt1_num, opt2_num, response_num, SR_norm, tau
         )
         eps = 0.000001
@@ -88,7 +111,7 @@ def get_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_trial=False
         return log_likelihood
 
 
-def maximize_likelihood(struc_df, induc_df, option):
+def maximize_induction_likelihood(struc_df, induc_df, option):
     """ Numerically maximizes the log likelihood function on the set of the subject's choices
          to find optimal values for alpha, gamma
         INPUT:
@@ -102,7 +125,7 @@ def maximize_likelihood(struc_df, induc_df, option):
         alpha = x[0]
         gamma = x[1]
         tau = x[2]
-        return -get_log_likelihood(struc_df, induc_df, gamma, alpha, tau)
+        return -get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau)
 
     start_time = time.time()
     if option == 'basinhopping':
