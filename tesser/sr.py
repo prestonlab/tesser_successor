@@ -133,25 +133,6 @@ def explore_runs(df, option, gamma, alpha):
     SR_matrices = {}
     M = np.zeros([n_states, n_states])
 
-    if option == "repeat":
-        for time in range(100):
-            for part in np.unique(df.part):
-                for run in np.unique(df.loc[df.part == part, 'run']):
-                    envstep = df.loc[(df.part == part) & (df.run == run),
-                                     'objnum'].values
-                    M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
-                    M = M / np.sum(M)
-        return M
-
-    if option == "once":
-        for part in np.unique(df.part):
-            for run in np.unique(df.loc[df.part == part, 'run']):
-                envstep = df.loc[(df.part == part) & (df.run == run),
-                                 'objnum'].values
-                M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
-                M = M / np.sum(M)
-        return M
-
     # This option allows the SR matrix to persist in Part 1 and Part 2, but resets it between them.
     if option == "reset":
         for part in np.unique(df.part):
@@ -174,19 +155,6 @@ def explore_runs(df, option, gamma, alpha):
                 M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
                 M = M / np.sum(M)
                 SR_matrices[(part, run)] = M
-
-    # This option forces the SR matrix to persist across all runs, but instead of plotting the SR matrix
-    #     after each run, it plots the changes made to it after learning each object sequence.
-    if option == "track changes":
-        for part in np.unique(df.part):
-            for run in np.unique(df.loc[df.part == part, 'run']):
-                envstep = df.loc[(df.part == part) & (df.run == run),
-                                 'objnum'].values
-                M_new = np.copy(M)
-                M_new = np.array(run_experiment(envstep, gamma, alpha, M_new, n_states))
-            
-                SR_matrices[(part, run)] = M_new - M
-                M = M_new
 
     return SR_matrices
 
