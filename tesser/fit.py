@@ -1,4 +1,4 @@
-'''
+"""
 Provides a set of functions designed to fit the parameters of the Successor
 Representation learning agent to the induction and grouping data via maximum
 likelihood.
@@ -18,13 +18,14 @@ maximize_induction_likelihood finds parameters of the SR agent which maximize
 the joint probability of all of the subject's choices under the SR matrix learned
 by the agent.
 
-'''
+"""
 
 
 # model fitting/parameter optimization
 import numpy as np
 from . import util
 from . import sr
+from . import tasks
 from scipy.spatial import distance
 from scipy import optimize
 from scipy.stats import linregress
@@ -141,14 +142,12 @@ def maximize_induction_likelihood(struc_df, induc_df, option):
     return alpha_max, gamma_max, tau_max
 
 
-def grouping_error(struc_df, group_df, alpha, gamma):
-    SR = sr.explore_runs(struc_df, "once", gamma, alpha)
-
+def grouping_error(struc_df, group_df, gamma, alpha):
+    SR = sr.learn_sr(struc_df, gamma, alpha)
+    SR = SR[2,6]
     euclid_matrix = np.array(group_df)
-    euclid_vector = np.matrix.flatten(euclid_matrix)
-
-    sr_vector = np.matrix.flatten(SR)
-
+    euclid_vector = tasks.make_sym_matrix(euclid_matrix)
+    sr_vector = tasks.make_sym_matrix(SR)
     slope, intercept, r_value, p_value, std_err = linregress(sr_vector, euclid_vector)
     return std_err
 

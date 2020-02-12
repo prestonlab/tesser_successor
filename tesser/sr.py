@@ -121,11 +121,10 @@ def explore_runs(df, option, gamma, alpha):
         INPUT:
         df: Structured learning data in DataFrame form.
         option: String describing particular models to run. 
-        ('repeat', 'once', 'reset', 'independent', 'track changes')
+        ('reset', 'independent')
         gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
          OUTPUT:
-        For 'repeat' and 'once' an array will be given.
-        For 'reset', 'independent' and 'track changes', a dictionary containing a DataFrame for
+        For 'reset' and 'independent' a dictionary containing a DataFrame for
         each run and part combination given in the initial DataFrame.
     """
 
@@ -159,11 +158,6 @@ def explore_runs(df, option, gamma, alpha):
     return SR_matrices
 
 
-# Modify the option in the following call to the main function in order to visualize the desired learning
-#     sequence.
-# explore_runs('track changes')
-
-
 def compute_limit_matrix(gamma, adjacency, n_states):
     """ Computes the matrix to which SR learning should converge, by summing a geometric matrix series."""
     num_states = n_states
@@ -181,7 +175,7 @@ def correlate_columns(matrix):
     return np.dot(matrix.T, matrix) / (la.norm(matrix) ** 2)
 
 
-def compute_correlations(df, option, gamma, alpha):
+def compute_correlations(struc_df, option, gamma, alpha):
     """ Computes the norm or correlation between the SR matrix and the limit matrix, 
         given a subject and values for gamma, alpha.
         The norm option computes the infinity norm between the SR Matrix and the limit matrix.
@@ -192,12 +186,13 @@ def compute_correlations(df, option, gamma, alpha):
         option: String describing particular function ( 'norm' or 'correlation'))
         gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
-    n_states = len(np.unique(df.objnum))
+    n_states = len(np.unique(struc_df.objnum))
     nodes = network.temp_node_info()
     adjacency = network.adjacency_mat(nodes)
     L = compute_limit_matrix(0.5, adjacency, n_states)
     L_vector = L.flatten()
-    M = explore_runs(df, "once", gamma, alpha)
+    M = learn_sr(struc_df, gamma, alpha)
+    M = M[2,6]
     M_vector = M.flatten()
 
     if option == "norm":

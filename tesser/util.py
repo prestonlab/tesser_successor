@@ -100,17 +100,17 @@ def load_struct_df_all(data_dir, subject_num):
     return df
 
 
-#should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
-#def drop_struct_df_nan(struct_dframe):
-#    """ INPUT struct_dframe
-#       OUTPUT struct_dframe without from the null trials (NaNs) at the beginning of scans """
-#    struct_dframe.replace(["NaN"], np.nan, inplace=True)
-#    data = struct_dframe.dropna()
-#    data = data.reset_index(drop=True)  # Resets the index to start at 0
-#    return data
+#   should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
+#   def drop_struct_df_nan(struct_dframe):
+    #    """ INPUT struct_dframe
+    #       OUTPUT struct_dframe without from the null trials (NaNs) at the beginning of scans """
+    #    struct_dframe.replace(["NaN"], np.nan, inplace=True)
+    #    data = struct_dframe.dropna()
+    #    data = data.reset_index(drop=True)  # Resets the index to start at 0
+    #    return data
 
 
-#should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
+#  should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
 def drop_struct_df_nan(struct_dframe):
     """ INPUT struct_dframe
        OUTPUT struct_dframe without from the null trials (NaNs) at the beginning of scans """
@@ -124,7 +124,7 @@ def get_struct_objects(struct_dframe):
     """ INPUT struct_dframe
        OUTPUT datafraome of just objects of from structured learning  """
 
-    #data = drop_struct_df_nan(struct_dframe)
+#   data = drop_struct_df_nan(struct_dframe)
     obj_sequence = struct_dframe["objnum"]
     return obj_sequence
 

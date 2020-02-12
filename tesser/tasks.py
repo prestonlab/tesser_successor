@@ -15,7 +15,7 @@ This function is to evaluate performance in the temporal structure learning, gro
 import numpy as np
 import scipy.spatial.distance as sd
 import pandas as pd
-from util import *
+from . import util
 
 
 ###########################
@@ -38,10 +38,10 @@ def induct_avg(induct_df):
 def induct_avg_all(data_dir):
     #want to load a list of the participants and loop through
     part_avg_list = []
-    part_list = subj_list()
+    part_list = util.subj_list()
     for i in range(len(part_list)):
         part_num = part_list[i]
-        this_induct = load_induct_df_all(data_dir, part_num)
+        this_induct = util.load_induct_df_all(data_dir, part_num)
         this_avg = induct_avg(this_induct)
         part_avg_list.append(this_avg)
     #convert list to df
