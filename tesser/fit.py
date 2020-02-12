@@ -148,7 +148,7 @@ def grouping_error(struc_df, group_df, gamma, alpha):
     euclid_matrix = np.array(group_df)
     euclid_vector = tasks.make_sym_matrix(euclid_matrix)
     sr_vector = tasks.make_sym_matrix(SR)
-    slope, intercept, r_value, p_value, std_err = linregress(sr_vector, euclid_vector)
+    slope, intercept, r_value, p_value, std_err = linregress(sr_vector[:, 0], euclid_vector[:, 0])
     return std_err
 
 
@@ -156,7 +156,7 @@ def minimize_grouping_error(struc_df, group_df, option):
     def ge(x):
         alpha = x[0]
         gamma = x[1]
-        return grouping_error(struc_df, group_df, alpha, gamma)
+        return grouping_error(struc_df, group_df, gamma, alpha)
 
     if option == 'basinhopping':
         alpha_max, gamma_max = optimize.basinhopping(ge, [.5, .5]).x
