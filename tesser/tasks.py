@@ -53,18 +53,18 @@ def induct_avg_all(data_dir):
 
 
 #make a function that returns a median split of the data based on overall induction performance
-def induct_avg_split_high(part_avg_df):
-    induct_avg = part_avg_df["Overall"].mean()
+def induct_avg_split_high(participant_induct_avg_df):
+    induct_avg = participant_induct_avg_df["Overall"].mean()
 
-    induct_above = part_avg_df[part_avg_df["Overall"] > induct_avg]
+    induct_above = participant_induct_avg_df[participant_induct_avg_df["Overall"] > induct_avg]
     return induct_above
 
 
 #make a function that returns a median split of the data based on overall induction performance
-def induct_avg_split_low(part_avg_df):
-    induct_avg = part_avg_df["Overall"].mean()
+def induct_avg_split_low(participant_induct_avg_df):
+    induct_avg = participant_induct_avg_df["Overall"].mean()
 
-    induct_below = part_avg_df[part_avg_df["Overall"] < induct_avg]
+    induct_below = participant_induct_avg_df[participant_induct_avg_df["Overall"] < induct_avg]
     return induct_below
 
 
@@ -72,8 +72,7 @@ def induct_avg_split_low(part_avg_df):
 #grouping task
 ###########################
 
-def group_dist_mat(data_dir, subj_num):
-    group_mat = load_group(data_dir, subj_num)
+def group_dist_mat(group_mat):
     rows, cols = np.nonzero(group_mat)
 
     # getting the identity of the objects from their coordinates:
@@ -116,37 +115,32 @@ def group_dist_df(group_dist_mat):
 # %%
 
 # make unique combo list
-def obj_combo(comm_objs):
+def obj_combo(list_objs):
     # have now gotten all the ones in community 1, reindex the data rows:
-    comm_objs = comm_objs.reset_index()
+    list_objs = list_objs.reset_index()
     pair_list = []
     this_dist_tog = []
-    for x in range(len(comm_objs)):
+    for x in range(len(list_objs)):
 
-        if x == len(comm_objs):
+        if x == len(list_objs):
             break
         else:
-            for q in range(x, len(comm_objs) - 1):
+            for q in range(x, len(list_objs) - 1):
                 y = q + 1
-                # print(x, y)
-                # print(comm_objs['node'][x], comm_objs['node'][y])
-                pair = [comm_objs['node'][x], comm_objs['node'][y]]
+                pair = [list_objs['node'][x], list_objs['node'][y]]
                 pair_list.append(pair)
     return pair_list
 
 
 # within-community distance between objects in particular community
-def specific_within_comm_dist(comm_objs, data_dir, subj_num):
-    # have now gotten all the ones in community 1, reindex the data rows:
-    pair_list = obj_combo(comm_objs)
+def specific_within_comm_dist(group_dist_mat, pair_list):
     this_dist_tog = []
     for l in range(len(pair_list) - 1):
         this_pair = pair_list[l]
         mat_x = this_pair[0]
         mat_y = this_pair[1]
         # now match to the matrix of similarity
-        dist_mat = group_dist_mat(data_dir, subj_num)
-        dist_df = group_dist_df(dist_mat)
+        dist_df = group_dist_df(group_dist_mat)
         this_dist = dist_df.loc[mat_x, mat_y]
         this_dist_tog.append(this_dist)
 
@@ -156,21 +150,22 @@ def specific_within_comm_dist(comm_objs, data_dir, subj_num):
 
 # %%
 # within-community distance between objects
-def within_comm_dist(data_dir, subj_num):
+def within_comm_dist(group_dist_mat):
     within_dist_tog = []
     # getting the structure information
     comm_all_objs = temp_node_info()
     # print(structure_info)
     for n in range(1, 4):
-        comm_objs = comm_all_objs[comm_all_objs["comm"] == n]
-        this_comm_within_dist = specific_within_comm_dist(comm_objs, data_dir, subj_num)
+        this_comm_objs = comm_all_objs[comm_all_objs["comm"] == n]
+        this_comm_pairs = obj_combo(this_comm_objs)
+        this_comm_within_dist = specific_within_comm_dist(group_dist_mat, this_comm_pairs)
         within_dist_tog.append(this_comm_within_dist)
     within_comm_dist = np.mean(within_dist_tog)
     return (within_comm_dist)
 
 
 # %%
-def across_comm_dist(data_dir, subj_num):
+def across_comm_dist(group_dist_mat):
     # getting the structure information
     comm_all_objs = temp_node_info()
 
@@ -198,8 +193,7 @@ def across_comm_dist(data_dir, subj_num):
         mat_x = this_pair[0]
         mat_y = this_pair[1]
         # now match to the matrix of similarity
-        dist_mat = group_dist_mat(data_dir, subj_num)
-        dist_df = group_dist_df(dist_mat)
+        dist_df = group_dist_df(group_dist_mat)
         this_dist = dist_df.loc[mat_x, mat_y]
         this_dist_tog.append(this_dist)
 
@@ -208,6 +202,42 @@ def across_comm_dist(data_dir, subj_num):
 
 
 #make a figure of the grouping task with corresponding colors
+def comm_color_map():
+    # Colour value constants
+    colors = {"d_purple": '#7e1e9c',
+              "l_purple": '#bf77f6',
+              "d_green": '#15b01a',
+              "l_green": '#96f97b',
+              "d_red": '#e50000',
+              "l_red": '#ff474c',
+              "grey": '#d8dcd6'}
+
+    color_list = []
+    for val in range(0, 22):
+        # Map the value to a color
+        if val == 0:
+            color = colors["grey"]
+        elif val in comm1_cent_objs['node']:
+            color = colors["d_purple"]
+        elif val in comm1_bound_objs['node']:
+            color = colors["l_purple"]
+        elif val in comm2_cent_objs['node']:
+            color = colors["d_red"]
+        elif val in comm2_bound_objs['node']:
+            color = colors["l_red"]
+        elif val in comm3_cent_objs['node']:
+            color = colors["d_green"]
+        elif val in comm3_bound_objs['node']:
+            color = colors["l_green"]
+        color_list.append(color)
+    return color_list
+
+
+def plot_dist(group_mat):
+    color_list = comm_color_map()
+    cmap = matplotlib.colors.ListedColormap(color_list)
+    plt.imshow(group_mat, cmap=cmap)
+
 
 #not sure if this function is useful?
 def make_sym_matrix(asym_mat):
