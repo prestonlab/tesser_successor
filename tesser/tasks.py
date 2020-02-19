@@ -239,12 +239,3 @@ def plot_dist(group_mat):
     plt.imshow(group_mat, cmap=cmap)
 
 
-#not sure if this function is useful?
-def make_sym_matrix(asym_mat):
-    """Calculate an average symmetric matrix from an asymmetric matrix."""
-
-    v1 = sd.squareform(asym_mat, checks=False)
-    v2 = sd.squareform(asym_mat.T, checks=False)
-    vm = (v1 + v2) / 2
-    sym_mat = sd.squareform(vm)
-    return sym_mat
