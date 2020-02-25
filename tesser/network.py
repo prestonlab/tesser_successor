@@ -17,13 +17,16 @@ This network function is used to showcase the temporal community structure netwo
 import numpy as np
 import pandas as pd
 import networkx as nx
+from . import sr
 from networkx.algorithms.shortest_paths.generic import shortest_path
 import matplotlib.pyplot as plt
 
 
 def temp_node_info():
     """ INPUT [none]
-        OUTPUT node dataframe detailing the community type (1, 2, 3), node type (boundary = 1, non-boundary = 0), and connectedness (1 = connected, 0 = not) of the 21 nodes in temporal community structure  """
+        OUTPUT node dataframe detailing the community type (1, 2, 3), node type (boundary = 1, non-boundary = 0), and
+        connectedness (1 = connected, 0 = not) of the 21 nodes in temporal community structure
+        """
 
     n_node = 21
 
@@ -114,7 +117,8 @@ def path_length(adj_mat):
             pathlen[source, target] = len(pathlist) - 1
     return pathlen
 
-def plot_adjecncy_matrix():
+
+def plot_adjacency_matrix():
     nodes = temp_node_info()
     adjacency = adjacency_mat(nodes)
     L = sr.compute_limit_matrix(0.5, adjacency, 21)
