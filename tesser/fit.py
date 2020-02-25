@@ -128,6 +128,46 @@ def induction_brute (struc_df, induc_df):
     return alphas[alpha_index], gammas[gamma_index], taus[tau_index]
 
 
+def param_bounds(var_bounds, var_names):
+    """Pack group-level parameters."""
+
+    group_lb = [var_bounds[k][0] for k in var_names]
+    group_ub = [var_bounds[k][1] for k in var_names]
+    bounds = optimize.Bounds(group_lb, group_ub)
+    return bounds
+
+
+def function_logl_induct(struct_df, induct_df, fixed, var_names):
+    """Generate log likelihood function for use with fitting."""
+
+    param = fixed.copy()
+    def fit_logl(x):
+        param.update(dict(zip(var_names, x)))
+        logl = get_induction_log_likelihood(struct_df, induct_df, **param)
+        return -logl
+    return fit_logl
+
+
+def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
+               f_optim=optimize.differential_evolution,
+               verbose=False, options=None):
+    """Fit induction data."""
+
+    if options is None:
+        options = {}
+
+    f_fit = function_logl_induct(struct_df, induct_df, fixed, var_names)
+    bounds = param_bounds(var_bounds, var_names)
+    res = f_optim(f_fit, bounds, disp=verbose, **options)
+
+    # fitted parameters
+    param = fixed.copy()
+    param.update(dict(zip(var_names, res['x'])))
+
+    logl = -res['fun']
+    return param, logl
+
+
 def maximize_induction_likelihood(struc_df, induc_df, option):
     """ Numerically maximizes the log likelihood function on the set of the subject's choices
          to find optimal values for alpha, gamma
