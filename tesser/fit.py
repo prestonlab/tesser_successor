@@ -73,8 +73,7 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_t
         induc_df: Generalized induction data in DataFrame format.
         gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
-    SR = sr.explore_runs(struc_df, "once", gamma, alpha)
-    SR_norm = SR / np.sum(SR)
+    SR = sr.learn_sr(struc_df, gamma, alpha)[(1,5)]
     cue_sequence, opt1_sequence, opt2_sequence, response_sequence = util.load_induct_array_all(
         induc_df
     )
@@ -94,7 +93,7 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_t
             int(response_sequence[trial_num]) - 1,
         )
         trial_probability = probability_induction_choice(
-            cue_num, opt1_num, opt2_num, response_num, SR_norm, tau
+            cue_num, opt1_num, opt2_num, response_num, SR, tau
         )
         eps = 0.000001
         if np.isnan(trial_probability):
@@ -110,6 +109,23 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_t
         return log_likelihood, all_trial_prob
     else:
         return log_likelihood
+    
+def induction_brute (struc_df, induc_df):
+    alphas = [float(i/20) for i in range(1, 20)]
+    gammas = [float(i/20) for i in range(1, 20)]
+    taus = [float(i/20) for i in range(1, 20)]
+    likelihoods = [[[get_induction_log_likelihood(struc_df, induc_df, alphas[i], gammas[j], taus[k]) for k in range(19)] for j in range(19)]for i in range(19)]
+    
+    alpha_index, gamma_index, tau_index = 0, 0, 0
+    likelihood_max = likelihoods[0][0]
+    for i in range(19):
+        for j in range(19):
+            for k in range(19):
+                if likelihoods[i][j][k] > likelihood_max:
+                    alpha_index, gamma_index, tau_index = i, j, k
+                    likelihood_max = likelihoods[i][j][k]
+    
+    return alphas[alpha_index], gammas[gamma_index], taus[tau_index]
 
 
 def maximize_induction_likelihood(struc_df, induc_df, option):
@@ -136,6 +152,9 @@ def maximize_induction_likelihood(struc_df, induc_df, option):
                                                                         [(.000001, 0.99), (0.1, 0.99), (.00001, .99)]).x
     elif option == 'brute':
         alpha_max, gamma_max, tau_max = optimize.brute(ll, [(0, 1), (0, 1), (0, 1)])[0]
+        
+    elif option == 'induction brute':
+        alpha_max, gamma_max, tau_max = induction_brute (struc_df, induc_df)
     else:
         raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
@@ -170,7 +189,10 @@ def group_brute (struc_df, group_df):
     for i in range(19):
         for j in range(19):
             if errors[i][j] < error_min:
-                alph = 1
+                alpha_index, gamma_index = i, j
+                error_min = errors[i][j]
+    
+    return alphas[alpha_index], gammas[gamma_index]
 
 
 def minimize_grouping_error(struc_df, group_df, option):
@@ -182,9 +204,11 @@ def minimize_grouping_error(struc_df, group_df, option):
     if option == 'basinhopping':
         alpha_max, gamma_max = optimize.basinhopping(ge, [.5, .5]).x
     elif option == 'differential evolution':
-        alpha_max, gamma_max = optimize.differential_evolution(ge, [(.01, 0.99), (0.01, 0.99)], tol=10e-3).x
+        alpha_max, gamma_max = optimize.differential_evolution(ge, [(.01, 0.99), (0.01, 0.99)]).x
     elif option == 'brute':
         alpha_max, gamma_max = optimize.brute(ge, [(0.01, 1), (0.01, 1)])
+    elif option == 'group brute':
+        alpha_max, gamma_max = group_brute (struc_df, group_df)
     else:
         raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
