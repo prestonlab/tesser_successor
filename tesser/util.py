@@ -21,6 +21,7 @@ It reads in the files associated with the following tasks
 """
 import numpy as np
 import pandas as pd
+import scipy.spatial.distance as sd
 import os
 from glob import glob
 
@@ -178,7 +179,8 @@ def load_group(data_dir, subject_num):
     mat = np.loadtxt(run_file)
     return mat.astype(int)
 
-#getting avrages of matrix data, making sure that it is below diagonal etc.
+
+# getting averages of matrix data, making sure that it is below diagonal etc.
 def make_sym_matrix(asym_mat):
     """Calculate an average symmetric matrix from an asymmetric matrix."""
 
