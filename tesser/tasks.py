@@ -12,19 +12,21 @@ This function is to evaluate performance in the temporal structure learning, gro
     path_length(adj_matrix)
 """
 
-import os
+
 import pandas as pd
 import numpy as np
 import scipy.spatial.distance as sd
+import matplotlib
 import matplotlib.pyplot as plt
-from util import *
-from tasks import *
-from network import *
+from . import util
+from . import network
 
 ###########################
-#inductive inference task
+# inductive inference task
 ###########################
-#make a function that gets the average inference task data for a participant
+# make a function that gets the average inference task data for a participant
+
+
 def induct_avg(induct_df):
     part_num = int(induct_df["SubjNum"].mean())
     overall_avg = induct_df["Acc"].mean()
@@ -37,39 +39,39 @@ def induct_avg(induct_df):
     return part_num, overall_avg, central_avg, bound1_avg, bound2_avg
 
 
-#make a function that gets the average inference task data for all participants
+# make a function that gets the average inference task data for all participants
 def induct_avg_all(data_dir):
-    #want to load a list of the participants and loop through
+    # want to load a list of the participants and loop through
     part_avg_list = []
-    part_list = subj_list()
+    part_list = util.subj_list()
     for i in range(len(part_list)):
         part_num = part_list[i]
-        this_induct = load_induct_df_all(data_dir, part_num)
+        this_induct = util.load_induct_df_all(data_dir, part_num)
         this_avg = induct_avg(this_induct)
         part_avg_list.append(this_avg)
-    #convert list to df
+    # convert list to df
     part_avg_df = pd.DataFrame(part_avg_list, columns=['Participant', 'Overall', 'Prim', 'Bound1', 'Bound1'])
     return part_avg_df
 
 
-#make a function that returns a median split of the data based on overall induction performance
+# make a function that returns a median split of the data based on overall induction performance
 def induct_avg_split_high(participant_induct_avg_df):
-    induct_avg = participant_induct_avg_df["Overall"].mean()
+    induct_average = participant_induct_avg_df["Overall"].mean()
 
-    induct_above = participant_induct_avg_df[participant_induct_avg_df["Overall"] > induct_avg]
+    induct_above = participant_induct_avg_df[participant_induct_avg_df["Overall"] > induct_average]
     return induct_above
 
 
-#make a function that returns a median split of the data based on overall induction performance
+# make a function that returns a median split of the data based on overall induction performance
 def induct_avg_split_low(participant_induct_avg_df):
-    induct_avg = participant_induct_avg_df["Overall"].mean()
+    induct_average = participant_induct_avg_df["Overall"].mean()
 
-    induct_below = participant_induct_avg_df[participant_induct_avg_df["Overall"] < induct_avg]
+    induct_below = participant_induct_avg_df[participant_induct_avg_df["Overall"] < induct_average]
     return induct_below
 
 
 ###########################
-#grouping task
+# grouping task
 ###########################
 
 def group_dist_mat(group_mat):
@@ -93,21 +95,21 @@ def group_dist_mat(group_mat):
     coord_list_sort = coord_list[sort_ind]
 
     # now we can take coord_list_sort (i.e. coordinates of objects in object order 1-21) and make a distance matrix
-    group_dist_mat = sd.squareform(sd.pdist(coord_list_sort, 'Euclidean'))
-    return group_dist_mat
+    group_dist_matrix = sd.squareform(sd.pdist(coord_list_sort, 'Euclidean'))
+    return group_dist_matrix
 
 
 # %%
 
-def group_dist_df(group_dist_mat):
+def group_dist_df(group_dist_matrix):
     # first convert to a dataframe
-    group_dist_df = pd.DataFrame(group_dist_mat)
+    group_dist_dataframe = pd.DataFrame(group_dist_matrix)
 
     # reindex the data rows
-    group_dist_df.index = group_dist_df.index + 1
+    group_dist_dataframe.index = group_dist_dataframe.index + 1
 
     # reindx the data cols
-    group_dist_df.columns = group_dist_df.columns + 1
+    group_dist_dataframe.columns = group_dist_dataframe.columns + 1
 
     return group_dist_df  # now index rows, cols = 1:21
 
@@ -119,7 +121,6 @@ def obj_combo(list_objs):
     # have now gotten all the ones in community 1, reindex the data rows:
     list_objs = list_objs.reset_index()
     pair_list = []
-    this_dist_tog = []
     for x in range(len(list_objs)):
 
         if x == len(list_objs):
@@ -133,41 +134,41 @@ def obj_combo(list_objs):
 
 
 # within-community distance between objects in particular community
-def specific_within_comm_dist(group_dist_mat, pair_list):
+def specific_within_comm_dist(group_dist_m, pair_list):
     this_dist_tog = []
     for l in range(len(pair_list) - 1):
         this_pair = pair_list[l]
         mat_x = this_pair[0]
         mat_y = this_pair[1]
         # now match to the matrix of similarity
-        dist_df = group_dist_df(group_dist_mat)
+        dist_df = group_dist_df(group_dist_m)
         this_dist = dist_df.loc[mat_x, mat_y]
         this_dist_tog.append(this_dist)
 
     this_comm_within_dist = np.mean(this_dist_tog)
-    return (this_comm_within_dist)
+    return this_comm_within_dist
 
 
 # %%
 # within-community distance between objects
-def within_comm_dist(group_dist_mat):
+def within_comm_dist(group_dist_matrix):
     within_dist_tog = []
     # getting the structure information
-    comm_all_objs = temp_node_info()
+    comm_all_objs = network.temp_node_info()
     # print(structure_info)
     for n in range(1, 4):
         this_comm_objs = comm_all_objs[comm_all_objs["comm"] == n]
         this_comm_pairs = obj_combo(this_comm_objs)
-        this_comm_within_dist = specific_within_comm_dist(group_dist_mat, this_comm_pairs)
+        this_comm_within_dist = specific_within_comm_dist(group_dist_matrix, this_comm_pairs)
         within_dist_tog.append(this_comm_within_dist)
-    within_comm_dist = np.mean(within_dist_tog)
-    return (within_comm_dist)
+    within_comm_d = np.mean(within_dist_tog)
+    return within_comm_d
 
 
 # %%
-def across_comm_dist(group_dist_mat):
+def across_comm_dist(group_dist_matrix):
     # getting the structure information
-    comm_all_objs = temp_node_info()
+    comm_all_objs = network.temp_node_info()
 
     comm1_objs = comm_all_objs[comm_all_objs["comm"] == 1]
     comm2_objs = comm_all_objs[comm_all_objs["comm"] == 2]
@@ -193,49 +194,49 @@ def across_comm_dist(group_dist_mat):
         mat_x = this_pair[0]
         mat_y = this_pair[1]
         # now match to the matrix of similarity
-        dist_df = group_dist_df(group_dist_mat)
+        dist_df = group_dist_df(group_dist_matrix)
         this_dist = dist_df.loc[mat_x, mat_y]
         this_dist_tog.append(this_dist)
 
-    across_comm_dist = np.mean(this_dist_tog)
-    return across_comm_dist
+    across_comm_distance = np.mean(this_dist_tog)
+    return across_comm_distance
 
-
-#make a figure of the grouping task with corresponding colors
-def comm_color_map():
-    # Colour value constants
-    colors = {"d_purple": '#7e1e9c',
-              "l_purple": '#bf77f6',
-              "d_green": '#15b01a',
-              "l_green": '#96f97b',
-              "d_red": '#e50000',
-              "l_red": '#ff474c',
-              "grey": '#d8dcd6'}
-
-    color_list = []
-    for val in range(0, 22):
-        # Map the value to a color
-        if val == 0:
-            color = colors["grey"]
-        elif val in comm1_cent_objs['node']:
-            color = colors["d_purple"]
-        elif val in comm1_bound_objs['node']:
-            color = colors["l_purple"]
-        elif val in comm2_cent_objs['node']:
-            color = colors["d_red"]
-        elif val in comm2_bound_objs['node']:
-            color = colors["l_red"]
-        elif val in comm3_cent_objs['node']:
-            color = colors["d_green"]
-        elif val in comm3_bound_objs['node']:
-            color = colors["l_green"]
-        color_list.append(color)
-    return color_list
-
-
-def plot_dist(group_mat):
-    color_list = comm_color_map()
-    cmap = matplotlib.colors.ListedColormap(color_list)
-    plt.imshow(group_mat, cmap=cmap)
-
+#
+# # make a figure of the grouping task with corresponding colors
+# def comm_color_map():
+#     # Colour value constants
+#     colors = {"d_purple": '#7e1e9c',
+#               "l_purple": '#bf77f6',
+#               "d_green": '#15b01a',
+#               "l_green": '#96f97b',
+#               "d_red": '#e50000',
+#               "l_red": '#ff474c',
+#               "grey": '#d8dcd6'}
+#
+#     color_list = []
+#     for val in range(0, 22):
+#         # Map the value to a color
+#         if val == 0:
+#             color = colors["grey"]
+#         elif val in comm1_cent_objs['node']:
+#             color = colors["d_purple"]
+#         elif val in comm1_bound_objs['node']:
+#             color = colors["l_purple"]
+#         elif val in comm2_cent_objs['node']:
+#             color = colors["d_red"]
+#         elif val in comm2_bound_objs['node']:
+#             color = colors["l_red"]
+#         elif val in comm3_cent_objs['node']:
+#             color = colors["d_green"]
+#         elif val in comm3_bound_objs['node']:
+#             color = colors["l_green"]
+#         color_list.append(color)
+#     return color_list
+#
+#
+# def plot_dist(group_mat):
+#     color_list = comm_color_map()
+#     cmap = matplotlib.colors.ListedColormap(color_list)
+#     plt.imshow(group_mat, cmap=cmap)
+#
 
