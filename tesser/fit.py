@@ -75,7 +75,7 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_t
     """
     SR = sr.explore_runs(struc_df, "once", gamma, alpha)
     SR_norm = SR / np.sum(SR)
-    cue_sequence, opt1_sequence, opt2_sequence, response_sequence = util.get_induction_data(
+    cue_sequence, opt1_sequence, opt2_sequence, response_sequence = util.load_induct_array_all(
         induc_df
     )
     num_trials = len(cue_sequence)
@@ -146,8 +146,8 @@ def grouping_error(struc_df, group_df, gamma, alpha):
     SR = sr.learn_sr(struc_df, gamma, alpha)
     SR = SR[2,6]
     euclid_matrix = np.array(group_df)
-    euclid_vector = tasks.make_sym_matrix(euclid_matrix)
-    sr_vector = tasks.make_sym_matrix(SR)
+    euclid_vector = util.make_sym_matrix(euclid_matrix)
+    sr_vector = util.make_sym_matrix(SR)
     slope, intercept, r_value, p_value, std_err = linregress(sr_vector[:, 0], euclid_vector[:, 0])
     return std_err
 
