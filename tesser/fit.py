@@ -142,28 +142,49 @@ def maximize_induction_likelihood(struc_df, induc_df, option):
     return alpha_max, gamma_max, tau_max
 
 
-def grouping_error(struc_df, group_df, gamma, alpha):
-    SR = sr.learn_sr(struc_df, gamma, alpha)
-    SR = SR[2,6]
-    euclid_matrix = np.array(group_df)
-    euclid_vector = util.make_sym_matrix(euclid_matrix)
-    sr_vector = util.make_sym_matrix(SR)
-    slope, intercept, r_value, p_value, std_err = linregress(sr_vector[:, 0], euclid_vector[:, 0])
-    return std_err
+def grouping_error(struc_df, group_df, alpha, gamma):
+    SR = sr.learn_sr(struc_df, gamma, alpha)[(1,5)]
+
+    euclid_matrix = tasks.group_dist_mat(group_df)
+    euclid_vector = distance.squareform(euclid_matrix)
+
+    sr_matrix = util.make_sym_matrix(SR)
+    sr_vector = distance.squareform(sr_matrix, checks=False) 
+
+    slope, intercept, r_value, p_value, std_err = linregress(sr_vector, euclid_vector)
+    
+    euclid_estimates = np.array([slope*x + intercept for x in sr_vector])
+    err = np.square(euclid_vector - euclid_estimates)
+    err = np.mean(err)
+    err = np.sqrt(err)
+    
+    return err
+
+def group_brute (struc_df, group_df):
+    alphas = [float(i/20) for i in range(1, 20)]
+    gammas = [float(i/20) for i in range(1, 20)]
+    errors = [[grouping_error(struc_df, group_df, alphas[i], gammas[j]) for j in range(19)] for i in range(19)]
+    
+    alpha_index, gamma_index = 0, 0
+    error_min = errors[0][0]
+    for i in range(19):
+        for j in range(19):
+            if errors[i][j] < error_min:
+                alph = 1
 
 
 def minimize_grouping_error(struc_df, group_df, option):
     def ge(x):
         alpha = x[0]
         gamma = x[1]
-        return grouping_error(struc_df, group_df, gamma, alpha)
+        return grouping_error(struc_df, group_df, alpha, gamma)
 
     if option == 'basinhopping':
         alpha_max, gamma_max = optimize.basinhopping(ge, [.5, .5]).x
     elif option == 'differential evolution':
-        alpha_max, gamma_max = optimize.differential_evolution(ge, [(.000001, 0.99), (0.1, 0.99)]).x
+        alpha_max, gamma_max = optimize.differential_evolution(ge, [(.01, 0.99), (0.01, 0.99)], tol=10e-3).x
     elif option == 'brute':
-        alpha_max, gamma_max = optimize.brute(ge, [(0, 1), (0, 1)])[0]
+        alpha_max, gamma_max = optimize.brute(ge, [(0.01, 1), (0.01, 1)])
     else:
         raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))

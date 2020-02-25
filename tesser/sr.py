@@ -109,7 +109,6 @@ def learn_sr(df, gamma, alpha):
                              'objnum'].values
             M = np.array(run_experiment(envstep, gamma, alpha,
                                         np.copy(M), n_states))
-            M = M / np.sum(M)
             SR_matrices[(part, run)] = M
     return SR_matrices
 
