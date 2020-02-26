@@ -146,6 +146,10 @@ def load_induct_df_all(data_dir, subject_num):
 
     # read log, fixing problem with spaces in column names
     df = pd.read_csv(run_file, sep='\t', skipinitialspace=True)
+    df.loc[:, 'cue'] = df.CueNum - 1
+    df.loc[:, 'opt1'] = df.Opt1Num - 1
+    df.loc[:, 'opt2'] = df.Opt2Num - 1
+    df.loc[:, 'response'] = df.Resp - 1
     return df
 
 
