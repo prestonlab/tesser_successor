@@ -64,7 +64,8 @@ def probability_induction_choice(cue, opt1, opt2, response, SR, tau):
         return pCGivenA(cue, opt1, opt2, SR, tau)
 
 
-def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_trial=False):
+def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
+                                 return_trial=False, use_run=(2, 6)):
     """ This function gives the probability of obtaining the choices in the run, given
         specific values for alpha, gamma.
         INPUT:
@@ -73,27 +74,23 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_t
         induc_df: Generalized induction data in DataFrame format.
         gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
-    SR = sr.learn_sr(struc_df, gamma, alpha)[(1,5)]
-    cue_sequence, opt1_sequence, opt2_sequence, response_sequence = util.load_induct_array_all(
-        induc_df
-    )
-    num_trials = len(cue_sequence)
+
+    # generate SR based on these parameters
+    SR_all = sr.learn_sr(struc_df, gamma, alpha)
+    SR = SR_all[use_run]
+
+    # get likelihood of induction data
+    num_trials = induc_df.shape[0]
     log_likelihood = 0
     all_trial_prob = np.zeros(num_trials)
-    for trial_num in range(num_trials):
-        if np.isnan(response_sequence[trial_num]):
+    for i, trial in induc_df.iterrows():
+        if np.isnan(trial.response):
             trial_probability = 0.5
             log_likelihood += np.log(trial_probability)
-            all_trial_prob[trial_num] = trial_probability
+            all_trial_prob[i] = trial_probability
             continue
-        cue_num, opt1_num, opt2_num, response_num = (
-            int(cue_sequence[trial_num]) - 1,
-            int(opt1_sequence[trial_num]) - 1,
-            int(opt2_sequence[trial_num]) - 1,
-            int(response_sequence[trial_num]) - 1,
-        )
         trial_probability = probability_induction_choice(
-            cue_num, opt1_num, opt2_num, response_num, SR, tau
+            trial.cue, trial.opt1, trial.opt2, trial.response, SR, tau
         )
         eps = 0.000001
         if np.isnan(trial_probability):
@@ -103,13 +100,14 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau, return_t
             # probability too close to zero; set to minimal value
             trial_probability = eps
         log_likelihood += np.log(trial_probability)
-        all_trial_prob[trial_num] = trial_probability
+        all_trial_prob[i] = trial_probability
 
     if return_trial:
         return log_likelihood, all_trial_prob
     else:
         return log_likelihood
-    
+
+
 def induction_brute (struc_df, induc_df):
     alphas = [float(i/20) for i in range(1, 20)]
     gammas = [float(i/20) for i in range(1, 20)]
