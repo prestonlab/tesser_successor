@@ -157,16 +157,16 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
     var_bounds - dict
         Bounds (in low, high order) for each variable parameter.
 
-    f_optim - function - scipy.optimize.differential_evolution
+    f_optim - function
         Function to use for parameter optimization.
 
-    verbose - Boolean - False
+    verbose - Boolean
         If true, more information about the search will be printed.
 
-    options - dict - {}
+    options - dict
         Options to pass to f_optim.
 
-    use_run - tuple - (2, 6)
+    use_run - tuple
         Run to take the SR matrix from for predicting induction data.
 
     Outputs
