@@ -135,26 +135,59 @@ def param_bounds(var_bounds, var_names):
     return bounds
 
 
-def function_logl_induct(struct_df, induct_df, fixed, var_names):
-    """Generate log likelihood function for use with fitting."""
-
-    param = fixed.copy()
-    def fit_logl(x):
-        param.update(dict(zip(var_names, x)))
-        logl = get_induction_log_likelihood(struct_df, induct_df, **param)
-        return -logl
-    return fit_logl
-
-
 def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
                f_optim=optimize.differential_evolution,
-               verbose=False, options=None):
-    """Fit induction data."""
+               verbose=False, options=None, use_run=(2, 6)):
+    """Fit induction data.
+
+    Inputs
+    ------
+    struct_df - DataFrame
+        Structure learning data.
+
+    induct_df - DataFrame
+        Induction test data.
+
+    fixed - dict
+        Parameter values for all fixed parameters.
+
+    var_names - list
+        String name for each variable parameter.
+
+    var_bounds - dict
+        Bounds (in low, high order) for each variable parameter.
+
+    f_optim - function - scipy.optimize.differential_evolution
+        Function to use for parameter optimization.
+
+    verbose - Boolean - False
+        If true, more information about the search will be printed.
+
+    options - dict - {}
+        Options to pass to f_optim.
+
+    use_run - tuple - (2, 6)
+        Run to take the SR matrix from for predicting induction data.
+
+    Outputs
+    -------
+    param - dict
+        Best-fitting parameters.
+
+    logl - float
+        Maximum log likelihood.
+    """
 
     if options is None:
         options = {}
 
-    f_fit = function_logl_induct(struct_df, induct_df, fixed, var_names)
+    param = fixed.copy()
+    def f_fit(x):
+        param.update(dict(zip(var_names, x)))
+        logl = get_induction_log_likelihood(struct_df, induct_df, **param,
+                                            return_trial=False, use_run=use_run)
+        return -logl
+
     bounds = param_bounds(var_bounds, var_names)
     res = f_optim(f_fit, bounds, disp=verbose, **options)
 
