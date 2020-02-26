@@ -101,6 +101,20 @@ def load_struct_df_all(data_dir, subject_num):
     return df
 
 
+def load_struct(data_dir, subjects=None):
+    """Load structure learning data for all subjects."""
+
+    if subjects is None:
+        subjects = subj_list()
+
+    df_all = []
+    for subject in subjects:
+        df_subj = load_struct_df_all(data_dir, subject)
+        df_all.append(df_subj)
+    df = pd.concat(df_all, axis=0, ignore_index=True)
+    return df
+
+
 #   should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
 #   def drop_struct_df_nan(struct_dframe):
     #    """ INPUT struct_dframe
@@ -150,6 +164,20 @@ def load_induct_df_all(data_dir, subject_num):
     df.loc[:, 'opt1'] = df.Opt1Num - 1
     df.loc[:, 'opt2'] = df.Opt2Num - 1
     df.loc[:, 'response'] = df.Resp - 1
+    return df
+
+
+def load_induct(data_dir, subjects=None):
+    """Load induction data for all subjects."""
+
+    if subjects is None:
+        subjects = subj_list()
+
+    df_all = []
+    for subject in subjects:
+        df_subj = load_induct_df_all(data_dir, subject)
+        df_all.append(df_subj)
+    df = pd.concat(df_all, axis=0, ignore_index=True)
     return df
 
 
