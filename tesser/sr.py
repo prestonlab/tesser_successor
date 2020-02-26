@@ -203,27 +203,76 @@ def compute_correlations(struc_df, option, gamma, alpha):
         print(np.dot(L_vector, M_vector) / (la.norm(L_vector) * la.norm(M_vector)))
 
 
-def plot_sr(SR, subject, option="Standard", gamma=0.5, alpha=0.5):
-    fig, ax = plt.subplots(2, 6, figsize=(14, 6))
-    plt.suptitle(f'Learning: {option}, subject: {subject}; gamma={gamma:.2f}, alpha={alpha:.2f}')
+def plot_sr(SR, subject=None, option=None, gamma=None, alpha=None):
+    """Plot successor representation by learning run.
+
+    Inputs
+    ------
+    SR - dict of numpy arrays
+        SR[(part, run)] gives the matrix for that experiment part and run.
+
+    subject - str
+        Subject ID.
+
+    option - str
+        Method used to create the SR.
+
+    gamma - float
+        Value of gamma parameter used.
+
+    alpha - float
+        Value of alpha parameter used.
+
+    Outputs
+    -------
+    fig - Figure object
+        Reference to figure.
+    """
+
+    # create figure with a grid layout
+    fig = plt.figure(tight_layout=False, constrained_layout=True,
+                     figsize=(12, 4))
+    gs = fig.add_gridspec(2, 7, width_ratios=[1, 1, 1, 1, 1, 1, .1])
+    ax_cbar = fig.add_subplot(gs[:, -1])
+
+    # title with optional parameter information
+    d = {'Learning': option, 'subject': subject, 'gamma': gamma, 'alpha': alpha}
+    title = ''
+    for key, val in d.items():
+        if val is not None:
+            if isinstance(val, str):
+                title += f'{key}: {val}; '
+            else:
+                title += f'{key}: {val:.2f}; '
+    if len(title) > 0:
+        title = title[:-2]
+    plt.suptitle(title)
+
+    # plot all SR matrices
     images = []
     for i, part in enumerate((1, 2)):
         for j, run in enumerate(range(1, 7)):
             if (part, run) not in SR:
-                fig.delaxes(ax[i, j])
                 continue
-            images.append(ax[i, j].matshow(SR[(part, run)]))
-            ax[i, j].set_title("Part_%s Run_%s \n" % (part, run))
-            ax[i, j].label_outer()
+            ax = fig.add_subplot(gs[i, j])
+            images.append(ax.matshow(SR[(part, run)]))
+            if part == 2:
+                ax.set_xlabel(f'Run {run}')
+                ax.tick_params(labelbottom=True, labeltop=False)
+            else:
+                ax.tick_params(labelbottom=False, labeltop=False)
 
+            if run == 1:
+                ax.set_ylabel(f'Part {part}')
+                ax.tick_params(labelleft=True)
+            else:
+                ax.tick_params(labelleft=False)
+
+    # set color limits to be equal for all matrices
     vmin = min(image.get_array().min() for image in images)
     vmax = max(image.get_array().max() for image in images)
     norm = colors.Normalize(vmin=vmin, vmax=vmax)
     for im in images:
         im.set_norm(norm)
-    cbar = fig.colorbar(images[1], ax=ax.ravel().tolist(), shrink=0.95)
-
-    cbar.set_ticks(np.arange(0, 0.5, 0.01))
-    # cbar.set_ticklabels()
-
-    plt.show()
+    fig.colorbar(images[0], cax=ax_cbar)
+    return fig
