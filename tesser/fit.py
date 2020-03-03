@@ -250,6 +250,7 @@ def grouping_error(struc_df, group_df, alpha, gamma):
     
     return err
 
+
 def group_brute (struc_df, group_df):
     alphas = [float(i/20) for i in range(1, 20)]
     gammas = [float(i/20) for i in range(1, 20)]
@@ -284,3 +285,86 @@ def minimize_grouping_error(struc_df, group_df, option):
         raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max
+
+
+def maximize_induction_likelihood_fixed(struc_df, induc_df, option, variable=0.5):
+    """ Numerically maximizes the log likelihood _fixed function on the set of the subject's choices
+         to find optimal values for alpha, gamma with the option to fix one variable.
+        INPUT:
+
+        struc_df: Structured learning data in DataFrame format.
+        induc_df: Generalized induction data in DataFrame format.
+        option: scipy optimization functions:'basinhopping','differential evolution', 'brute'
+    """
+
+    def ll(x):
+        alpha = x[0]
+        gamma = x[1]
+        tau = x[2]
+        return -get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau)
+
+    def ll_alpha(x):
+        alpha = variable
+        gamma = x[1]
+        tau = x[2]
+        return -get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau)
+
+    def ll_gamma(x):
+        alpha = x[0]
+        gamma = variable
+        tau = x[2]
+        return -get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau)
+
+    def ll_tau(x):
+        alpha = x[0]
+        gamma = x[1]
+        tau = variable
+        return -get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau)
+
+    start_time = time.time()
+    if option == 'not fixed':
+        alpha_max, gamma_max, tau_max = optimize.differential_evolution(ll,
+                                                                        [(.000001, 0.99), (0.1, 0.99), (.00001, .99)]).x
+    elif option == 'fixed alpha':
+        alpha_max, gamma_max, tau_max = optimize.differential_evolution(ll_alpha,
+                                                                        [(.000001, 0.99), (0.1, 0.99), (.00001, .99)]).x
+    elif option == 'fixed gamma':
+        alpha_max, gamma_max, tau_max = optimize.differential_evolution(ll_gamma,
+                                                                        [(.000001, 0.99), (0.1, 0.99), (.00001, .99)]).x
+    elif option == 'fixed tau':
+        alpha_max, gamma_max, tau_max = optimize.differential_evolution(ll_tau,
+                                                                        [(.000001, 0.99), (0.1, 0.99), (.00001, .99)]).x
+    # else:
+    #     raise ValueError('Unknown option: {option}')
+    # print("--- %s seconds ---" % (time.time() - start_time))
+    return alpha_max, gamma_max, tau_max
+
+
+def minimize_grouping_error_fixed(struc_df, group_df, option, variable=0.5):
+
+    def ge(x):
+        alpha = x[0]
+        gamma = x[1]
+        return grouping_error(struc_df, group_df, alpha, gamma)
+
+    def ge_fixed_alpha(x):
+        alpha = variable
+        gamma = x[1]
+        return grouping_error(struc_df, group_df, alpha, gamma)
+
+    def ge_fixed_gamma(x):
+        alpha = x[0]
+        gamma = variable
+        return grouping_error(struc_df, group_df, alpha, gamma)
+
+    if option == 'not fixed':
+        alpha_max, gamma_max = optimize.differential_evolution(ge, [(.01, 0.99), (0.01, 0.99)]).x
+    elif option == 'fixed alpha':
+        alpha_max, gamma_max = optimize.differential_evolution(ge_fixed_alpha, [(.01, 0.99), (0.01, 0.99)]).x
+    elif option == 'fixed gamma':
+        alpha_max, gamma_max = optimize.differential_evolution(ge_fixed_gamma, [(.01, 0.99), (0.01, 0.99)]).x
+    # else:
+    #     raise ValueError('Unknown option: {option}')
+    # # print("--- %s seconds ---" % (time.time() - start_time))
+    return alpha_max, gamma_max
+
