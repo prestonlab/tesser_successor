@@ -79,6 +79,9 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
     SR_all = sr.learn_sr(struc_df, gamma, alpha)
     SR = SR_all[use_run]
 
+    struc_df = struc_df.reset_index()
+    induc_df = induc_df.reset_index()
+
     # get likelihood of induction data
     num_trials = induc_df.shape[0]
     log_likelihood = 0
