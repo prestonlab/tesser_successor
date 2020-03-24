@@ -201,42 +201,61 @@ def across_comm_dist(group_dist_matrix):
     across_comm_distance = np.mean(this_dist_tog)
     return across_comm_distance
 
-#
-# # make a figure of the grouping task with corresponding colors
-# def comm_color_map():
-#     # Colour value constants
-#     colors = {"d_purple": '#7e1e9c',
-#               "l_purple": '#bf77f6',
-#               "d_green": '#15b01a',
-#               "l_green": '#96f97b',
-#               "d_red": '#e50000',
-#               "l_red": '#ff474c',
-#               "grey": '#d8dcd6'}
-#
-#     color_list = []
-#     for val in range(0, 22):
-#         # Map the value to a color
-#         if val == 0:
-#             color = colors["grey"]
-#         elif val in comm1_cent_objs['node']:
-#             color = colors["d_purple"]
-#         elif val in comm1_bound_objs['node']:
-#             color = colors["l_purple"]
-#         elif val in comm2_cent_objs['node']:
-#             color = colors["d_red"]
-#         elif val in comm2_bound_objs['node']:
-#             color = colors["l_red"]
-#         elif val in comm3_cent_objs['node']:
-#             color = colors["d_green"]
-#         elif val in comm3_bound_objs['node']:
-#             color = colors["l_green"]
-#         color_list.append(color)
-#     return color_list
-#
-#
-# def plot_dist(group_mat):
-#     color_list = comm_color_map()
-#     cmap = matplotlib.colors.ListedColormap(color_list)
-#     plt.imshow(group_mat, cmap=cmap)
-#
+def comm_color_map():
+    # Color value constants
+    colors = {"d_purple": '#7e1e9c',
+              "l_purple": '#bf77f6',
+              "d_green": '#15b01a',
+              "l_green": '#96f97b',
+              "d_red": '#e50000',
+              "l_red": '#ff474c',
+              "grey": '#d8dcd6'}
+    
+    color_list = []
+    for val in range(0, 22):
+        # Map the value to a color
+        if val == 0:
+            color = colors["grey"]
+        elif val in comm1_cent_objs['node']:
+            color = colors["d_purple"]
+        elif val in comm1_bound_objs['node']:
+            color = colors["l_purple"]
+        elif val in comm2_cent_objs['node']:
+            color = colors["d_red"]
+        elif val in comm2_bound_objs['node']:
+            color = colors["l_red"]
+        elif val in comm3_cent_objs['node']:
+            color = colors["d_green"]
+        elif val in comm3_bound_objs['node']:
+            color = colors["l_green"]
+        color_list.append(color)       
+    return color_list
+
+def plot_dist(group_mat_input):
+    color_list = comm_color_map()
+    cmap = matplotlib.colors.ListedColormap(color_list)
+    plt.imshow(group_mat_input, cmap=cmap)
+    
+def total_group_num(group_mat_input):
+    #make group_mat into 0 and 1 values instead of object numbers
+    bin_group_mat = (group_mat > 0).astype(int)
+    from skimage import measure
+    groupmat_labeled = measure.label(bin_group_mat, connectivity=2, return_num=True)
+    labeled_total = groupmat_labeled[1] #total number of groups
+    return labeled_total
+
+def group_clusters(group_mat_input):
+    #make group_mat into 0 and 1 values instead of object numbers
+    bin_group_mat = (group_mat > 0).astype(int)   
+    from skimage import measure
+    groupmat_labeled = measure.label(bin_group_mat, connectivity=2, return_num=True)
+    labeled_array = groupmat_labeled[0] #array of labeled groups
+    group_stacked = []
+    
+    for t in range(1, labeled_total+1):
+        this_index = np.where(labeled_array==t)
+        this_group = group_mat[this_index] 
+        this_group_list = this_group.tolist()
+        group_stacked.append(this_group_list)
+    return group_stacked
 
