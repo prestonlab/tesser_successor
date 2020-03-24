@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-This network function is used to showcase the temporal community structure network used in Tesser
-- 21-node temporal community structure in a dataframe
+"""Information about the temporal community structure used in Tesser.
+
+21-node temporal community structure in a dataframe:
     temp_node_info()
 
-- adjacency matrix for the temporal community structure (i.e. connected nodes)
+Adjacency matrix for the temporal community structure (i.e. connected
+nodes):
     adjacency_mat(node_df)
 
-- path legnth between the connected nodes
+Path legnth between the connected nodes:
     path_length(adj_matrix)
 
-- community matrix for the temporal community structure (i.e. assuming just unconnected groups)
+Community matrix for the temporal community structure (i.e. assuming
+just unconnected groups):
     community_mat(node_df)
 """
+
 import numpy as np
 import pandas as pd
 import networkx as nx
@@ -23,10 +26,16 @@ import matplotlib.pyplot as plt
 
 
 def temp_node_info():
-    """ INPUT [none]
-        OUTPUT node dataframe detailing the community type (1, 2, 3), node type (boundary = 1, non-boundary = 0), and
-        connectedness (1 = connected, 0 = not) of the 21 nodes in temporal community structure
-        """
+    """Get information about nodes in the structured learning task network.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Dataframe detailing the community type (1, 2, 3), node type
+        (boundary = 1, non-boundary = 0), and connectedness
+        (1 = connected, 0 = not) of the 21 nodes in temporal community
+        structure
+    """
 
     n_node = 21
 
@@ -56,8 +65,20 @@ def temp_node_info():
 
 
 def community_mat(node_df):
-    """ INPUT node_df
-        OUTPUT commmunity matrix (i.e. isolated, unconnected) temporal community structure  """
+    """Label adjacent node pairs that are in the same community.
+
+    Parameters
+    ----------
+    node_df : pandas.DataFrame
+        Information about node structure. See temp_node_info.
+
+    Returns
+    -------
+    comm : array
+        A nodes x nodes array with 1 for node pairs that are
+        adjacent and in the same community and 0 for node pairs that
+        are non-adjacent or in different communities.
+    """
 
     n_node = node_df.shape[0]
     comm = np.zeros((n_node, n_node), dtype=int)
@@ -78,8 +99,19 @@ def community_mat(node_df):
 
 
 def adjacency_mat(node_df):
-    """ INPUT node_df
-        OUTPUT adjacency matrix of temporal community structure  """
+    """Create an adjacency matrix based on network node information.
+
+    Parameters
+    ----------
+    node_df : pandas.DataFrame
+        Information about node structure. See temp_node_info.
+
+    Returns
+    -------
+    adj : array
+        A nodes x nodes array with 1 for adjacent node pairs and 0 for
+        unconnected nodes.
+    """
 
     n_node = node_df.shape[0]
     adj = np.zeros((n_node, n_node), dtype=int)
@@ -105,8 +137,7 @@ def adjacency_mat(node_df):
 
 
 def path_length(adj_mat):
-    """ INPUT adjacency matrix of temporal community structure
-        OUTPUT shortest path length  """
+    """Calculate shortest path length from an adjacency matrix."""
 
     n_node = adj_mat.shape[0]
     G = nx.from_numpy_matrix(adj_mat)
