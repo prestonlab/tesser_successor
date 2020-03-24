@@ -156,43 +156,50 @@ def param_bounds(var_bounds, var_names):
 def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
                f_optim=optimize.differential_evolution,
                verbose=False, options=None, use_run=(2, 6)):
-    """Fit induction data.
+    """Fit induction data for one subject.
 
-    Inputs
-    ------
-    struct_df - DataFrame
+    For a given set of parameters, the structure learning task is used
+    to generate a simulated SR matrix. Then this matrix is used to 
+    simulate responses in the induction task. Parameters are optimized
+    to obtain the set that maximizes the probability of the responses
+    observed in the induction task.
+
+    Parameters
+    ----------
+    struct_df : DataFrame
         Structure learning data.
 
-    induct_df - DataFrame
+    induct_df : DataFrame
         Induction test data.
 
-    fixed - dict
+    fixed : dict
         Parameter values for all fixed parameters.
 
-    var_names - list
+    var_names : list
         String name for each variable parameter.
 
-    var_bounds - dict
+    var_bounds : dict
         Bounds (in low, high order) for each variable parameter.
 
-    f_optim - function
+    f_optim : function
         Function to use for parameter optimization.
 
-    verbose - Boolean
+    verbose : Boolean
         If true, more information about the search will be printed.
 
-    options - dict
+    options : dict
         Options to pass to f_optim.
 
-    use_run - tuple
-        Run to take the SR matrix from for predicting induction data.
+    use_run : tuple
+        Run to take the SR matrix from for predicting induction data,
+        specified as (part_number, run_number).
 
-    Outputs
+    Returns
     -------
-    param - dict
+    param : dict
         Best-fitting parameters.
 
-    logl - float
+    logl : float
         Maximum log likelihood.
     """
 
