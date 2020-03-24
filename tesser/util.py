@@ -27,19 +27,24 @@ from glob import glob
 
 
 def subj_list():
-    """ INPUT [NONE]
-       OUTPUT tuple of participant numbers in TesserScan  """
-    participant_list = 100, 101, 102, 103, 104, 105, 106, 107, 108, 109,\
-                       110, 111, 112, 113, 114, 115, 116, 117, 119, 120,\
-                       121, 122, 123, 124, 125, 126, 127, 128, 129, 130,\
-                       131, 132, 133, 135, 136, 137, 138
-
+    """Get IDs of included tesser participants."""
+    participant_list = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+                        110, 111, 112, 113, 114, 115, 116, 117, 119, 120,
+                        121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
+                        131, 132, 133, 135, 136, 137, 138]
     return participant_list
 
 
 def get_subj_dir(data_dir, subject_num):
-    """ INPUT data_dir, subject_num
-       OUTPUT subject directory for a participant  """
+    """Get the path to the data directory for a subject.
+
+    data_dir : str
+        Path to the base directory with subdirectories for each
+        subject.
+
+    subject_num : int
+        Subject number without initials.
+    """
 
     # check that the base directory exists
     if not os.path.exists(data_dir):
@@ -54,8 +59,7 @@ def get_subj_dir(data_dir, subject_num):
 
 
 def load_struct_df_run(data_dir, subject_num, part_num, run_num):
-    """ INPUT data_dir, subject_num, part_num, run_num
-       OUTPUT dataframe of a particular structured learning run  """
+    """Load dataframe for one structured learning run."""
 
     # subject directory
     subj_dir = get_subj_dir(data_dir, subject_num)
@@ -82,8 +86,7 @@ def load_struct_df_run(data_dir, subject_num, part_num, run_num):
 
 
 def load_struct_df_all(data_dir, subject_num):
-    """ INPUT data_dir, subject_num
-       OUTPUT dataframe of all the structured learning  """
+    """Load dataframe with structured learning task for one subject."""
 
     # list of all runs to load
     parts = (1, 2)
@@ -115,20 +118,9 @@ def load_struct(data_dir, subjects=None):
     return df
 
 
-#   should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
-#   def drop_struct_df_nan(struct_dframe):
-    #    """ INPUT struct_dframe
-    #       OUTPUT struct_dframe without from the null trials (NaNs) at the beginning of scans """
-    #    struct_dframe.replace(["NaN"], np.nan, inplace=True)
-    #    data = struct_dframe.dropna()
-    #    data = data.reset_index(drop=True)  # Resets the index to start at 0
-    #    return data
-
-
 #  should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
 def drop_struct_df_nan(struct_dframe):
-    """ INPUT struct_dframe
-       OUTPUT struct_dframe without from the null trials (NaNs) at the beginning of scans """
+    """Remove null trials (NaNs) at the beginning of structure task scans."""
 
     data = struct_dframe[pd.notnull(struct_dframe['obj'])]
     data = data.reset_index(drop=True)  # Resets the index to start at 0
@@ -136,8 +128,7 @@ def drop_struct_df_nan(struct_dframe):
 
 
 def get_struct_objects(struct_dframe):
-    """ INPUT struct_dframe
-       OUTPUT datafraome of just objects of from structured learning  """
+    """Series of just objects of from structured learning task."""
 
 #   data = drop_struct_df_nan(struct_dframe)
     obj_sequence = struct_dframe["objnum"]
@@ -145,8 +136,7 @@ def get_struct_objects(struct_dframe):
 
 
 def load_induct_df_all(data_dir, subject_num):
-    """ INPUT data_dir, subject_num
-       OUTPUT dataframe of inductive generalization  """
+    """Load dataframe of inductive generalization task for one subject."""
 
     # subject directory
     subj_dir = get_subj_dir(data_dir, subject_num)
@@ -182,8 +172,10 @@ def load_induct(data_dir, subjects=None):
 
 
 def load_induct_array_all(induct_dframe):
-    """ INPUT induct_dframe
-       OUTPUT array of cue_num, opt1_num, opt2_num, participant_resp """
+    """Unpack induction data into separate arrays.
+
+    Returns arrays of cue_num, opt1_num, opt2_num, participant_resp.
+    """
 
     data = induct_dframe
     cue_sequence = data["CueNum"].values
@@ -194,8 +186,7 @@ def load_induct_array_all(induct_dframe):
 
 
 def load_group(data_dir, subject_num):
-    """ INPUT data_dir, subject_num
-       OUTPUT matrix of grouping data  """
+    """Load matrix of grouping data."""
 
     # subject directory
     subj_dir = get_subj_dir(data_dir, subject_num)
