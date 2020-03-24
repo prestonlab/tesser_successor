@@ -12,7 +12,6 @@ This function is to evaluate performance in the temporal structure learning, gro
     path_length(adj_matrix)
 """
 
-
 import pandas as pd
 import numpy as np
 import scipy.spatial.distance as sd
@@ -24,10 +23,11 @@ from . import network
 ###########################
 # inductive inference task
 ###########################
-# make a function that gets the average inference task data for a participant
 
 
 def induct_avg(induct_df):
+    """Get average induction task performance by question type."""
+
     part_num = int(induct_df["SubjNum"].mean())
     overall_avg = induct_df["Acc"].mean()
     central_trials = induct_df[(induct_df.QuestType == 'Prim')]
@@ -39,8 +39,9 @@ def induct_avg(induct_df):
     return part_num, overall_avg, central_avg, bound1_avg, bound2_avg
 
 
-# make a function that gets the average inference task data for all participants
 def induct_avg_all(data_dir):
+    """Average induction task performance for all participants."""
+
     # want to load a list of the participants and loop through
     part_avg_list = []
     part_list = util.subj_list()
@@ -54,16 +55,18 @@ def induct_avg_all(data_dir):
     return part_avg_df
 
 
-# make a function that returns a median split of the data based on overall induction performance
 def induct_avg_split_high(participant_induct_avg_df):
+    """High performers based on a median split of induction."""
+
     induct_average = participant_induct_avg_df["Overall"].mean()
 
     induct_above = participant_induct_avg_df[participant_induct_avg_df["Overall"] > induct_average]
     return induct_above
 
 
-# make a function that returns a median split of the data based on overall induction performance
 def induct_avg_split_low(participant_induct_avg_df):
+    """Low performers based on a median split of induction."""
+
     induct_average = participant_induct_avg_df["Overall"].mean()
 
     induct_below = participant_induct_avg_df[participant_induct_avg_df["Overall"] < induct_average]
@@ -75,6 +78,8 @@ def induct_avg_split_low(participant_induct_avg_df):
 ###########################
 
 def group_dist_mat(group_mat):
+    """Calculate pairwise object distances from a grouping matrix."""
+
     rows, cols = np.nonzero(group_mat)
 
     # getting the identity of the objects from their coordinates:
@@ -99,9 +104,9 @@ def group_dist_mat(group_mat):
     return group_dist_matrix
 
 
-# %%
-
 def group_dist_df(group_dist_matrix):
+    """Grouping task distance matrix as a data frame."""
+
     # first convert to a dataframe
     group_dist_dataframe = pd.DataFrame(group_dist_matrix)
 
@@ -114,10 +119,9 @@ def group_dist_df(group_dist_matrix):
     return group_dist_df  # now index rows, cols = 1:21
 
 
-# %%
-
-# make unique combo list
 def obj_combo(list_objs):
+    """Make list of unique object combinations."""
+
     # have now gotten all the ones in community 1, reindex the data rows:
     list_objs = list_objs.reset_index()
     pair_list = []
@@ -133,8 +137,9 @@ def obj_combo(list_objs):
     return pair_list
 
 
-# within-community distance between objects in particular community
 def specific_within_comm_dist(group_dist_m, pair_list):
+    """Within-community distance between objects in a particular community."""
+
     this_dist_tog = []
     for l in range(len(pair_list) - 1):
         this_pair = pair_list[l]
@@ -149,9 +154,9 @@ def specific_within_comm_dist(group_dist_m, pair_list):
     return this_comm_within_dist
 
 
-# %%
-# within-community distance between objects
 def within_comm_dist(group_dist_matrix):
+    """Within-community distance between objects."""
+
     within_dist_tog = []
     # getting the structure information
     comm_all_objs = network.temp_node_info()
@@ -165,8 +170,9 @@ def within_comm_dist(group_dist_matrix):
     return within_comm_d
 
 
-# %%
 def across_comm_dist(group_dist_matrix):
+    """Across-community distance between objects."""
+
     # getting the structure information
     comm_all_objs = network.temp_node_info()
 
@@ -201,6 +207,7 @@ def across_comm_dist(group_dist_matrix):
     across_comm_distance = np.mean(this_dist_tog)
     return across_comm_distance
 
+
 def comm_color_map():
     # Color value constants
     colors = {"d_purple": '#7e1e9c',
@@ -231,21 +238,24 @@ def comm_color_map():
         color_list.append(color)       
     return color_list
 
+
 def plot_dist(group_mat_input):
     color_list = comm_color_map()
     cmap = matplotlib.colors.ListedColormap(color_list)
     plt.imshow(group_mat_input, cmap=cmap)
-    
-def total_group_num(group_mat_input):
-    #make group_mat into 0 and 1 values instead of object numbers
+
+
+def total_group_num(group_mat):
+    # make group_mat into 0 and 1 values instead of object numbers
     bin_group_mat = (group_mat > 0).astype(int)
     from skimage import measure
     groupmat_labeled = measure.label(bin_group_mat, connectivity=2, return_num=True)
     labeled_total = groupmat_labeled[1] #total number of groups
     return labeled_total
 
-def group_clusters(group_mat_input):
-    #make group_mat into 0 and 1 values instead of object numbers
+
+def group_clusters(group_mat):
+    # make group_mat into 0 and 1 values instead of object numbers
     bin_group_mat = (group_mat > 0).astype(int)   
     from skimage import measure
     groupmat_labeled = measure.label(bin_group_mat, connectivity=2, return_num=True)
@@ -258,4 +268,3 @@ def group_clusters(group_mat_input):
         this_group_list = this_group.tolist()
         group_stacked.append(this_group_list)
     return group_stacked
-
