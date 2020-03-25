@@ -118,7 +118,6 @@ def load_struct(data_dir, subjects=None):
     return df
 
 
-#  should this function drop the NaNs at the beginning of the runs? not sure what this funciton is for
 def drop_struct_df_nan(struct_dframe):
     """Remove null trials (NaNs) at the beginning of structure task scans."""
 
