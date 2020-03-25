@@ -1,6 +1,8 @@
 # creating and testing model RDMs
 import scipy.spatial.distance as dist
-
+import os
+from glob import glob
+import numpy as np
 
 def rdm(matrix):
     """ Computes the representational dissimilarity matrix for one matrix. """
