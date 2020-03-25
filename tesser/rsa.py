@@ -1,5 +1,7 @@
 # creating and testing model RDMs
+import numpy as np
 import scipy.spatial.distance as dist
+import os
 
 
 def rdm(matrix):
@@ -49,5 +51,5 @@ def load_betas(data_dir, subject_num, roi):
     # remove the fixation trials in the runs (these are just filler trials, i.e. the 4 null trials above)
     this_reformat_pattern = np.delete(this_pattern, null_list, axis=0)
     
-    #return this_reformat_pattern
+#  return this_reformat_pattern
     return this_reformat_pattern

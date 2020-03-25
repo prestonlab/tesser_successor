@@ -96,6 +96,27 @@ def run_experiment(envstep, gamma, alpha, M, n_states):
 
     return SR_agent.M
 
+def neural_sr(envstep, gamma, alpha, M, n_state):
+    '''
+
+    :param envstep: objects in a single run
+    :param gamma: discount parameter, determines scale of predictive representations
+    :param alpha: learning rate
+    :param M: prob sampling each of the two sequences
+    :param n_state: the number of states in the environment to initialize matrices
+    :return: all_rows: all
+    '''
+    SR_agent = SRMatrix(gamma, alpha, n_state, M)
+    s = envstep[0]
+    all_rows = np.zeros((n_state, n_state))
+    for i, s_new in enumerate(envstep[1:]):  # go through trajectory till the end
+        SR_agent.step(s, s_new)
+        all_rows[i] = SR_agent.M[s_new]
+        s = s_new
+
+    return all_rows
+
+
 
 def learn_sr(df, gamma, alpha):
     """Train an SR matrix on the structure-learning task."""
