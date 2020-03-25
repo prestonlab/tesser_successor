@@ -96,6 +96,7 @@ def run_experiment(envstep, gamma, alpha, M, n_states):
 
     return SR_agent.M
 
+
 def neural_sr(envstep, gamma, alpha, M, n_state):
     '''
 
@@ -108,7 +109,7 @@ def neural_sr(envstep, gamma, alpha, M, n_state):
     '''
     SR_agent = SRMatrix(gamma, alpha, n_state, M)
     s = envstep[0]
-    all_rows = np.zeros((n_state, n_state))
+    all_rows = np.zeros((len(envstep), n_state))
     for i, s_new in enumerate(envstep[1:]):  # go through trajectory till the end
         SR_agent.step(s, s_new)
         all_rows[i] = SR_agent.M[s_new]
