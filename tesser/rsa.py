@@ -22,6 +22,30 @@ def multiple_rdm(SR_matrices):
     return rdm_matrices
 
 
+def load_rsa(data_dir, subject, roi):
+    """Load RSA data by subject."""
+
+    # search for a file with the correct name formatting
+    file_pattern = f'{subject}_betas_{roi}.txt'
+    file_search = glob(os.path.join(data_dir, file_pattern))
+    if len(file_search) != 1:
+        raise IOError(f'Problem finding data for {subject}.')
+    rsa_file = file_search[0]
+
+    # read log, fixing problem with spaces in column names
+    rsa_df = np.loadtxt(rsa_file)
+
+    return rsa_df
+
+
+def rsa_run(rsa_df, run):
+    """Load RSA data by run."""
+    this = list(range(0, 1057, 151))
+    rsa_run_df = rsa_df[this[run-1]:this[run], this[run-1]:this[run]]
+    
+    return rsa_run_df
+
+
 def load_betas(data_dir, subject_num, roi): 
     """ Computes the representational dissimilarity matrix for one matrix. """
     
@@ -53,3 +77,45 @@ def load_betas(data_dir, subject_num, roi):
     
     #return this_reformat_pattern
     return this_reformat_pattern
+
+
+def exclude_rsa(rsa, exclude_n):
+    for d in range(0, exclude_n):
+        diag_pos = np.diagonal(rsa, d)
+        diag_neg = np.diagonal(rsa, -d)
+        # It's not writable. MAKE it writable.
+        diag_pos.setflags(write=True)
+        diag_neg.setflags(write=True)
+        diag_pos.fill('NaN')
+        diag_neg.fill('NaN')
+    return rsa
+            
+    
+def pair_eq(x):
+    """Pairs where conditions are equal."""
+    """e.g. Pairs are from the same community for all three communities."""
+    
+    return x[:, None] == x[:, None].T
+
+
+def pair_neq(x):
+    """Pairs where conditions are not equal."""
+    """e.g. Pairs are not selected from the same run."""
+    return x[:, None] != x[:, None].T
+
+
+def pair_and(x):
+    """Pairs where conditions are both true."""
+    """e.g. Pairs ...??"""
+    return x[:, None] & x[:, None].T
+
+
+# getting averages of matrix data, making sure that it is below diagonal etc.
+def make_sym_matrix(asym_mat):
+    """Calculate an average symmetric matrix from an asymmetric matrix."""
+
+    v1 = sd.squareform(asym_mat, checks=False)
+    v2 = sd.squareform(asym_mat.T, checks=False)
+    vm = (v1 + v2) / 2
+    sym_mat = sd.squareform(vm)
+    return sym_mat
