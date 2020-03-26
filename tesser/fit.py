@@ -115,6 +115,10 @@ def get_induction_prob_correct(struc_df, induc_df, gamma, alpha, tau,
                                use_run=(2, 6)):
     """Get probability of correct response on each induction trial."""
 
+    # this can loop over each subject
+    
+    # use probability induction choice to figure out what the correct response was (not partiicpant response)
+    
     # learn SR based on structure learning data, gamma, and alpha
 
     # iterate over induction test trials
