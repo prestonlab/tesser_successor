@@ -46,6 +46,27 @@ def prob_induct_choice(cue, opt, response, SR, tau):
     return prob
 
 
+def prob_induct(struct, induct, gamma, alpha, tau, use_run=(2, 6)):
+    """Calculate induction task probability for each trial."""
+
+    # generate SR based on these parameters
+    SR_all = sr.learn_sr(struct, gamma, alpha)
+    SR = SR_all[use_run]
+    induct = induct.reset_index()
+
+    # get likelihood of induction data
+    num_trials = induct.shape[0]
+    trial_prob = np.zeros(num_trials)
+    for i, trial in induct.iterrows():
+        if np.isnan(trial.response):
+            trial_prob[i] = np.nan
+            continue
+
+        trial_prob[i] = prob_induct_choice(
+            trial.cue, [trial.opt1, trial.opt2], trial.response, SR, tau)
+    return trial_prob
+
+
 def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
                                  return_trial=False, use_run=(2, 6)):
     """ This function gives the probability of obtaining the choices in the run,
