@@ -65,10 +65,12 @@ def load_struct_run(data_dir, subject_num, part_num, run_num):
     subj_dir = get_subj_dir(data_dir, subject_num)
 
     # search for a file with the correct name formatting
-    file_pattern = f'tesserScan_{subject_num}_*_StructLearn_Part{part_num}_Run_{run_num}.txt'
+    file_pattern = (f'tesserScan_{subject_num}_*_StructLearn' 
+                    f'_Part{part_num}_Run_{run_num}.txt')
     file_search = glob(os.path.join(subj_dir, file_pattern))
     if len(file_search) != 1:
-        raise IOError(f'Problem finding data for {subject_num}, part {part_num}, run {run_num}.')
+        raise IOError(f'Problem finding data for {subject_num}, ' 
+                      f'part {part_num}, run {run_num}.')
     run_file = file_search[0]
 
     # read log, fixing problem with spaces in column names
