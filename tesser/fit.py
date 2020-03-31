@@ -19,8 +19,6 @@ the joint probability of all of the subject's choices under the SR matrix
 learned by the agent.
 """
 
-
-# model fitting/parameter optimization
 import numpy as np
 from . import util
 from . import sr
@@ -117,10 +115,10 @@ def get_induction_prob_correct(struc_df, induc_df, gamma, alpha, tau,
     """Get probability of correct response on each induction trial."""
 
     # this can loop over each subject
-    
+
     # use probability induction choice to figure out what the correct
     # response was (not partiicpant response)
-    
+
     # learn SR based on structure learning data, gamma, and alpha
 
     # iterate over induction test trials
@@ -132,14 +130,14 @@ def get_induction_prob_correct(struc_df, induc_df, gamma, alpha, tau,
     pass
 
 
-def induction_brute (struc_df, induc_df):
-    alphas = [float(i/20) for i in range(1, 20)]
-    gammas = [float(i/20) for i in range(1, 20)]
-    taus = [float(i/20) for i in range(1, 20)]
+def induction_brute(struc_df, induc_df):
+    alphas = [float(i / 20) for i in range(1, 20)]
+    gammas = [float(i / 20) for i in range(1, 20)]
+    taus = [float(i / 20) for i in range(1, 20)]
     likelihoods = [[[get_induction_log_likelihood(
         struc_df, induc_df, alphas[i], gammas[j], taus[k])
-        for k in range(19)] for j in range(19)]for i in range(19)]
-    
+        for k in range(19)] for j in range(19)] for i in range(19)]
+
     alpha_index, gamma_index, tau_index = 0, 0, 0
     likelihood_max = likelihoods[0][0]
     for i in range(19):
@@ -148,7 +146,7 @@ def induction_brute (struc_df, induc_df):
                 if likelihoods[i][j][k] > likelihood_max:
                     alpha_index, gamma_index, tau_index = i, j, k
                     likelihood_max = likelihoods[i][j][k]
-    
+
     return alphas[alpha_index], gammas[gamma_index], taus[tau_index]
 
 
@@ -261,9 +259,9 @@ def maximize_induction_likelihood(struc_df, induc_df, option):
     elif option == 'brute':
         alpha_max, gamma_max, tau_max = optimize.brute(
             ll, [(0, 1), (0, 1), (0, 1)])[0]
-        
+
     elif option == 'induction brute':
-        alpha_max, gamma_max, tau_max = induction_brute (struc_df, induc_df)
+        alpha_max, gamma_max, tau_max = induction_brute(struc_df, induc_df)
     else:
         raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
@@ -271,31 +269,31 @@ def maximize_induction_likelihood(struc_df, induc_df, option):
 
 
 def grouping_error(struc_df, group_df, alpha, gamma):
-    SR = sr.learn_sr(struc_df, gamma, alpha)[(1,5)]
+    SR = sr.learn_sr(struc_df, gamma, alpha)[(1, 5)]
 
     euclid_matrix = tasks.group_dist_mat(group_df)
     euclid_vector = distance.squareform(euclid_matrix)
 
     sr_matrix = util.make_sym_matrix(SR)
-    sr_vector = distance.squareform(sr_matrix, checks=False) 
+    sr_vector = distance.squareform(sr_matrix, checks=False)
 
     slope, intercept, r_value, p_value, std_err = linregress(sr_vector,
                                                              euclid_vector)
-    
-    euclid_estimates = np.array([slope*x + intercept for x in sr_vector])
+
+    euclid_estimates = np.array([slope * x + intercept for x in sr_vector])
     err = np.square(euclid_vector - euclid_estimates)
     err = np.mean(err)
     err = np.sqrt(err)
-    
+
     return err
 
 
-def group_brute (struc_df, group_df):
-    alphas = [float(i/20) for i in range(1, 20)]
-    gammas = [float(i/20) for i in range(1, 20)]
+def group_brute(struc_df, group_df):
+    alphas = [float(i / 20) for i in range(1, 20)]
+    gammas = [float(i / 20) for i in range(1, 20)]
     errors = [[grouping_error(struc_df, group_df, alphas[i], gammas[j])
                for j in range(19)] for i in range(19)]
-    
+
     alpha_index, gamma_index = 0, 0
     error_min = errors[0][0]
     for i in range(19):
@@ -303,7 +301,7 @@ def group_brute (struc_df, group_df):
             if errors[i][j] < error_min:
                 alpha_index, gamma_index = i, j
                 error_min = errors[i][j]
-    
+
     return alphas[alpha_index], gammas[gamma_index]
 
 
@@ -321,7 +319,7 @@ def minimize_grouping_error(struc_df, group_df, option):
     elif option == 'brute':
         alpha_max, gamma_max = optimize.brute(ge, [(0.01, 1), (0.01, 1)])
     elif option == 'group brute':
-        alpha_max, gamma_max = group_brute (struc_df, group_df)
+        alpha_max, gamma_max = group_brute(struc_df, group_df)
     else:
         raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
