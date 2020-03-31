@@ -1,0 +1,26 @@
+import unittest
+import numpy as np
+from tesser import fit
+
+
+class InductionCase(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.SR = np.array([[1, 2, 3],
+                            [4, 5, 6],
+                            [7, 8, 9]])
+
+    def test_choice_probability(self):
+        cue = [0, 1, 2]
+        opt1 = [1, 0, 1]
+        opt2 = [2, 2, 0]
+        response = [1, 0, 1]
+        tau = 1
+        p = [fit.probability_induction_choice(c, a, b, r, self.SR, tau) for
+             c, a, b, r in zip(cue, opt1, opt2, response)]
+        expected = [.6, .4, .4667]
+        np.testing.assert_allclose(p, expected, atol=0.0001)
+
+
+if __name__ == '__main__':
+    unittest.main()
