@@ -27,6 +27,13 @@ class InductionCase(unittest.TestCase):
         expected = [.6, .4, .4667]
         np.testing.assert_allclose(p, expected, atol=0.0001)
 
+    def test_choice_by_tau(self):
+        sr_row = np.array([[1, 2, 3]])
+        p = [fit.probability_induction_choice(0, 1, 2, 0, sr_row, tau)
+             for tau in [.5, 1, 2]]
+        expected = [0.4494897427831781, 0.4, 0.3076923076923077]
+        np.testing.assert_allclose(p, expected)
+
 
 if __name__ == '__main__':
     unittest.main()
