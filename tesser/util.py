@@ -155,7 +155,7 @@ def load_induct_subject(data_dir, subject_num):
     df.loc[:, 'cue'] = df.CueNum - 1
     df.loc[:, 'opt1'] = df.Opt1Num - 1
     df.loc[:, 'opt2'] = df.Opt2Num - 1
-    df.loc[:, 'response'] = np.astype(df.Resp - 1, 'int')
+    df.loc[:, 'response'] = (df.Resp - 1).astype('int')
     return df
 
 
