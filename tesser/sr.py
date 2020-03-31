@@ -98,15 +98,16 @@ def run_experiment(envstep, gamma, alpha, M, n_states):
 
 
 def neural_sr(envstep, gamma, alpha, M, n_state):
-    '''
-
+    """
     :param envstep: objects in a single run
-    :param gamma: discount parameter, determines scale of predictive representations
+    :param gamma: discount parameter, determines scale of predictive
+    representations
     :param alpha: learning rate
     :param M: prob sampling each of the two sequences
-    :param n_state: the number of states in the environment to initialize matrices
+    :param n_state: the number of states in the environment to initialize
+    matrices
     :return: all_rows: all
-    '''
+    """
     SR_agent = SRMatrix(gamma, alpha, n_state, M)
     s = envstep[0]
     all_rows = np.zeros((len(envstep), n_state))
