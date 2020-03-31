@@ -36,7 +36,7 @@ def eu_dist(a, b, SR):
     return distance.euclidean(SR[a], SR[b])
 
 
-def probability_induction_choice(cue, opt, response, SR, tau):
+def prob_induct_choice(cue, opt, response, SR, tau):
     """Likelihood of induction response."""
 
     if np.all(SR[cue, opt] == 0):
@@ -75,9 +75,8 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
             log_likelihood += np.log(trial_probability)
             all_trial_prob[i] = trial_probability
             continue
-        trial_probability = probability_induction_choice(
-            trial.cue, trial.opt1, trial.opt2, trial.response, SR, tau
-        )
+        trial_probability = prob_induct_choice(
+            trial.cue, [trial.opt1, trial.opt2], trial.response, SR, tau)
         eps = 0.000001
         if np.isnan(trial_probability):
             # probability undefined; can occur if SR has zeros
