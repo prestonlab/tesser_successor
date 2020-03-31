@@ -36,15 +36,14 @@ def eu_dist(a, b, SR):
     return distance.euclidean(SR[a], SR[b])
 
 
-def probability_induction_choice(cue, opt1, opt2, response, SR, tau):
+def probability_induction_choice(cue, opt, response, SR, tau):
     """Likelihood of induction response."""
 
-    if SR[cue, opt1] == 0 and SR[cue, opt2] == 0:
+    if np.all(SR[cue, opt] == 0):
         return np.nan
 
-    opt_eval = opt1 if response == 0 else opt2
-    prob = ((SR[cue, opt_eval] ** tau) /
-            (SR[cue, opt1] ** tau + SR[cue, opt2] ** tau))
+    prob = ((SR[cue, opt[response]] ** tau) /
+            (SR[cue, opt[0]] ** tau + SR[cue, opt[1]] ** tau))
     return prob
 
 
