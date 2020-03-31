@@ -10,6 +10,12 @@ class InductionCase(unittest.TestCase):
                             [4, 5, 6],
                             [7, 8, 9]])
 
+    def test_zero_mat(self):
+        zero_sr = np.zeros((1, 3))
+        tau = 1
+        p = fit.probability_induction_choice(0, 1, 2, 0, zero_sr, tau)
+        assert np.isnan(p)
+
     def test_choice_probability(self):
         cue = [0, 1, 2]
         opt1 = [1, 0, 1]
