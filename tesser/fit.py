@@ -36,15 +36,8 @@ def eu_dist(a, b, SR):
     return distance.euclidean(SR[a], SR[b])
 
 
-# def pBGivenA(A, B, C, SR, tau):
-#     """ Computes the probability of B given A using the Luce choice rule."""
-#     if SR[A, B] == 0 and SR[A, C] == 0:
-#         # if SR is zero for both, probability is undefined
-#         return np.nan
-#     return np.exp((-eu_dist(A,B,SR)/tau)) / (np.exp((-eu_dist(A,B,SR)/tau)) + np.exp((-eu_dist(A,C,SR)/tau)))
-
 def pBGivenA(A, B, C, SR, tau):
-    """ Computes the probability of B given A using the Luce choice rule."""
+    """Probability of B given A using the Luce choice rule."""
     if SR[A, B] == 0 and SR[A, C] == 0:
         # if SR is zero for both, probability is undefined
         return np.nan
@@ -52,12 +45,12 @@ def pBGivenA(A, B, C, SR, tau):
 
 
 def pCGivenA(A, B, C, SR, tau):
-    """ Computes the probability of C given A using the Luce choice rule."""
+    """Probability of C given A using the Luce choice rule."""
     return 1 - pBGivenA(A, B, C, SR, tau)
 
 
 def probability_induction_choice(cue, opt1, opt2, response, SR, tau):
-    """ Computes the likelihood of a subject's response given the SR matrix for this subject."""
+    """Likelihood of induction response given an SR matrix."""
     if response == 0:
         return pBGivenA(cue, opt1, opt2, SR, tau)
     if response == 1:
@@ -66,8 +59,8 @@ def probability_induction_choice(cue, opt1, opt2, response, SR, tau):
 
 def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
                                  return_trial=False, use_run=(2, 6)):
-    """ This function gives the probability of obtaining the choices in the run, given
-        specific values for alpha, gamma.
+    """ This function gives the probability of obtaining the choices in the run,
+        given specific values for alpha, gamma.
         INPUT:
 
         struc_df: Structured learning data in DataFrame format.
@@ -134,7 +127,9 @@ def induction_brute (struc_df, induc_df):
     alphas = [float(i/20) for i in range(1, 20)]
     gammas = [float(i/20) for i in range(1, 20)]
     taus = [float(i/20) for i in range(1, 20)]
-    likelihoods = [[[get_induction_log_likelihood(struc_df, induc_df, alphas[i], gammas[j], taus[k]) for k in range(19)] for j in range(19)]for i in range(19)]
+    likelihoods = [[[get_induction_log_likelihood(
+        struc_df, induc_df, alphas[i], gammas[j], taus[k])
+        for k in range(19)] for j in range(19)]for i in range(19)]
     
     alpha_index, gamma_index, tau_index = 0, 0, 0
     likelihood_max = likelihoods[0][0]
@@ -211,6 +206,7 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
         options = {}
 
     param = fixed.copy()
+
     def f_fit(x):
         param.update(dict(zip(var_names, x)))
         logl = get_induction_log_likelihood(struct_df, induct_df, **param,
@@ -229,29 +225,33 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
 
 
 def maximize_induction_likelihood(struc_df, induc_df, option):
-    """ Numerically maximizes the log likelihood function on the set of the subject's choices
-         to find optimal values for alpha, gamma
+    """ Numerically maximizes the log likelihood function on the set of
+        the subject's choices to find optimal values for alpha, gamma
         INPUT:
 
         struc_df: Structured learning data in DataFrame format.
         induc_df: Generalized induction data in DataFrame format.
-        option: scipy optimization functions:'basinhopping','differential evolution', 'brute'
+        option: scipy optimization functions:'basinhopping',
+        'differential evolution', 'brute'
     """
 
     def ll(x):
         alpha = x[0]
         gamma = x[1]
         tau = x[2]
-        return -get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau)
+        return -get_induction_log_likelihood(struc_df, induc_df, gamma,
+                                             alpha, tau)
 
     start_time = time.time()
     if option == 'basinhopping':
-        alpha_max, gamma_max, tau_max = optimize.basinhopping(ll, [0.5, 0.5, 0.5]).x
+        alpha_max, gamma_max, tau_max = optimize.basinhopping(
+            ll, [0.5, 0.5, 0.5]).x
     elif option == 'differential evolution':
-        alpha_max, gamma_max, tau_max = optimize.differential_evolution(ll,
-                                                                        [(.000001, 0.99), (0.1, 0.99), (.00001, .99)]).x
+        alpha_max, gamma_max, tau_max = optimize.differential_evolution(
+            ll, [(.000001, 0.99), (0.1, 0.99), (.00001, .99)]).x
     elif option == 'brute':
-        alpha_max, gamma_max, tau_max = optimize.brute(ll, [(0, 1), (0, 1), (0, 1)])[0]
+        alpha_max, gamma_max, tau_max = optimize.brute(
+            ll, [(0, 1), (0, 1), (0, 1)])[0]
         
     elif option == 'induction brute':
         alpha_max, gamma_max, tau_max = induction_brute (struc_df, induc_df)
@@ -270,7 +270,8 @@ def grouping_error(struc_df, group_df, alpha, gamma):
     sr_matrix = util.make_sym_matrix(SR)
     sr_vector = distance.squareform(sr_matrix, checks=False) 
 
-    slope, intercept, r_value, p_value, std_err = linregress(sr_vector, euclid_vector)
+    slope, intercept, r_value, p_value, std_err = linregress(sr_vector,
+                                                             euclid_vector)
     
     euclid_estimates = np.array([slope*x + intercept for x in sr_vector])
     err = np.square(euclid_vector - euclid_estimates)
@@ -283,7 +284,8 @@ def grouping_error(struc_df, group_df, alpha, gamma):
 def group_brute (struc_df, group_df):
     alphas = [float(i/20) for i in range(1, 20)]
     gammas = [float(i/20) for i in range(1, 20)]
-    errors = [[grouping_error(struc_df, group_df, alphas[i], gammas[j]) for j in range(19)] for i in range(19)]
+    errors = [[grouping_error(struc_df, group_df, alphas[i], gammas[j])
+               for j in range(19)] for i in range(19)]
     
     alpha_index, gamma_index = 0, 0
     error_min = errors[0][0]
@@ -305,7 +307,8 @@ def minimize_grouping_error(struc_df, group_df, option):
     if option == 'basinhopping':
         alpha_max, gamma_max = optimize.basinhopping(ge, [.5, .5]).x
     elif option == 'differential evolution':
-        alpha_max, gamma_max = optimize.differential_evolution(ge, [(.01, 0.99), (0.01, 0.99)]).x
+        alpha_max, gamma_max = optimize.differential_evolution(
+            ge, [(.01, 0.99), (0.01, 0.99)]).x
     elif option == 'brute':
         alpha_max, gamma_max = optimize.brute(ge, [(0.01, 1), (0.01, 1)])
     elif option == 'group brute':
