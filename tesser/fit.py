@@ -11,13 +11,12 @@ pCGivenA computes the probability of the alternative choice.
 probability_induction_choice combines these two functions to give a probability
 of one of the agent's choices in the induction data.
 
-get_induction_log_likelihood computes the joint probability of all of the subject's
-choices present in the induction data given a learned SR matrix.
+get_induction_log_likelihood computes the joint probability of all of the
+subject's choices present in the induction data given a learned SR matrix.
 
 maximize_induction_likelihood finds parameters of the SR agent which maximize
-the joint probability of all of the subject's choices under the SR matrix learned
-by the agent.
-
+the joint probability of all of the subject's choices under the SR matrix
+learned by the agent.
 """
 
 
@@ -306,7 +305,3 @@ def minimize_grouping_error(struc_df, group_df, option):
         raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max
-
-
-
-
