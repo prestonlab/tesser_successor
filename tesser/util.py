@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This util function is used to read in the behavioral data associated with TesserScan.
+This util function is used to read in the behavioral data associated
+with TesserScan.
 It gets the associated data directories for a given participant:
     get_subj_dir(data_dir, subject_num)
 
