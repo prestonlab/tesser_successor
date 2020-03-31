@@ -87,18 +87,16 @@ def run_experiment(envstep, gamma, alpha, M, n_states):
         
         Ida Momennejad, NYC, 2019"""
 
-    num_states = n_states
+    # initialize agent SR matrix
+    SR_agent = SRMatrix(gamma, alpha, n_states, M)
 
-    SR_agent = SRMatrix(gamma, alpha, num_states, M)
+    # set initial state
     s = envstep[0] - 1
-
-    for entry in envstep[1:]:  # go through trajectory till the end
-
+    for entry in envstep[1:]:
+        # update matrix based on state transition
         s_new = entry - 1
         SR_agent.step(s, s_new)
-
-        s = int(s_new)
-
+        s = s_new
     return SR_agent.M
 
 
