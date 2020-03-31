@@ -110,26 +110,6 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
         return log_likelihood
 
 
-def get_induction_prob_correct(struc_df, induc_df, gamma, alpha, tau,
-                               use_run=(2, 6)):
-    """Get probability of correct response on each induction trial."""
-
-    # this can loop over each subject
-
-    # use probability induction choice to figure out what the correct
-    # response was (not partiicpant response)
-
-    # learn SR based on structure learning data, gamma, and alpha
-
-    # iterate over induction test trials
-
-    # get probability of correctly responding on each trial
-
-    # return array of probabilities for correct response on each trial
-
-    pass
-
-
 def induction_brute(struc_df, induc_df):
     alphas = [float(i / 20) for i in range(1, 20)]
     gammas = [float(i / 20) for i in range(1, 20)]
