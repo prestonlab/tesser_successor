@@ -110,13 +110,12 @@ def neural_sr(envstep, gamma, alpha, M, n_state):
     SR_agent = SRMatrix(gamma, alpha, n_state, M)
     s = envstep[0]
     all_rows = np.zeros((len(envstep), n_state))
-    for i, s_new in enumerate(envstep[1:]):  # go through trajectory till the end
+    # go through trajectory till the end
+    for i, s_new in enumerate(envstep[1:]):
         SR_agent.step(s, s_new)
-        all_rows[i] = SR_agent.M[s_new]
+        all_rows[i + 1] = SR_agent.M[s_new]
         s = s_new
-
     return all_rows
-
 
 
 def learn_sr(df, gamma, alpha):
