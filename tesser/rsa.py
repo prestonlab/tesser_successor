@@ -1,17 +1,18 @@
 # creating and testing model RDMs
 # creating and testing model RDMs
-import scipy.spatial.distance as dist
+from scipy.spatial import distance
 import os
 from glob import glob
 import numpy as np
 
+
 def rdm(matrix):
     """ Computes the representational dissimilarity matrix for one matrix. """
-    return dist.squareform(dist.pdist(matrix, 'correlation'))
+    return distance.squareform(distance.pdist(matrix, 'correlation'))
 
 
 def multiple_rdm(SR_matrices):
-    """ Computes the representational dissimilarity matrix for a list of matrices. """
+    """Representational dissimilarity matrices for a list of SR matrices."""
 
     rdm_matrices = {}
     for part in [1, 2]:
@@ -42,28 +43,30 @@ def load_rsa(data_dir, subject, roi):
 def rsa_run(rsa_df, run):
     """Load RSA data by run."""
     this = list(range(0, 1057, 151))
-    rsa_run_df = rsa_df[this[run-1]:this[run], this[run-1]:this[run]]
-    
+    rsa_run_df = rsa_df[this[run - 1]:this[run], this[run - 1]:this[run]]
+
     return rsa_run_df
 
 
-def load_betas(data_dir, subject_num, roi): 
+def load_betas(data_dir, subject_num, roi):
     """ Computes the representational dissimilarity matrix for one matrix. """
-    
+
     roi_dir = os.path.join(data_dir, 'item_betas', 'roi')
 
     # look for directories with the correct pattern
-    file_search = glob(os.path.join(roi_dir + '/' + roi, f'pattern_{subject_num}.txt'))
+    file_search = glob(
+        os.path.join(roi_dir + '/' + roi, f'pattern_{subject_num}.txt'))
     if len(file_search) != 1:
-        raise IOError(f'Problem finding ROI or subject directory for {roi} and {subject_num}')
+        raise IOError(f'Problem finding ROI or subject directory for '
+                      f'{roi} and {subject_num}')
     pattern_file = file_search[0]
-    
+
     # read log, fixing problem with spaces in column names
     this_pattern = np.loadtxt(pattern_file)
 
     null_list = []
     for run in range(1, 7):
-        this_run_len = run*151
+        this_run_len = run * 151
         null_1 = this_run_len - 151
         null_list.append(null_1)
         null_2 = (this_run_len - 151) + 1
@@ -72,11 +75,12 @@ def load_betas(data_dir, subject_num, roi):
         null_list.append(null_3)
         null_4 = this_run_len - 1
         null_list.append(null_4)
-        
-    # remove the fixation trials in the runs (these are just filler trials, i.e. the 4 null trials above)
+
+    # remove the fixation trials in the runs
+    # (these are just filler trials, i.e. the 4 null trials above)
     this_reformat_pattern = np.delete(this_pattern, null_list, axis=0)
-    
-#  return this_reformat_pattern
+
+    #  return this_reformat_pattern
     return this_reformat_pattern
 
 
@@ -90,12 +94,12 @@ def exclude_rsa(rsa, exclude_n):
         diag_pos.fill('NaN')
         diag_neg.fill('NaN')
     return rsa
-            
-    
+
+
 def pair_eq(x):
     """Pairs where conditions are equal."""
     """e.g. Pairs are from the same community for all three communities."""
-    
+
     return x[:, None] == x[:, None].T
 
 
@@ -115,8 +119,8 @@ def pair_and(x):
 def make_sym_matrix(asym_mat):
     """Calculate an average symmetric matrix from an asymmetric matrix."""
 
-    v1 = sd.squareform(asym_mat, checks=False)
-    v2 = sd.squareform(asym_mat.T, checks=False)
+    v1 = distance.squareform(asym_mat, checks=False)
+    v2 = distance.squareform(asym_mat.T, checks=False)
     vm = (v1 + v2) / 2
-    sym_mat = sd.squareform(vm)
+    sym_mat = distance.squareform(vm)
     return sym_mat
