@@ -14,7 +14,6 @@ This function is to evaluate performance in the temporal structure learning, gro
 
 import pandas as pd
 import numpy as np
-import scipy.spatial.distance as sd 
 from scipy.spatial.distance import pdist, squareform
 import matplotlib
 import matplotlib.pyplot as plt
