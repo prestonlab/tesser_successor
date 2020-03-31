@@ -49,7 +49,7 @@ def induct_avg_all(data_dir):
     part_list = util.subj_list()
     for i in range(len(part_list)):
         part_num = part_list[i]
-        this_induct = util.load_induct_df_all(data_dir, part_num)
+        this_induct = util.load_induct_subject(data_dir, part_num)
         this_avg = induct_avg(this_induct)
         part_avg_list.append(this_avg)
     # convert list to df
@@ -131,7 +131,7 @@ def induct_bias_all(data_dir):
     part_list = util.subj_list()
     for i in range(len(part_list)):
         part_num = part_list[i]
-        this_induct = util.load_induct_df_all(data_dir, part_num)
+        this_induct = util.load_induct_subject(data_dir, part_num)
         overall_bias, prim_bias, bound1_bias, bound2_bias = induct_bias(this_induct)
         part_bias = [part_num, overall_bias, prim_bias, bound1_bias, bound2_bias]        
         part_bias_list.append(part_bias)
@@ -145,7 +145,7 @@ def induct_bias_all(data_dir):
 
 def euc_dist_mat(data_dir, subject):
     """Calculate pairwise object distances from a grouping array output."""
-    group_load = util.load_group(data_dir, subject)
+    group_load = util.load_group_subject(data_dir, subject)
     df_group = pd.DataFrame(group_load)
     df_group.columns = np.arange(len(df_group.columns))
     
