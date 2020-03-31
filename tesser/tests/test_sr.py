@@ -8,7 +8,7 @@ class SRTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.n_state = 6
-        self.env_step = [1, 2, 3, 2, 1, 2, 3, 4, 5, 6, 5, 4]
+        self.env_step = [0, 1, 2, 1, 0, 1, 2, 3, 4, 5, 4, 3]
         self.SR_init = np.zeros((self.n_state, self.n_state))
         self.gamma = .9
         self.alpha = .5
