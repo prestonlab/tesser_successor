@@ -78,7 +78,7 @@ def run_experiment(envstep, gamma, alpha, M, n_states):
     Parameters
     ----------
     envstep : numpy.array
-        Objects in a single run. Assumed to be one-indexed.
+        Object indices for a single run..
 
     gamma : float
         Discount parameter; determines scale of predictive representations.
@@ -104,10 +104,9 @@ def run_experiment(envstep, gamma, alpha, M, n_states):
     SR_agent = SRMatrix(gamma, alpha, n_states, M)
 
     # set initial state
-    s = envstep[0] - 1
-    for entry in envstep[1:]:
+    s = envstep[0]
+    for s_new in envstep[1:]:
         # update matrix based on state transition
-        s_new = entry - 1
         SR_agent.step(s, s_new)
         s = s_new
     return SR_agent.M
@@ -164,7 +163,7 @@ def learn_sr(df, gamma, alpha):
     for part in np.unique(df.part):
         for run in np.unique(df.loc[df.part == part, 'run']):
             envstep = df.loc[(df.part == part) & (df.run == run),
-                             'objnum'].values
+                             'objnum'].values - 1
             M = np.array(run_experiment(envstep, gamma, alpha,
                                         np.copy(M), n_states))
             SR_matrices[(part, run)] = M
