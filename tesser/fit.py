@@ -36,25 +36,16 @@ def eu_dist(a, b, SR):
     return distance.euclidean(SR[a], SR[b])
 
 
-def pBGivenA(A, B, C, SR, tau):
-    """Probability of B given A using the Luce choice rule."""
-    if SR[A, B] == 0 and SR[A, C] == 0:
-        # if SR is zero for both, probability is undefined
-        return np.nan
-    return SR[A][B] ** tau / (SR[A][B] ** tau + SR[A][C] ** tau)
-
-
-def pCGivenA(A, B, C, SR, tau):
-    """Probability of C given A using the Luce choice rule."""
-    return 1 - pBGivenA(A, B, C, SR, tau)
-
-
 def probability_induction_choice(cue, opt1, opt2, response, SR, tau):
-    """Likelihood of induction response given an SR matrix."""
-    if response == 0:
-        return pBGivenA(cue, opt1, opt2, SR, tau)
-    if response == 1:
-        return pCGivenA(cue, opt1, opt2, SR, tau)
+    """Likelihood of induction response."""
+
+    if SR[cue, opt1] == 0 and SR[cue, opt2] == 0:
+        return np.nan
+
+    opt_eval = opt1 if response == 0 else opt2
+    prob = ((SR[cue, opt_eval] ** tau) /
+            (SR[cue, opt1] ** tau + SR[cue, opt2] ** tau))
+    return prob
 
 
 def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
