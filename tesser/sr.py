@@ -136,8 +136,28 @@ def neural_sr(envstep, gamma, alpha, M, n_state):
 
 
 def learn_sr(df, gamma, alpha):
-    """Train an SR matrix on the structure-learning task."""
+    """
+    Train an SR matrix on the structure-learning task.
 
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Structure learning task trials. Must have fields:
+        objnum - object number (starting from 1)
+        part - part number
+        run - run number
+
+    gamma : float
+        Discounting factor.
+
+    alpha : float
+        Learning rate.
+
+    Returns
+    -------
+    SR_matrices : dict of numpy.array
+        Matrices are indexed by (part, run) tuples.
+    """
     n_states = len(np.unique(df.objnum))
     SR_matrices = {}
     M = np.zeros([n_states, n_states])
