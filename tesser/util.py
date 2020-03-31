@@ -211,4 +211,3 @@ def make_sym_matrix(asym_mat):
     vm = (v1 + v2) / 2
     sym_mat = sd.squareform(vm)
     return sym_mat
-
