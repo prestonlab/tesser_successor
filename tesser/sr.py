@@ -66,26 +66,39 @@ class SRMatrix:
 
 
 def run_experiment(envstep, gamma, alpha, M, n_states):
-    """ This function uses the reinforcement learning agent class in
-        SRMatrix to learn.
-        Here the function takes the environment from Experiment 1 in our
-        Nat Hum Beh paper & learns predictive representations with the
-        specified learning rate and scale.
-        Note: This is not SR dyna, nor SR-MB.
-        This agent only learns the SR.
-        Inputs:
+    """
+    Simulate SR learning in an experiment.
 
-        envstep:  objects in a single run
-        gamma: discount parameter, determines scale of predictive
-        representations
-        alpha: learning rate
-        M: prob sampling each of the two sequences
-        n_states: the number of states in the environment to initialize matrices
+    This function uses the reinforcement learning agent class in SRMatrix to
+    learn. Here the function takes the environment from Experiment 1 in our
+    Nat Hum Beh paper & learns predictive representations with the specified
+    learning rate and scale. Note: This is not SR dyna, nor SR-MB. This agent
+    only learns the SR.
 
-        Outputs:
-        M: SR matrix
-        
-        Ida Momennejad, NYC, 2019"""
+    Parameters
+    ----------
+    envstep : numpy.array
+        Objects in a single run. Assumed to be one-indexed.
+
+    gamma : float
+        Discount parameter; determines scale of predictive representations.
+
+    alpha : float
+        Learning rate.
+
+    M : numpy.array
+        Probability of sampling each of the two sequences.
+
+    n_states : int
+        The number of states in the environment to initialize matrices.
+
+    Returns
+    -------
+    M : numpy.array
+        SR matrix
+
+    Ida Momennejad, NYC, 2019
+    """
 
     # initialize agent SR matrix
     SR_agent = SRMatrix(gamma, alpha, n_states, M)
