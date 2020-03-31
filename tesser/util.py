@@ -58,7 +58,7 @@ def get_subj_dir(data_dir, subject_num):
     return dir_search[0]
 
 
-def load_struct_df_run(data_dir, subject_num, part_num, run_num):
+def load_struct_run(data_dir, subject_num, part_num, run_num):
     """Load dataframe for one structured learning run."""
 
     # subject directory
@@ -85,7 +85,7 @@ def load_struct_df_run(data_dir, subject_num, part_num, run_num):
     return df
 
 
-def load_struct_df_all(data_dir, subject_num):
+def load_struct_subject(data_dir, subject_num):
     """Load dataframe with structured learning task for one subject."""
 
     # list of all runs to load
@@ -96,7 +96,7 @@ def load_struct_df_all(data_dir, subject_num):
     df_list = []
     for part in parts:
         for run in part_runs[part]:
-            run_df = load_struct_df_run(data_dir, subject_num, part, run)
+            run_df = load_struct_run(data_dir, subject_num, part, run)
             df_list.append(run_df)
 
     # concatenate into one data frame
@@ -112,7 +112,7 @@ def load_struct(data_dir, subjects=None):
 
     df_all = []
     for subject in subjects:
-        df_subj = load_struct_df_all(data_dir, subject)
+        df_subj = load_struct_subject(data_dir, subject)
         df_all.append(df_subj)
     df = pd.concat(df_all, axis=0, ignore_index=True)
     return df
@@ -134,7 +134,7 @@ def get_struct_objects(struct_dframe):
     return obj_sequence
 
 
-def load_induct_df_all(data_dir, subject_num):
+def load_induct_subject(data_dir, subject_num):
     """Load dataframe of inductive generalization task for one subject."""
 
     # subject directory
@@ -152,7 +152,7 @@ def load_induct_df_all(data_dir, subject_num):
     df.loc[:, 'cue'] = df.CueNum - 1
     df.loc[:, 'opt1'] = df.Opt1Num - 1
     df.loc[:, 'opt2'] = df.Opt2Num - 1
-    df.loc[:, 'response'] = df.Resp - 1
+    df.loc[:, 'response'] = np.astype(df.Resp - 1, 'int')
     return df
 
 
@@ -164,7 +164,7 @@ def load_induct(data_dir, subjects=None):
 
     df_all = []
     for subject in subjects:
-        df_subj = load_induct_df_all(data_dir, subject)
+        df_subj = load_induct_subject(data_dir, subject)
         df_all.append(df_subj)
     df = pd.concat(df_all, axis=0, ignore_index=True)
     return df
@@ -184,7 +184,7 @@ def load_induct_array_all(induct_dframe):
     return cue_sequence, opt1_sequence, opt2_sequence, response_sequence
 
 
-def load_group(data_dir, subject_num):
+def load_group_subject(data_dir, subject_num):
     """Load matrix of grouping data."""
 
     # subject directory
