@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Learning module for tesser simulations. Functions for learning/running experiment phases
-are based on Ida Momennejad's state-state successor representation learning agent.
+Learning module for tesser simulations. Functions for learning/running
+experiment phases are based on Ida Momennejad's state-state successor
+representation learning agent.
 
 These include:
 
-- Class that defines a reinforcement learning agent which learns the state-state successor representation
-without taking actions.
+- Class that defines a reinforcement learning agent which learns the state-state
+  successor representation without taking actions.
     SRMatrix()
 - Function uses the reinforcement learning agent class in SRMatrix to learn.
     run_experiment(envstep, gamma, alpha, M, n_states)
@@ -15,7 +16,8 @@ without taking actions.
 - Train an SR matrix on the structure-learning task.
     learn_sr(df, gamma, alpha)
 
-- Computes the matrix to which SR learning should converge, by summing a geometric matrix series.
+- Computes the matrix to which SR learning should converge, by summing a
+    geometric matrix series.
     compute_limit_matrix(gamma, adjacency, n_states)
 
 - Computes the correlation matrix for a matrix's rows.
@@ -24,7 +26,8 @@ without taking actions.
 - Computes the correlation matrix for a matrix's columns.
     correlate_columns(matrix)
 
-- Computes the norm or correlation between the SR matrix and the limit matrix, given a subject & values for gamma, alpha
+- Computes the norm or correlation between the SR matrix and the limit matrix,
+  given a subject & values for gamma, alpha
     compute_correlations(df, option, gamma, alpha)
 
 """
@@ -42,7 +45,8 @@ class SRMatrix:
     Initialization parameters
     gamma: discount param
     alpha: learning rate
-    p_sample: probability of sampling different options, only relevant for testing policy dependence
+    p_sample: probability of sampling different options, only relevant for
+    testing policy dependence
     num_states: the number of states in the environment to initialize matrices
     Ida Momennejad, 2019"""
 
@@ -72,7 +76,8 @@ def run_experiment(envstep, gamma, alpha, M, n_states):
         Inputs:
 
         envstep:  objects in a single run
-        gamma: discount parameter, determines scale of predictive representations
+        gamma: discount parameter, determines scale of predictive
+        representations
         alpha: learning rate
         M: prob sampling each of the two sequences
         n_states: the number of states in the environment to initialize matrices
@@ -136,8 +141,10 @@ def learn_sr(df, gamma, alpha):
 
 
 def explore_runs(df, option, gamma, alpha):
-    """Function that takes in structured data and returns a dictionary or array that contains learned data.
-        User has the ability to set learning parameters and how much data the learning agent can use in any given
+    """Function that takes in structured data and returns a dictionary or array
+    that contains learned data.
+        User has the ability to set learning parameters and how much data the
+        learning agent can use in any given
         sequence.
         INPUT:
         df: Structured learning data in DataFrame form.
@@ -153,7 +160,8 @@ def explore_runs(df, option, gamma, alpha):
     SR_matrices = {}
     M = np.zeros([n_states, n_states])
 
-    # This option allows the SR matrix to persist in Part 1 and Part 2, but resets it between them.
+    # This option allows the SR matrix to persist in Part 1 and Part 2,
+    # but resets it between them.
     if option == "reset":
         for part in np.unique(df.part):
             if part == 2:
@@ -161,7 +169,8 @@ def explore_runs(df, option, gamma, alpha):
             for run in np.unique(df.loc[df.part == part, 'run']):
                 envstep = df.loc[(df.part == part) & (df.run == run),
                                  'objnum'].values
-                M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+                M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M),
+                                            n_states))
                 M = M / np.sum(M)
                 SR_matrices[(part, run)] = M
 
@@ -172,7 +181,8 @@ def explore_runs(df, option, gamma, alpha):
                 M = np.zeros([n_states, n_states])
                 envstep = df.loc[(df.part == part) & (df.run == run),
                                  'objnum'].values
-                M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M), n_states))
+                M = np.array(run_experiment(envstep, gamma, alpha, np.copy(M),
+                                            n_states))
                 M = M / np.sum(M)
                 SR_matrices[(part, run)] = M
 
@@ -180,7 +190,12 @@ def explore_runs(df, option, gamma, alpha):
 
 
 def compute_limit_matrix(gamma, adjacency, n_states):
-    """ Computes the matrix to which SR learning should converge, by summing a geometric matrix series."""
+    """
+    Compute limit successor representation matrix.
+
+    Computes the matrix to which SR learning should converge
+    by summing a geometric matrix series.
+    """
     num_states = n_states
     identity = np.eye(num_states)
     return np.linalg.inv(identity - gamma * adjacency / 6)
@@ -197,14 +212,16 @@ def correlate_columns(matrix):
 
 
 def compute_correlations(struc_df, option, gamma, alpha):
-    """ Computes the norm or correlation between the SR matrix and the limit matrix, 
-        given a subject and values for gamma, alpha.
-        The norm option computes the infinity norm between the SR Matrix and the limit matrix.
-        The correlation option computes the correlation between the SR Matrix and the limit matrix.
+    """ Computes the norm or correlation between the SR matrix and the limit
+        matrix, given a subject and values for gamma, alpha.
+        The norm option computes the infinity norm between the SR Matrix and
+        the limit matrix.
+        The correlation option computes the correlation between the SR Matrix
+        and the limit matrix.
         INPUT:
 
         df: Structured learning data in DataFrame format.
-        option: String describing particular function ( 'norm' or 'correlation'))
+        option: String describing particular function ('norm' or 'correlation'))
         gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
     n_states = len(np.unique(struc_df.objnum))
@@ -213,7 +230,7 @@ def compute_correlations(struc_df, option, gamma, alpha):
     L = compute_limit_matrix(0.5, adjacency, n_states)
     L_vector = L.flatten()
     M = learn_sr(struc_df, gamma, alpha)
-    M = M[2,6]
+    M = M[2, 6]
     M_vector = M.flatten()
 
     if option == "norm":
@@ -222,7 +239,8 @@ def compute_correlations(struc_df, option, gamma, alpha):
 
     if option == "correlation":
         print("Correlation of L, M: ")
-        print(np.dot(L_vector, M_vector) / (la.norm(L_vector) * la.norm(M_vector)))
+        print(np.dot(L_vector, M_vector) /
+              (la.norm(L_vector) * la.norm(M_vector)))
 
 
 def plot_sr(SR, subject=None, option=None, gamma=None, alpha=None):
