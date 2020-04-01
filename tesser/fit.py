@@ -120,7 +120,7 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
             all_trial_prob[i] = trial_probability
             continue
         trial_probability = prob_induct_choice(
-            trial.cue, [trial.opt1, trial.opt2], trial.response, SR, tau)
+            trial.cue, [trial.opt1, trial.opt2], int(trial.response), SR, tau)
         eps = 0.000001
         if np.isnan(trial_probability):
             # probability undefined; can occur if SR has zeros
