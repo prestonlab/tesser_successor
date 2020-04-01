@@ -20,6 +20,8 @@ learned by the agent.
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from . import util
 from . import sr
 from . import tasks
@@ -64,6 +66,30 @@ def prob_induct_subject(struct, induct, gamma, alpha, tau,
         trial_prob[i] = prob_induct_choice(
             trial.cue, [trial.opt1, trial.opt2], trial[response_key], SR, tau)
     return trial_prob
+
+
+def assess_induct_fit_subject(struct, induct, param):
+    """Compare model and data in fitting the induction task."""
+
+    trial_prob = prob_induct_subject(struct, induct, param['gamma'],
+                                     param['alpha'], param['tau'],
+                                     response_key='correct')
+    induct.loc[:, 'Data'] = induct['Acc']
+    induct.loc[:, 'Model'] = trial_prob
+    results = induct.melt(id_vars=['SubjNum', 'TrialNum', 'QuestType',
+                                   'Environment'], value_vars=['Data', 'Model'],
+                          var_name='Source', value_name='Accuracy')
+    return results
+
+
+def plot_induct_fit(results):
+    """Plot fit to induction performance."""
+
+    fig, ax = plt.subplots(1, 2)
+    sns.pointplot(x='QuestType', y='Accuracy', hue='Source',
+                  data=results, dodge=True, ax=ax[0])
+    sns.pointplot(x='Environment', y='Accuracy', hue='Source',
+                  data=results, dodge=True, ax=ax[1])
 
 
 def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
