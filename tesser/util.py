@@ -25,6 +25,7 @@ import pandas as pd
 import scipy.spatial.distance as sd
 import os
 from glob import glob
+from tesser import network
 
 
 def subj_list():
@@ -137,6 +138,19 @@ def get_struct_objects(struct_dframe):
     return obj_sequence
 
 
+def score_induct(induct):
+    """Score induction task data."""
+
+    nodes = network.temp_node_info()
+    for i, trial in induct.iterrows():
+        correct_comm = nodes.loc[trial.CueNum, 'comm']
+        answers = nodes.loc[nodes['comm'] == correct_comm]['node'].to_numpy()
+        opts = [trial.Opt1Num, trial.Opt2Num]
+        induct.loc[i, 'correct'] = np.nonzero(np.isin(opts, answers))[0][0]
+    induct = induct.astype({'correct': int})
+    return induct
+
+
 def load_induct_subject(data_dir, subject_num):
     """Load dataframe of inductive generalization task for one subject."""
 
@@ -156,6 +170,7 @@ def load_induct_subject(data_dir, subject_num):
     df.loc[:, 'opt1'] = df.Opt1Num - 1
     df.loc[:, 'opt2'] = df.Opt2Num - 1
     df.loc[:, 'response'] = (df.Resp - 1).astype('int')
+    df = score_induct(df)
     return df
 
 
