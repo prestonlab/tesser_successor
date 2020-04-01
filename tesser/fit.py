@@ -20,6 +20,7 @@ learned by the agent.
 """
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from . import util
@@ -236,6 +237,25 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
 
     logl = -res['fun']
     return param, logl
+
+
+def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds):
+    """Estimate parameters for individual subjects."""
+
+    df_list = []
+    for sub in struct['SubjNum'].unique():
+        print(f'Estimating parameters for {sub}...')
+        subj_struct = struct.query(f'SubjNum == {sub}')
+        subj_induct = induct.query(f'SubjNum == {sub}')
+        param, logl = fit_induct(subj_struct, subj_induct, fixed,
+                                 var_names, var_bounds, verbose=False)
+        param['subject'] = sub
+        param['log_like'] = logl
+        df = pd.DataFrame(param, index=[0])
+        df_list.append(df)
+    df = pd.concat(df_list, axis=0, ignore_index=True)
+    df = df.set_index('SubjNum')
+    return df
 
 
 def maximize_induction_likelihood(struc_df, induc_df, option):
