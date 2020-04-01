@@ -44,7 +44,8 @@ def prob_induct_choice(cue, opt, response, SR, tau):
     return prob
 
 
-def prob_induct(struct, induct, gamma, alpha, tau, use_run=(2, 6)):
+def prob_induct(struct, induct, gamma, alpha, tau, response_key='response',
+                use_run=(2, 6)):
     """Calculate induction task probability for each trial."""
 
     # generate SR based on these parameters
@@ -61,7 +62,7 @@ def prob_induct(struct, induct, gamma, alpha, tau, use_run=(2, 6)):
             continue
 
         trial_prob[i] = prob_induct_choice(
-            trial.cue, [trial.opt1, trial.opt2], trial.response, SR, tau)
+            trial.cue, [trial.opt1, trial.opt2], trial[response_key], SR, tau)
     return trial_prob
 
 
