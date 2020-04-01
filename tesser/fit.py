@@ -44,9 +44,9 @@ def prob_induct_choice(cue, opt, response, SR, tau):
     return prob
 
 
-def prob_induct(struct, induct, gamma, alpha, tau, response_key='response',
-                use_run=(2, 6)):
-    """Calculate induction task probability for each trial."""
+def prob_induct_subject(struct, induct, gamma, alpha, tau,
+                        response_key='response', use_run=(2, 6)):
+    """Calculate induction task probabilities for one subject."""
 
     # generate SR based on these parameters
     SR_all = sr.learn_sr(struct, gamma, alpha)
