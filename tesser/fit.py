@@ -259,7 +259,7 @@ def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds):
         df = pd.DataFrame(param, index=[0])
         df_list.append(df)
     df = pd.concat(df_list, axis=0, ignore_index=True)
-    df = df.set_index('SubjNum')
+    #df = df.set_index('subject')
     return df
 
 
