@@ -133,22 +133,19 @@ def drop_struct_df_nan(struct_dframe):
 def get_struct_objects(struct_dframe):
     """Series of just objects of from structured learning task."""
 
-#   data = drop_struct_df_nan(struct_dframe)
     obj_sequence = struct_dframe["objnum"]
     return obj_sequence
 
 
-def score_induct(induct):
-    """Score induction task data."""
-
-    nodes = network.temp_node_info()
-    for i, trial in induct.iterrows():
-        correct_comm = nodes.loc[trial.CueNum, 'comm']
-        answers = nodes.loc[nodes['comm'] == correct_comm]['node'].to_numpy()
-        opts = [trial.Opt1Num, trial.Opt2Num]
-        induct.loc[i, 'correct'] = np.nonzero(np.isin(opts, answers))[0][0]
-    induct = induct.astype({'correct': int})
-    return induct
+def object_count_run(this_run_info):
+    """Getting count of each object 1-21 when inputting a structure learning dataframe."""
+    this_run = this_run_info.reset_index(drop=True)
+    all_count = []
+    for item in range(1, 22):
+        these_items = this_run[this_run["objnum"]==item]
+        count = len(these_items)
+        all_count.append(count)
+    return all_count
 
 
 def load_induct_subject(data_dir, subject_num):
@@ -219,13 +216,14 @@ def load_group_subject(data_dir, subject_num):
     mat = np.loadtxt(run_file)
     return mat.astype(int)
 
+def score_induct(induct):
+    """Score induction task data."""
 
-# getting averages of matrix data, making sure that it is below diagonal etc.
-def make_sym_matrix(asym_mat):
-    """Calculate an average symmetric matrix from an asymmetric matrix."""
-
-    v1 = sd.squareform(asym_mat, checks=False)
-    v2 = sd.squareform(asym_mat.T, checks=False)
-    vm = (v1 + v2) / 2
-    sym_mat = sd.squareform(vm)
-    return sym_mat
+    nodes = network.temp_node_info()
+    for i, trial in induct.iterrows():
+        correct_comm = nodes.loc[trial.CueNum, 'comm']
+        answers = nodes.loc[nodes['comm'] == correct_comm]['node'].to_numpy()
+        opts = [trial.Opt1Num, trial.Opt2Num]
+        induct.loc[i, 'correct'] = np.nonzero(np.isin(opts, answers))[0][0]
+    induct = induct.astype({'correct': int})
+    return induct
