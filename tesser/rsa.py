@@ -4,6 +4,7 @@ from scipy.spatial import distance
 import os
 from glob import glob
 import numpy as np
+import scipy.spatial.distance as sd
 
 
 def rdm(matrix):
@@ -119,8 +120,8 @@ def pair_and(x):
 def make_sym_matrix(asym_mat):
     """Calculate an average symmetric matrix from an asymmetric matrix."""
 
-    v1 = distance.squareform(asym_mat, checks=False)
-    v2 = distance.squareform(asym_mat.T, checks=False)
+    v1 = sd.squareform(asym_mat, checks=False)
+    v2 = sd.squareform(asym_mat.T, checks=False)
     vm = (v1 + v2) / 2
-    sym_mat = distance.squareform(vm)
+    sym_mat = sd.squareform(vm)
     return sym_mat
