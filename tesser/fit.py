@@ -221,16 +221,21 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
         options = {}
 
     param = fixed.copy()
+    subjects = struct_df.SubjNum.unique()
 
     def f_fit(x):
         param.update(dict(zip(var_names, x)))
         # draft code to fit at the group level:
-        # logl = 0
-        # for subject in subjects:
-        #     subj_logl = get_induction_log_likelihood(...)
-        #     logl += subj_logl
-        logl = get_induction_log_likelihood(struct_df, induct_df, **param,
-                                            return_trial=False, use_run=use_run)
+        logl = 0
+        for subject in subjects:
+            subj_filter = f'SubjNum == {subject}'
+            subj_struct = struct_df.query(subj_filter)
+            subj_induct = induct_df.query(subj_filter)
+            subj_logl = get_induction_log_likelihood(subj_struct,subj_induct, **param,
+                                                     return_trial=False, use_run=use_run)
+            logl += subj_logl
+        # logl = get_induction_log_likelihood(struct_df, induct_df, **param,
+        #                                     return_trial=False, use_run=use_run)
         return -logl
 
     bounds = param_bounds(var_bounds, var_names)
