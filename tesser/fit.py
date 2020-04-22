@@ -136,6 +136,31 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
         return log_likelihood, all_trial_prob
     else:
         return log_likelihood
+    
+def get_induct_ll_all(struct_df, induct_df, fixed, var_names, x, use_run):
+    param = fixed.copy()
+    flexible = {}
+    flex_names = []
+    for var_name in var_names:
+        if var_name not in list(fixed.keys()):
+            flex_names.append(var_name)
+
+    num_flex = len(flex_names)
+    for i in range(num_flex):
+        key = flex_names[i]
+        flexible[key] = x[i]
+    param.update(flexible)
+    logl = 0
+    subjects = struct_df.SubjNum.unique()
+    for subject in subjects:
+        subj_filter = f'SubjNum == {subject}'
+        subj_struct = struct_df.query(subj_filter)
+        subj_induct = induct_df.query(subj_filter)
+        subj_logl = get_induction_log_likelihood(subj_struct,subj_induct, **param,
+                                                 return_trial=False, use_run=use_run)
+        logl += subj_logl
+    
+    return logl
 
 
 def induction_brute(struc_df, induc_df):
