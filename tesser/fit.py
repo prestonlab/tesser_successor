@@ -36,6 +36,20 @@ def eu_dist(a, b, SR):
     return distance.euclidean(SR[a], SR[b])
 
 
+def prob_induct_choice_hybrid(cue, opt, response, SR, comm, w, tau):
+    """Likelihood of induction response."""
+
+    if np.all(SR[cue, opt] == 0):
+        return np.nan
+
+    support1 = w * SR[cue, opt[0]] + (1 - w) * comm[cue, opt[0]]
+    support2 = w * SR[cue, opt[1]] + (1 - w) * comm[cue, opt[1]]
+    support = [support1, support2]
+    prob = ((support[response] ** tau) /
+            (support[0] ** tau + support[1] ** tau))
+    return prob
+
+
 def prob_induct_choice(cue, opt, response, SR, tau):
     """Likelihood of induction response."""
 
