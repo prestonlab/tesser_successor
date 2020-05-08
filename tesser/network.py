@@ -81,7 +81,7 @@ def community_mat(node_df):
     """
 
     n_node = node_df.shape[0]
-    comm = np.zeros((n_node, n_node), dtype=int)
+    comm_mat = np.zeros((n_node, n_node), dtype=int)
     for node in node_df.index:
         comm_row = np.zeros(n_node)
         if node_df.loc[node, 'nodetype'] == 0:
@@ -93,9 +93,39 @@ def community_mat(node_df):
             isprim = node_df.nodetype == 0
             comm_row[samecomm & isprim] = 1
         comm_row[node - 1] = 0
-        comm[node - 1, :] = comm_row
-        comm[:, node - 1] = comm_row
-    return comm
+        comm_mat[node - 1, :] = comm_row
+        comm_mat[:, node - 1] = comm_row
+    return comm_mat
+
+
+def community_memb_mat(node_df, comm_mat):
+    """Label adjacent node pairs that are in the same community
+       with  their community number (1-3).
+
+    Parameters
+    ----------
+    node_df : pandas.DataFrame
+        Information about node structure. See temp_node_info.
+        
+    comm_mat : pandas.DataFrame
+        Information about community membership. See community_mat.
+
+    Returns
+    -------
+    comm_mat_id : array
+        A nodes x nodes array with labels of 1, 2, or 3 for node pairs that are
+        adjacent and in the same community and 0 for node pairs that
+        are non-adjacent or in different communities.
+    """
+    n_node = node_df.shape[0]
+    comm_mat_id = np.zeros((n_node, n_node), dtype=int)
+    for r in range(0, comm_mat.shape[0]):
+        for c in range(0, comm_mat.shape[1]):
+            if comm_mat[r, c] == 1:
+                this_node = r + 1
+                this_comm = node_df.comm[this_node]
+                comm_mat_id[r, c] = this_comm
+    return comm_mat_id
 
 
 def adjacency_mat(node_df):
