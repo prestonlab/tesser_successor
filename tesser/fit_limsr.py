@@ -64,7 +64,8 @@ def prob_induct_subject_limsr(adjacency, induct, gamma, tau,
             trial_prob[i] = np.nan
             continue
 
-        trial_prob[i] = prob_induct_choice(trial.cue, [trial.opt1, trial.opt2], trial[response_key], SR_lim, tau)
+        trial_prob[i] = prob_induct_choice(trial.cue, [trial.opt1, trial.opt2],
+                                           int(trial[response_key]), SR_lim, tau)
     return trial_prob
 
 
