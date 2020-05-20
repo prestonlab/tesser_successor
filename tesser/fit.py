@@ -79,7 +79,7 @@ def prob_induct_subject(struct, induct, gamma, alpha, tau,
             continue
 
         trial_prob[i] = prob_induct_choice(
-            trial.cue, [trial.opt1, trial.opt2], trial[response_key], SR, tau)
+            trial.cue, [trial.opt1, trial.opt2], int(trial[response_key]), SR, tau)
     return trial_prob
 
 
