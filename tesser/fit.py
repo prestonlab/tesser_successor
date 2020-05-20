@@ -89,6 +89,7 @@ def assess_induct_fit_subject(struct, induct, param):
     trial_prob = prob_induct_subject(struct, induct, param['gamma'],
                                      param['alpha'], param['tau'],
                                      response_key='response')
+    induct = induct.copy()
     induct.loc[:, 'Data'] = induct['Acc']
     induct.loc[:, 'Model'] = trial_prob
     results = induct.melt(id_vars=['SubjNum', 'TrialNum', 'QuestType',
