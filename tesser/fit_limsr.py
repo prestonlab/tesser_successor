@@ -73,7 +73,8 @@ def assess_induct_fit_subject_limsr(adjacency, induct, param):
     """Compare model and data in fitting the induction task."""
     SR_lim = sr.compute_limit_matrix(param['gamma'], adjacency, 21)
     trial_prob = prob_induct_subject_limsr(SR_lim, induct, param['gamma'], param['tau'],
-                                     response_key='correct')
+                                     response_key='response')
+    induct = induct.copy()
     induct.loc[:, 'Data'] = induct['Acc']
     induct.loc[:, 'Model'] = trial_prob
     results = induct.melt(id_vars=['SubjNum', 'TrialNum', 'QuestType',
