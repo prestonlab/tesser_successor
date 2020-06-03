@@ -36,20 +36,6 @@ def eu_dist(a, b, SR):
     return distance.euclidean(SR[a], SR[b])
 
 
-def prob_induct_choice_hybrid(cue, opt, response, SR, comm, w, tau):
-    """Likelihood of induction response."""
-
-    if np.all(SR[cue, opt] == 0):
-        return np.nan
-
-    support1 = w * SR[cue, opt[0]] + (1 - w) * comm[cue, opt[0]]
-    support2 = w * SR[cue, opt[1]] + (1 - w) * comm[cue, opt[1]]
-    support = [support1, support2]
-    prob = ((support[response] ** tau) /
-            (support[0] ** tau + support[1] ** tau))
-    return prob
-
-
 def prob_induct_choice(cue, opt, response, SR, tau):
     """Likelihood of induction response."""
 
@@ -61,13 +47,13 @@ def prob_induct_choice(cue, opt, response, SR, tau):
     return prob
 
 
-def prob_induct_subject(struct, induct, gamma, alpha, tau,
-                        response_key='response', use_run=(2, 6)):
+#hack below to pass in SR instead:
+def prob_induct_subject_limsr(adjacency, induct, gamma, tau,
+                        response_key='response'):
     """Calculate induction task probabilities for one subject."""
 
     # generate SR based on these parameters
-    SR_all = sr.learn_sr(struct, gamma, alpha)
-    SR = SR_all[use_run]
+    SR_lim = sr.compute_limit_matrix(gamma, adjacency, 21)
     induct = induct.reset_index()
 
     # get likelihood of induction data
@@ -78,16 +64,14 @@ def prob_induct_subject(struct, induct, gamma, alpha, tau,
             trial_prob[i] = np.nan
             continue
 
-        trial_prob[i] = prob_induct_choice(
-            trial.cue, [trial.opt1, trial.opt2], int(trial[response_key]), SR, tau)
+        trial_prob[i] = prob_induct_choice(trial.cue, [trial.opt1, trial.opt2],
+                                           int(trial[response_key]), SR_lim, tau)
     return trial_prob
 
 
-def assess_induct_fit_subject(struct, induct, param):
+def assess_induct_fit_subject_limsr(adjacency, induct, param):
     """Compare model and data in fitting the induction task."""
-
-    trial_prob = prob_induct_subject(struct, induct, param['gamma'],
-                                     param['alpha'], param['tau'],
+    trial_prob = prob_induct_subject_limsr(adjacency, induct, param['gamma'], param['tau'],
                                      response_key='response')
     induct = induct.copy()
     induct.loc[:, 'Data'] = induct['Acc']
@@ -107,9 +91,9 @@ def plot_induct_fit(results):
     sns.pointplot(x='Environment', y='Accuracy', hue='Source',
                   data=results, dodge=True, ax=ax[1])
 
-
-def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
-                                 return_trial=False, use_run=(2, 6)):
+    
+def get_induction_log_likelihood_limsr(adjacency, induc_df, tau, gamma,
+                                 return_trial=False):
     """ This function gives the probability of obtaining the choices in the run,
         given specific values for alpha, gamma.
         INPUT:
@@ -119,9 +103,8 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
         gamma & alpha: discount and learning rate parameters. From 0.0 to 1.0.
     """
 
-    # generate SR based on these parameters
-    SR_all = sr.learn_sr(struc_df, gamma, alpha)
-    SR = SR_all[use_run]
+    # generate lim SR based on these parameters
+    SR = sr.compute_limit_matrix(gamma, adjacency, 21)
 
     induc_df = induc_df.reset_index()
 
@@ -151,65 +134,11 @@ def get_induction_log_likelihood(struc_df, induc_df, gamma, alpha, tau,
         return log_likelihood, all_trial_prob
     else:
         return log_likelihood
+
     
-def get_induct_ll_all(struct_df, induct_df, fixed, var_names, x, use_run):
-    param = fixed.copy()
-    flexible = {}
-    flex_names = []
-    for var_name in var_names:
-        if var_name not in list(fixed.keys()):
-            flex_names.append(var_name)
-
-    num_flex = len(flex_names)
-    for i in range(num_flex):
-        key = flex_names[i]
-        flexible[key] = x[i]
-    param.update(flexible)
-    logl = 0
-    subjects = struct_df.SubjNum.unique()
-    for subject in subjects:
-        subj_filter = f'SubjNum == {subject}'
-        subj_struct = struct_df.query(subj_filter)
-        subj_induct = induct_df.query(subj_filter)
-        subj_logl = get_induction_log_likelihood(subj_struct,subj_induct, **param,
-                                                 return_trial=False, use_run=use_run)
-        logl += subj_logl
-    
-    return logl
-
-
-def induction_brute(struc_df, induc_df):
-    alphas = [float(i / 20) for i in range(1, 20)]
-    gammas = [float(i / 20) for i in range(1, 20)]
-    taus = [float(i / 20) for i in range(1, 20)]
-    likelihoods = [[[get_induction_log_likelihood(
-        struc_df, induc_df, alphas[i], gammas[j], taus[k])
-        for k in range(19)] for j in range(19)] for i in range(19)]
-
-    alpha_index, gamma_index, tau_index = 0, 0, 0
-    likelihood_max = likelihoods[0][0]
-    for i in range(19):
-        for j in range(19):
-            for k in range(19):
-                if likelihoods[i][j][k] > likelihood_max:
-                    alpha_index, gamma_index, tau_index = i, j, k
-                    likelihood_max = likelihoods[i][j][k]
-
-    return alphas[alpha_index], gammas[gamma_index], taus[tau_index]
-
-
-def param_bounds(var_bounds, var_names):
-    """Pack group-level parameters."""
-
-    group_lb = [var_bounds[k][0] for k in var_names]
-    group_ub = [var_bounds[k][1] for k in var_names]
-    bounds = optimize.Bounds(group_lb, group_ub)
-    return bounds
-
-
-def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
+def fit_induct_limsr(adjacency, induct_df, fixed, var_names, var_bounds,
                f_optim=optimize.differential_evolution,
-               verbose=False, options=None, use_run=(2, 6)):
+               verbose=False, options=None):
     """Fit induction data for one subject.
 
     For a given set of parameters, the structure learning task is used
@@ -261,21 +190,16 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
         options = {}
 
     param = fixed.copy()
-    subjects = struct_df.SubjNum.unique()
 
     def f_fit(x):
         param.update(dict(zip(var_names, x)))
         # draft code to fit at the group level:
-        logl = 0
-        for subject in subjects:
-            subj_filter = f'SubjNum == {subject}'
-            subj_struct = struct_df.query(subj_filter)
-            subj_induct = induct_df.query(subj_filter)
-            subj_logl = get_induction_log_likelihood(subj_struct,subj_induct, **param,
-                                                     return_trial=False, use_run=use_run)
-            logl += subj_logl
-        # logl = get_induction_log_likelihood(struct_df, induct_df, **param,
-        #                                     return_trial=False, use_run=use_run)
+        # logl = 0
+        # for subject in subjects:
+        #     subj_logl = get_induction_log_likelihood(...)
+        #     logl += subj_logl
+        logl = get_induction_log_likelihood_limsr(adjacency, induct_df, **param,
+                                            return_trial=False)
         return -logl
 
     bounds = param_bounds(var_bounds, var_names)
@@ -289,26 +213,7 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
     return param, logl
 
 
-def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds):
-    """Estimate parameters for individual subjects."""
-
-    df_list = []
-    for sub in struct['SubjNum'].unique():
-        print(f'Estimating parameters for {sub}...')
-        subj_struct = struct.query(f'SubjNum == {sub}')
-        subj_induct = induct.query(f'SubjNum == {sub}')
-        param, logl = fit_induct(subj_struct, subj_induct, fixed,
-                                 var_names, var_bounds, verbose=False)
-        param['subject'] = sub
-        param['log_like'] = logl
-        df = pd.DataFrame(param, index=[0])
-        df_list.append(df)
-    df = pd.concat(df_list, axis=0, ignore_index=True)
-    #df = df.set_index('subject')
-    return df
-
-
-def maximize_induction_likelihood(struc_df, induc_df, option):
+def maximize_induction_likelihood(adjacency, induc_df, option):
     """ Numerically maximizes the log likelihood function on the set of
         the subject's choices to find optimal values for alpha, gamma
         INPUT:
@@ -323,8 +228,7 @@ def maximize_induction_likelihood(struc_df, induc_df, option):
         alpha = x[0]
         gamma = x[1]
         tau = x[2]
-        return -get_induction_log_likelihood(struc_df, induc_df, gamma,
-                                             alpha, tau)
+        return -get_induction_log_likelihood_limsr(adjacency, induc_df, tau)
 
     start_time = time.time()
     if option == 'basinhopping':
@@ -343,6 +247,24 @@ def maximize_induction_likelihood(struc_df, induc_df, option):
         raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max, tau_max
+
+
+def fit_induct_indiv_limsr(adjacency, induct, fixed, var_names, var_bounds):
+    """Estimate parameters for individual subjects."""
+
+    df_list = []
+    for sub in induct['SubjNum'].unique():
+        print(f'Estimating parameters for {sub}...')
+        subj_induct = induct.query(f'SubjNum == {sub}')
+        param, logl = fit_induct_limsr(adjacency, subj_induct, fixed,
+                                 var_names, var_bounds, verbose=False)
+        param['subject'] = sub
+        param['log_like'] = logl
+        df = pd.DataFrame(param, index=[0])
+        df_list.append(df)
+    df = pd.concat(df_list, axis=0, ignore_index=True)
+    #df = df.set_index('subject')
+    return df
 
 
 def grouping_error(struc_df, group_df, alpha, gamma):
@@ -365,23 +287,6 @@ def grouping_error(struc_df, group_df, alpha, gamma):
     return err
 
 
-def group_brute(struc_df, group_df):
-    alphas = [float(i / 20) for i in range(1, 20)]
-    gammas = [float(i / 20) for i in range(1, 20)]
-    errors = [[grouping_error(struc_df, group_df, alphas[i], gammas[j])
-               for j in range(19)] for i in range(19)]
-
-    alpha_index, gamma_index = 0, 0
-    error_min = errors[0][0]
-    for i in range(19):
-        for j in range(19):
-            if errors[i][j] < error_min:
-                alpha_index, gamma_index = i, j
-                error_min = errors[i][j]
-
-    return alphas[alpha_index], gammas[gamma_index]
-
-
 def minimize_grouping_error(struc_df, group_df, option):
     def ge(x):
         alpha = x[0]
@@ -401,3 +306,49 @@ def minimize_grouping_error(struc_df, group_df, option):
         raise ValueError('Unknown option: {option}')
     # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max
+
+
+def induction_brute(struc_df, induc_df):
+    alphas = [float(i / 20) for i in range(1, 20)]
+    gammas = [float(i / 20) for i in range(1, 20)]
+    taus = [float(i / 20) for i in range(1, 20)]
+    likelihoods = [[[get_induction_log_likelihood(
+        struc_df, induc_df, alphas[i], gammas[j], taus[k])
+        for k in range(19)] for j in range(19)] for i in range(19)]
+
+    alpha_index, gamma_index, tau_index = 0, 0, 0
+    likelihood_max = likelihoods[0][0]
+    for i in range(19):
+        for j in range(19):
+            for k in range(19):
+                if likelihoods[i][j][k] > likelihood_max:
+                    alpha_index, gamma_index, tau_index = i, j, k
+                    likelihood_max = likelihoods[i][j][k]
+
+    return alphas[alpha_index], gammas[gamma_index], taus[tau_index]
+
+
+def group_brute(struc_df, group_df):
+    alphas = [float(i / 20) for i in range(1, 20)]
+    gammas = [float(i / 20) for i in range(1, 20)]
+    errors = [[grouping_error(struc_df, group_df, alphas[i], gammas[j])
+               for j in range(19)] for i in range(19)]
+
+    alpha_index, gamma_index = 0, 0
+    error_min = errors[0][0]
+    for i in range(19):
+        for j in range(19):
+            if errors[i][j] < error_min:
+                alpha_index, gamma_index = i, j
+                error_min = errors[i][j]
+
+    return alphas[alpha_index], gammas[gamma_index]
+
+
+def param_bounds(var_bounds, var_names):
+    """Pack group-level parameters."""
+
+    group_lb = [var_bounds[k][0] for k in var_names]
+    group_ub = [var_bounds[k][1] for k in var_names]
+    bounds = optimize.Bounds(group_lb, group_ub)
+    return bounds

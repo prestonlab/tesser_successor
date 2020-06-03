@@ -63,7 +63,7 @@ class SRMatrix:
 
     def update_SR(self, s, s_new):
         self.M[s] = (1 - self.alpha) * self.M[s] + self.alpha * (
-                self.onehot[s] + self.gamma * self.M[s_new]
+                self.onehot[s_new] + self.gamma * self.M[s_new]
         )
 
 
