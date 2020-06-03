@@ -33,6 +33,8 @@ These include:
 """
 import numpy as np
 import numpy.linalg as la
+import theano
+import theano.tensor as tt
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from . import network
