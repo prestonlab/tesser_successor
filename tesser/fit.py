@@ -37,7 +37,7 @@ def eu_dist(a, b, SR):
     return distance.euclidean(SR[a], SR[b])
 
 
-def prob_induct_choice_hybrid(cue, opt, response, SR, comm, w, tau, choice_rule="softmax"):
+def prob_induct_choice_hybrid(cue, opt, response, SR, comm, w, tau, choice_rule):
     """Likelihood of induction response."""
 
     if np.all(SR[cue, opt] == 0):
@@ -67,7 +67,7 @@ def prob_induct_choice(cue, opt, response, SR, tau):
 
 
 def prob_induct_subject(struct, induct, gamma, alpha, tau, w=1,
-                        response_key='response', use_run=(2, 6)):
+                        response_key='response', use_run=(2, 6),comm= [], choice_rule='softmax'):
     """Calculate induction task probabilities for one subject."""
 
     # generate SR based on these parameters
@@ -75,9 +75,7 @@ def prob_induct_subject(struct, induct, gamma, alpha, tau, w=1,
     SR = SR_all[use_run]
     induct = induct.reset_index()
 
-    # get community matrix
-    net = network.temp_node_info()
-    comm = 1 - distance.squareform(distance.pdist(net['comm'][:, None], 'hamming'))
+
 
     # get likelihood of induction data
     num_trials = induct.shape[0]
@@ -88,7 +86,7 @@ def prob_induct_subject(struct, induct, gamma, alpha, tau, w=1,
             continue
 
         trial_prob[i] = prob_induct_choice_hybrid(
-            trial.cue, [trial.opt1, trial.opt2], int(trial[response_key]), SR, comm, w, tau)
+            trial.cue, [trial.opt1, trial.opt2], int(trial[response_key]), SR, comm, w, tau, choice_rule)
     return trial_prob
 
 
@@ -107,12 +105,12 @@ def assess_induct_fit_subject(struct, induct, param):
     return results
 
 
-def assess_induct_fit_subject_hybrid(struct, induct, param):
+def assess_induct_fit_subject_hybrid(struct, induct, param, comm, choice_rule):
     """Compare model and data in fitting the induction task."""
 
     trial_prob = prob_induct_subject(struct, induct, param['gamma'],
-                                     param['alpha'], param['tau'],
-                                     response_key='response')
+                                     param['alpha'], param['tau'], param['w'],
+                                     response_key='response', comm=comm, choice_rule=choice_rule)
     induct = induct.copy()
     induct.loc[:, 'Data'] = induct['Acc']
     induct.loc[:, 'Model'] = trial_prob
@@ -133,7 +131,7 @@ def plot_induct_fit(results):
 
 
 def get_induction_log_likelihood_hybrid(struc_df, induc_df, gamma, alpha, tau, w=1,
-                                 return_trial=False, use_run=(2, 6)):
+                                 return_trial=False, use_run=(2, 6), comm=[], choice_rule='softmax'):
     """ This function gives the probability of obtaining the choices in the run,
         given specific values for alpha, gamma.
         INPUT:
@@ -152,11 +150,10 @@ def get_induction_log_likelihood_hybrid(struc_df, induc_df, gamma, alpha, tau, w
     SR = SR_all[use_run]
 
     induc_df = induc_df.reset_index()
-
-    # get community matrix
-    net = network.temp_node_info()
-    comm = 1 - distance.squareform(distance.pdist(net['comm'][:, None], 'hamming'))
-
+    if comm == []:
+        # get community matrix
+        net = network.temp_node_info()
+        comm = 1 - distance.squareform(distance.pdist(net['comm'][:, None], 'hamming'))
     # get likelihood of induction data
     num_trials = induc_df.shape[0]
     log_likelihood = 0
@@ -168,7 +165,7 @@ def get_induction_log_likelihood_hybrid(struc_df, induc_df, gamma, alpha, tau, w
             all_trial_prob[i] = trial_probability
             continue
         trial_probability = prob_induct_choice_hybrid(
-            trial.cue, [trial.opt1, trial.opt2], int(trial.response), SR, comm, w, tau)
+            trial.cue, [trial.opt1, trial.opt2], int(trial.response), SR, comm, w, tau, choice_rule)
         eps = 0.000001
         if np.isnan(trial_probability):
             # probability undefined; can occur if SR has zeros
@@ -185,7 +182,7 @@ def get_induction_log_likelihood_hybrid(struc_df, induc_df, gamma, alpha, tau, w
         return log_likelihood
 
     
-def get_induct_ll_all(struct_df, induct_df, fixed, var_names, x, use_run):
+def get_induct_ll_all(struct_df, induct_df, fixed, var_names, x, use_run, comm=[], choice_rule='softmax'):
     param = fixed.copy()
     flexible = {}
     flex_names = []
@@ -205,7 +202,7 @@ def get_induct_ll_all(struct_df, induct_df, fixed, var_names, x, use_run):
         subj_struct = struct_df.query(subj_filter)
         subj_induct = induct_df.query(subj_filter)
         subj_logl = get_induction_log_likelihood_hybrid(subj_struct,subj_induct, **param,
-                                                 return_trial=False, use_run=use_run)
+                                                 return_trial=False, use_run=use_run, comm=comm, choice_rule=choice_rule)
         logl += subj_logl
     
     return logl
@@ -242,7 +239,7 @@ def param_bounds(var_bounds, var_names):
 
 def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
                f_optim=optimize.differential_evolution,
-               verbose=False, options=None, use_run=(2, 6)):
+               verbose=False, options=None, use_run=(2, 6), comm=[], choice_rule='softmax'):
     """Fit induction data for one subject.
 
     For a given set of parameters, the structure learning task is used
@@ -305,7 +302,7 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
             subj_struct = struct_df.query(subj_filter)
             subj_induct = induct_df.query(subj_filter)
             subj_logl = get_induction_log_likelihood_hybrid(subj_struct,subj_induct, **param,
-                                                     return_trial=False, use_run=use_run)
+                                                     return_trial=False, use_run=use_run, comm=comm, choice_rule=choice_rule)
             logl += subj_logl
         # logl = get_induction_log_likelihood(struct_df, induct_df, **param,
         #                                     return_trial=False, use_run=use_run)
@@ -322,7 +319,7 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds,
     return param, logl
 
 
-def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds):
+def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, comm=[], choice_rule='softmax'):
     """Estimate parameters for individual subjects."""
 
     df_list = []
@@ -331,7 +328,7 @@ def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds):
         subj_struct = struct.query(f'SubjNum == {sub}')
         subj_induct = induct.query(f'SubjNum == {sub}')
         param, logl = fit_induct(subj_struct, subj_induct, fixed,
-                                 var_names, var_bounds, verbose=False)
+                                 var_names, var_bounds, verbose=False,comm=comm, choice_rule=choice_rule)
         param['subject'] = sub
         param['log_like'] = logl
         df = pd.DataFrame(param, index=[0])
