@@ -1,6 +1,7 @@
 import numpy as np
 import emcee
 import pymc3 as pm
+import pystan as ps
 from tesser import fit
 from scipy.stats import multivariate_normal as mvn
 from scipy.stats import uniform
@@ -69,7 +70,69 @@ def bayes_induct(struct_df, induct_df, num_samples, option):
             y = pm.DensityDist('y', logp=log_likelihood, observed={'x': x})
             samples = pm.sample(10000)
         return samples
-        
-            
+    
+    if option == 'stan':
+        struct_arr = struct_df.objnum
+        cue = induct_df.CueNum.to_numpy()
+        response1 = induct_df.Opt1Num.to_numpy()
+        response2 = induct_df.Opt2Num.to_numpy()
+        choice = induct_df.response.to_numpy().astype(int)
+        indices = np.logical_or(choice == 1, choice == 0)
+        cue = cue[indices]
+        response1 = response1[indices]
+        response2 = response2[indices]
+        choice = choice[indices]
+        num_struct = struct_arr.shape[0]
+        num_induct = cue.shape[0]
+        model = """
+        data {
+            int<lower=0> num_struct;
+            int<lower=0> num_induct;
+            int struct_arr[num_struct];
+            int cue[num_induct];
+            int response1[num_induct];
+            int response2[num_induct];
+            int choice[num_induct];
+        }
+        parameters {
+            real<lower=0, upper=1> alpha;
+            real<lower=0, upper=1> gam;
+            real<lower=0> tau;
+        }
+        model {
+            matrix[21, 21] SR = rep_matrix(0, 21, 21);
+            vector[21] ones = rep_vector(1, 21);
+            matrix[21, 21] I = diag_matrix(ones);
+            int s;
+            int s_new;
+            int A;
+            int B;
+            int C;
+            real p;
+            alpha ~ uniform(0, 1);
+            gam ~ uniform(0, 1);
+            tau ~ gamma(2, 4);
+            for (i in 1:num_struct-1){
+                s = struct_arr[i];
+                s_new = struct_arr[i+1];
+                SR[s] = (1 - alpha) * SR[s] + alpha * (
+                I[s_new] + gam * SR[s_new]);
+            }
+            for (i in 1:num_induct){
+                A = cue[i];
+                B = response1[i];
+                C = response2[i];
+                p = exp(SR[A][B]/tau) / (exp(SR[A][B]/tau) + exp(SR[A][C]/tau));
+                choice[i] ~ bernoulli(p);
+            }
+        }
+        """
+        data = {'num_struct': num_struct, 'num_induct': num_induct, 'struct_arr': struct_arr, 'cue': cue, 'response1': response1, 
+               'response2': response2, 'choice': choice}
+        sm = ps.StanModel(model_code=model)
+        samples = sm.sampling(data=data, iter=num_samples, chains=4, warmup=500, thin=1, seed=101)
+        return samples
+    
+    
             
     
