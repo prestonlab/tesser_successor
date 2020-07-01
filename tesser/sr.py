@@ -38,6 +38,7 @@ import theano.tensor as tt
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from . import network
+from . import csr
 
 
 class SRMatrix:
@@ -170,6 +171,41 @@ def learn_sr(df, gamma, alpha):
                                         np.copy(M), n_states))
             SR_matrices[(part, run)] = M
     return SR_matrices
+
+
+def clearn_sr(df, gamma, alpha, n_states):
+    """
+    Train an SR matrix on the structure-learning task.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Structure learning task trials. Must have fields:
+        objnum - object number (starting from 1)
+        part - part number
+        run - run number
+
+    gamma : float
+        Discounting factor.
+
+    alpha : float
+        Learning rate.
+        
+    n_states : int
+        The number of states in the environment to initialize matrices.
+
+    Returns
+    -------
+    M : numpy.array
+        SR Matrix for all parts and run for a given subject.
+    """
+    M = np.zeros([n_states, n_states])
+    onehot= np.eye(n_states, dtype = np.dtype('i'))
+
+    envstep = df.objnum.to_numpy() -1
+    envstep = envstep.astype(np.dtype('i'))
+    csr.SR(envstep, gamma, alpha, M, n_states, onehot)
+    return M
 
 
 def explore_runs(df, option, gamma, alpha):
