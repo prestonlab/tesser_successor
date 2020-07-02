@@ -382,20 +382,20 @@ body.cython { font-family: courier; font-size: 12; }
 <pre class="cython line score-0">&#xA0;<span class="">008</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">009</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">010</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">cdivision</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span></pre>
-<pre class="cython line score-3" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">011</span>: <span class="k">cdef</span> <span class="nf">cprob_induct</span><span class="p">(</span><span class="nb">int</span> <span class="n">cue</span><span class="p">,</span></pre>
-<pre class='cython code score-3 '>static PyObject *__pyx_f_6tesser_4cfit_cprob_induct(int __pyx_v_cue, int __pyx_v_opt1, int __pyx_v_opt2, int __pyx_v_response, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_comm, double __pyx_v_w, double __pyx_v_tau) {
+<pre class="cython line score-3" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">011</span>: <span class="k">cdef</span> <span class="nf">cprob_choice</span><span class="p">(</span><span class="nb">int</span> <span class="n">cue</span><span class="p">,</span></pre>
+<pre class='cython code score-3 '>static PyObject *__pyx_f_6tesser_4cfit_cprob_choice(int __pyx_v_cue, int __pyx_v_opt1, int __pyx_v_opt2, int __pyx_v_response, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_model, double __pyx_v_w, double __pyx_v_tau) {
   double __pyx_v_support1;
   double __pyx_v_support2;
   double __pyx_v_support;
   double __pyx_v_prob;
   PyObject *__pyx_r = NULL;
   <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
-  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("cprob_induct", 0);
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("cprob_choice", 0);
 /* … */
   /* function exit code */
   __pyx_L1_error:;
   <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_10);
-  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("tesser.cfit.cprob_induct", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("tesser.cfit.cprob_choice", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   <span class='refnanny'>__Pyx_XGIVEREF</span>(__pyx_r);
@@ -406,7 +406,7 @@ body.cython { font-family: courier; font-size: 12; }
 <pre class="cython line score-0">&#xA0;<span class="">013</span>:                    <span class="nb">int</span> <span class="n">opt2</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">014</span>:                    <span class="nb">int</span> <span class="n">response</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">015</span>:                    <span class="n">double</span> <span class="p">[:,:]</span> <span class="n">SR</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">016</span>:                    <span class="n">double</span> <span class="p">[:,:]</span> <span class="n">comm</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">016</span>:                    <span class="n">double</span> <span class="p">[:,:]</span> <span class="n">model</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">017</span>:                    <span class="n">double</span> <span class="n">w</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">018</span>:                    <span class="n">double</span> <span class="n">tau</span><span class="p">):</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">019</span>: </pre>
@@ -417,18 +417,18 @@ body.cython { font-family: courier; font-size: 12; }
 <pre class="cython line score-0">&#xA0;<span class="">024</span>: </pre>
 <pre class="cython line score-0">&#xA0;<span class="">025</span>: </pre>
 <pre class="cython line score-0">&#xA0;<span class="">026</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">027</span>:     <span class="n">support1</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">SR</span><span class="p">[</span><span class="n">cue</span><span class="p">,</span> <span class="n">opt1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="n">comm</span><span class="p">[</span><span class="n">cue</span><span class="p">,</span> <span class="n">opt1</span><span class="p">]</span></pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">027</span>:     <span class="n">support1</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">SR</span><span class="p">[</span><span class="n">cue</span><span class="p">,</span> <span class="n">opt1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="p">[</span><span class="n">cue</span><span class="p">,</span> <span class="n">opt1</span><span class="p">]</span></pre>
 <pre class='cython code score-0 '>  __pyx_t_1 = __pyx_v_cue;
   __pyx_t_2 = __pyx_v_opt1;
   __pyx_t_3 = __pyx_v_cue;
   __pyx_t_4 = __pyx_v_opt1;
-  __pyx_v_support1 = ((__pyx_v_w * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_SR.data + __pyx_t_1 * __pyx_v_SR.strides[0]) ) + __pyx_t_2 * __pyx_v_SR.strides[1]) )))) + ((1.0 - __pyx_v_w) * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_comm.data + __pyx_t_3 * __pyx_v_comm.strides[0]) ) + __pyx_t_4 * __pyx_v_comm.strides[1]) )))));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">028</span>:     <span class="n">support2</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">SR</span><span class="p">[</span><span class="n">cue</span><span class="p">,</span> <span class="n">opt2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="n">comm</span><span class="p">[</span><span class="n">cue</span><span class="p">,</span> <span class="n">opt2</span><span class="p">]</span></pre>
+  __pyx_v_support1 = ((__pyx_v_w * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_SR.data + __pyx_t_1 * __pyx_v_SR.strides[0]) ) + __pyx_t_2 * __pyx_v_SR.strides[1]) )))) + ((1.0 - __pyx_v_w) * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_model.data + __pyx_t_3 * __pyx_v_model.strides[0]) ) + __pyx_t_4 * __pyx_v_model.strides[1]) )))));
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">028</span>:     <span class="n">support2</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">SR</span><span class="p">[</span><span class="n">cue</span><span class="p">,</span> <span class="n">opt2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span> <span class="o">*</span> <span class="n">model</span><span class="p">[</span><span class="n">cue</span><span class="p">,</span> <span class="n">opt2</span><span class="p">]</span></pre>
 <pre class='cython code score-0 '>  __pyx_t_5 = __pyx_v_cue;
   __pyx_t_6 = __pyx_v_opt2;
   __pyx_t_7 = __pyx_v_cue;
   __pyx_t_8 = __pyx_v_opt2;
-  __pyx_v_support2 = ((__pyx_v_w * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_SR.data + __pyx_t_5 * __pyx_v_SR.strides[0]) ) + __pyx_t_6 * __pyx_v_SR.strides[1]) )))) + ((1.0 - __pyx_v_w) * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_comm.data + __pyx_t_7 * __pyx_v_comm.strides[0]) ) + __pyx_t_8 * __pyx_v_comm.strides[1]) )))));
+  __pyx_v_support2 = ((__pyx_v_w * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_SR.data + __pyx_t_5 * __pyx_v_SR.strides[0]) ) + __pyx_t_6 * __pyx_v_SR.strides[1]) )))) + ((1.0 - __pyx_v_w) * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_model.data + __pyx_t_7 * __pyx_v_model.strides[0]) ) + __pyx_t_8 * __pyx_v_model.strides[1]) )))));
 </pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">029</span>:     <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="mf">0</span><span class="p">:</span></pre>
 <pre class='cython code score-0 '>  __pyx_t_9 = ((__pyx_v_response == 0) != 0);
   if (__pyx_t_9) {
@@ -454,28 +454,29 @@ body.cython { font-family: courier; font-size: 12; }
   __pyx_t_10 = 0;
   goto __pyx_L0;
 </pre><pre class="cython line score-0">&#xA0;<span class="">036</span>: </pre>
-<pre class="cython line score-0">&#xA0;<span class="">037</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">038</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
-<pre class="cython line score-131" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">039</span>: <span class="k">def</span> <span class="nf">cget_induc_ll</span><span class="p">(</span><span class="nb">int</span> <span class="p">[:]</span> <span class="n">cue</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">037</span>: </pre>
+<pre class="cython line score-0">&#xA0;<span class="">038</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">039</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
+<pre class="cython line score-131" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">040</span>: <span class="k">def</span> <span class="nf">cprob_induct</span><span class="p">(</span><span class="nb">int</span> <span class="p">[:]</span> <span class="n">cue</span><span class="p">,</span></pre>
 <pre class='cython code score-131 '>/* Python wrapper */
-static PyObject *__pyx_pw_6tesser_4cfit_1cget_induc_ll(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_6tesser_4cfit_1cget_induc_ll = {"cget_induc_ll", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6tesser_4cfit_1cget_induc_ll, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_6tesser_4cfit_1cget_induc_ll(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6tesser_4cfit_1cprob_induct(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_6tesser_4cfit_1cprob_induct = {"cprob_induct", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6tesser_4cfit_1cprob_induct, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_6tesser_4cfit_1cprob_induct(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_cue = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_opt1 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_opt2 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_response = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_SR = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_comm = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_model = { 0, 0, { 0 }, { 0 }, { 0 } };
   double __pyx_v_w;
   double __pyx_v_tau;
   int __pyx_v_return_trial;
   __Pyx_memviewslice __pyx_v_all_trial_prob = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_r = 0;
   <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
-  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("cget_induc_ll (wrapper)", 0);
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("cprob_induct (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&amp;__pyx_n_s_cue,&amp;__pyx_n_s_opt1,&amp;__pyx_n_s_opt2,&amp;__pyx_n_s_response,&amp;__pyx_n_s_SR,&amp;__pyx_n_s_comm,&amp;__pyx_n_s_w,&amp;__pyx_n_s_tau,&amp;__pyx_n_s_return_trial,&amp;__pyx_n_s_all_trial_prob,0};
+    static PyObject **__pyx_pyargnames[] = {&amp;__pyx_n_s_cue,&amp;__pyx_n_s_opt1,&amp;__pyx_n_s_opt2,&amp;__pyx_n_s_response,&amp;__pyx_n_s_SR,&amp;__pyx_n_s_model,&amp;__pyx_n_s_w,&amp;__pyx_n_s_tau,&amp;__pyx_n_s_return_trial,&amp;__pyx_n_s_all_trial_prob,0};
     PyObject* values[10] = {0,0,0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
@@ -513,59 +514,59 @@ static PyObject *__pyx_pw_6tesser_4cfit_1cget_induc_ll(PyObject *__pyx_self, PyO
         case  1:
         if (likely((values[1] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_opt1)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, 1); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, 1); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_opt2)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, 2); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, 2); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_response)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, 3); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, 3); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_SR)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, 4); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, 4); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
         }
         CYTHON_FALLTHROUGH;
         case  5:
-        if (likely((values[5] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_comm)) != 0)) kw_args--;
+        if (likely((values[5] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_model)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, 5); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, 5); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_w)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, 6); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, 6); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_tau)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, 7); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, 7); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
         }
         CYTHON_FALLTHROUGH;
         case  8:
         if (likely((values[8] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_return_trial)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, 8); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, 8); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
         }
         CYTHON_FALLTHROUGH;
         case  9:
         if (likely((values[9] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_all_trial_prob)) != 0)) kw_args--;
         else {
-          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, 9); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, 9); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
         }
       }
       if (unlikely(kw_args &gt; 0)) {
-        if (unlikely(<span class='pyx_c_api'>__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "cget_induc_ll") &lt; 0)) <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+        if (unlikely(<span class='pyx_c_api'>__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "cprob_induct") &lt; 0)) <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
       }
     } else if (<span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args) != 10) {
       goto __pyx_L5_argtuple_error;
@@ -581,33 +582,33 @@ static PyObject *__pyx_pw_6tesser_4cfit_1cget_induc_ll(PyObject *__pyx_self, PyO
       values[8] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 8);
       values[9] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 9);
     }
-    __pyx_v_cue = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_int</span>(values[0], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_cue.memview)) __PYX_ERR(0, 39, __pyx_L3_error)</span>
-    __pyx_v_opt1 = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_int</span>(values[1], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_opt1.memview)) __PYX_ERR(0, 40, __pyx_L3_error)</span>
-    __pyx_v_opt2 = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_int</span>(values[2], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_opt2.memview)) __PYX_ERR(0, 41, __pyx_L3_error)</span>
-    __pyx_v_response = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_int</span>(values[3], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_response.memview)) __PYX_ERR(0, 42, __pyx_L3_error)</span>
-    __pyx_v_SR = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_dsds_double</span>(values[4], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_SR.memview)) __PYX_ERR(0, 43, __pyx_L3_error)</span>
-    __pyx_v_comm = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_dsds_double</span>(values[5], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_comm.memview)) __PYX_ERR(0, 44, __pyx_L3_error)</span>
-    __pyx_v_w = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(values[6]); if (unlikely((__pyx_v_w == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 45, __pyx_L3_error)</span>
-    __pyx_v_tau = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(values[7]); if (unlikely((__pyx_v_tau == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 46, __pyx_L3_error)</span>
-    __pyx_v_return_trial = <span class='pyx_c_api'>__Pyx_PyObject_IsTrue</span>(values[8]); if (unlikely((__pyx_v_return_trial == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 47, __pyx_L3_error)</span>
-    __pyx_v_all_trial_prob = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_double</span>(values[9], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_all_trial_prob.memview)) __PYX_ERR(0, 48, __pyx_L3_error)</span>
+    __pyx_v_cue = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_int</span>(values[0], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_cue.memview)) __PYX_ERR(0, 40, __pyx_L3_error)</span>
+    __pyx_v_opt1 = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_int</span>(values[1], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_opt1.memview)) __PYX_ERR(0, 41, __pyx_L3_error)</span>
+    __pyx_v_opt2 = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_int</span>(values[2], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_opt2.memview)) __PYX_ERR(0, 42, __pyx_L3_error)</span>
+    __pyx_v_response = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_int</span>(values[3], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_response.memview)) __PYX_ERR(0, 43, __pyx_L3_error)</span>
+    __pyx_v_SR = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_dsds_double</span>(values[4], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_SR.memview)) __PYX_ERR(0, 44, __pyx_L3_error)</span>
+    __pyx_v_model = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_dsds_double</span>(values[5], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_model.memview)) __PYX_ERR(0, 45, __pyx_L3_error)</span>
+    __pyx_v_w = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(values[6]); if (unlikely((__pyx_v_w == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 46, __pyx_L3_error)</span>
+    __pyx_v_tau = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(values[7]); if (unlikely((__pyx_v_tau == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 47, __pyx_L3_error)</span>
+    __pyx_v_return_trial = <span class='pyx_c_api'>__Pyx_PyObject_IsTrue</span>(values[8]); if (unlikely((__pyx_v_return_trial == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 48, __pyx_L3_error)</span>
+    __pyx_v_all_trial_prob = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_double</span>(values[9], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_all_trial_prob.memview)) __PYX_ERR(0, 49, __pyx_L3_error)</span>
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cget_induc_ll", 1, 10, 10, <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args)); <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L3_error)</span>
+  <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct", 1, 10, 10, <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args)); <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L3_error)</span>
   __pyx_L3_error:;
-  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("tesser.cfit.cget_induc_ll", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("tesser.cfit.cprob_induct", __pyx_clineno, __pyx_lineno, __pyx_filename);
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_6tesser_4cfit_cget_induc_ll(__pyx_self, __pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_SR, __pyx_v_comm, __pyx_v_w, __pyx_v_tau, __pyx_v_return_trial, __pyx_v_all_trial_prob);
+  __pyx_r = __pyx_pf_6tesser_4cfit_cprob_induct(__pyx_self, __pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau, __pyx_v_return_trial, __pyx_v_all_trial_prob);
 
   /* function exit code */
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6tesser_4cfit_cget_induc_ll(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_cue, __Pyx_memviewslice __pyx_v_opt1, __Pyx_memviewslice __pyx_v_opt2, __Pyx_memviewslice __pyx_v_response, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_comm, double __pyx_v_w, double __pyx_v_tau, int __pyx_v_return_trial, __Pyx_memviewslice __pyx_v_all_trial_prob) {
+static PyObject *__pyx_pf_6tesser_4cfit_cprob_induct(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_cue, __Pyx_memviewslice __pyx_v_opt1, __Pyx_memviewslice __pyx_v_opt2, __Pyx_memviewslice __pyx_v_response, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_model, double __pyx_v_w, double __pyx_v_tau, int __pyx_v_return_trial, __Pyx_memviewslice __pyx_v_all_trial_prob) {
   Py_ssize_t __pyx_v_num_trials;
   double __pyx_v_log_likelihood;
   double __pyx_v_trial_probability;
@@ -615,14 +616,14 @@ static PyObject *__pyx_pf_6tesser_4cfit_cget_induc_ll(CYTHON_UNUSED PyObject *__
   Py_ssize_t __pyx_v_i;
   PyObject *__pyx_r = NULL;
   <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
-  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("cget_induc_ll", 0);
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("cprob_induct", 0);
 /* … */
   /* function exit code */
   __pyx_L1_error:;
   <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_11);
   <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_14);
   <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_15);
-  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("tesser.cfit.cget_induc_ll", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("tesser.cfit.cprob_induct", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&amp;__pyx_v_cue, 1);
@@ -630,112 +631,112 @@ static PyObject *__pyx_pf_6tesser_4cfit_cget_induc_ll(CYTHON_UNUSED PyObject *__
   __PYX_XDEC_MEMVIEW(&amp;__pyx_v_opt2, 1);
   __PYX_XDEC_MEMVIEW(&amp;__pyx_v_response, 1);
   __PYX_XDEC_MEMVIEW(&amp;__pyx_v_SR, 1);
-  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_comm, 1);
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_model, 1);
   __PYX_XDEC_MEMVIEW(&amp;__pyx_v_all_trial_prob, 1);
   <span class='refnanny'>__Pyx_XGIVEREF</span>(__pyx_r);
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
 /* … */
-  __pyx_tuple__19 = <span class='py_c_api'>PyTuple_Pack</span>(15, __pyx_n_s_cue, __pyx_n_s_opt1, __pyx_n_s_opt2, __pyx_n_s_response, __pyx_n_s_SR, __pyx_n_s_comm, __pyx_n_s_w, __pyx_n_s_tau, __pyx_n_s_return_trial, __pyx_n_s_all_trial_prob, __pyx_n_s_num_trials, __pyx_n_s_log_likelihood, __pyx_n_s_trial_probability, __pyx_n_s_eps, __pyx_n_s_i);<span class='error_goto'> if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 39, __pyx_L1_error)</span>
+  __pyx_tuple__19 = <span class='py_c_api'>PyTuple_Pack</span>(15, __pyx_n_s_cue, __pyx_n_s_opt1, __pyx_n_s_opt2, __pyx_n_s_response, __pyx_n_s_SR, __pyx_n_s_model, __pyx_n_s_w, __pyx_n_s_tau, __pyx_n_s_return_trial, __pyx_n_s_all_trial_prob, __pyx_n_s_num_trials, __pyx_n_s_log_likelihood, __pyx_n_s_trial_probability, __pyx_n_s_eps, __pyx_n_s_i);<span class='error_goto'> if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 40, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_tuple__19);
   <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_tuple__19);
 /* … */
-  __pyx_t_1 = PyCFunction_NewEx(&amp;__pyx_mdef_6tesser_4cfit_1cget_induc_ll, NULL, __pyx_n_s_tesser_cfit);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)</span>
+  __pyx_t_1 = PyCFunction_NewEx(&amp;__pyx_mdef_6tesser_4cfit_1cprob_induct, NULL, __pyx_n_s_tesser_cfit);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
-  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_cget_induc_ll, __pyx_t_1) &lt; 0) <span class='error_goto'>__PYX_ERR(0, 39, __pyx_L1_error)</span>
+  if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_cprob_induct, __pyx_t_1) &lt; 0) <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L1_error)</span>
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_codeobj__20 = (PyObject*)<span class='pyx_c_api'>__Pyx_PyCode_New</span>(10, 0, 15, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_tesser_cfit_pyx, __pyx_n_s_cget_induc_ll, 39, __pyx_empty_bytes);<span class='error_goto'> if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(0, 39, __pyx_L1_error)</span>
-</pre><pre class="cython line score-0">&#xA0;<span class="">040</span>:                   <span class="nb">int</span> <span class="p">[:]</span> <span class="n">opt1</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">041</span>:                   <span class="nb">int</span> <span class="p">[:]</span> <span class="n">opt2</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">042</span>:                   <span class="nb">int</span><span class="p">[:]</span> <span class="n">response</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">043</span>:                   <span class="n">double</span> <span class="p">[:,:]</span> <span class="n">SR</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">044</span>:                   <span class="n">double</span> <span class="p">[:,:]</span> <span class="n">comm</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">045</span>:                   <span class="n">double</span> <span class="n">w</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">046</span>:                   <span class="n">double</span> <span class="n">tau</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">047</span>:                   <span class="n">bint</span> <span class="n">return_trial</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">048</span>:                   <span class="n">double</span> <span class="p">[:]</span> <span class="n">all_trial_prob</span><span class="p">):</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">049</span>: </pre>
+  __pyx_codeobj__20 = (PyObject*)<span class='pyx_c_api'>__Pyx_PyCode_New</span>(10, 0, 15, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cfit_pyx, __pyx_n_s_cprob_induct, 40, __pyx_empty_bytes);<span class='error_goto'> if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(0, 40, __pyx_L1_error)</span>
+</pre><pre class="cython line score-0">&#xA0;<span class="">041</span>:                   <span class="nb">int</span> <span class="p">[:]</span> <span class="n">opt1</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">042</span>:                   <span class="nb">int</span> <span class="p">[:]</span> <span class="n">opt2</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">043</span>:                   <span class="nb">int</span><span class="p">[:]</span> <span class="n">response</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">044</span>:                   <span class="n">double</span> <span class="p">[:,:]</span> <span class="n">SR</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">045</span>:                   <span class="n">double</span> <span class="p">[:,:]</span> <span class="n">model</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">046</span>:                   <span class="n">double</span> <span class="n">w</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">047</span>:                   <span class="n">double</span> <span class="n">tau</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">048</span>:                   <span class="n">bint</span> <span class="n">return_trial</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">049</span>:                   <span class="n">double</span> <span class="p">[:]</span> <span class="n">all_trial_prob</span><span class="p">):</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">050</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">051</span>:     <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">num_trials</span> <span class="o">=</span> <span class="n">cue</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mf">0</span><span class="p">]</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">051</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">052</span>:     <span class="k">cdef</span> <span class="kt">Py_ssize_t</span> <span class="nf">num_trials</span> <span class="o">=</span> <span class="n">cue</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mf">0</span><span class="p">]</span></pre>
 <pre class='cython code score-0 '>  __pyx_v_num_trials = (__pyx_v_cue.shape[0]);
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">052</span>:     <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">log_likelihood</span> <span class="o">=</span> <span class="mf">0.0</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">053</span>:     <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">log_likelihood</span> <span class="o">=</span> <span class="mf">0.0</span></pre>
 <pre class='cython code score-0 '>  __pyx_v_log_likelihood = 0.0;
-</pre><pre class="cython line score-0">&#xA0;<span class="">053</span>:     <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">trial_probability</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">054</span>:     <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">eps</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">055</span>: </pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">054</span>:     <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">trial_probability</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">055</span>:     <span class="k">cdef</span> <span class="kt">double</span> <span class="nf">eps</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">056</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">057</span>:     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_trials</span><span class="p">):</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">057</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">058</span>:     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_trials</span><span class="p">):</span></pre>
 <pre class='cython code score-0 '>  __pyx_t_1 = __pyx_v_num_trials;
   __pyx_t_2 = __pyx_t_1;
   for (__pyx_t_3 = 0; __pyx_t_3 &lt; __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">058</span>:         <span class="k">if</span> <span class="n">isnan</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">059</span>:         <span class="k">if</span> <span class="n">isnan</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span></pre>
 <pre class='cython code score-0 '>    __pyx_t_4 = __pyx_v_i;
     __pyx_t_5 = (isnan((*((int *) ( /* dim=0 */ (__pyx_v_response.data + __pyx_t_4 * __pyx_v_response.strides[0]) )))) != 0);
     if (__pyx_t_5) {
 /* … */
     }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">059</span>:             <span class="n">trial_probability</span> <span class="o">=</span> <span class="mf">0.5</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">060</span>:             <span class="n">trial_probability</span> <span class="o">=</span> <span class="mf">0.5</span></pre>
 <pre class='cython code score-0 '>      __pyx_v_trial_probability = 0.5;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">060</span>:             <span class="n">log_likelihood</span> <span class="o">+=</span> <span class="n">log</span><span class="p">(</span><span class="n">trial_probability</span><span class="p">)</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">061</span>:             <span class="n">log_likelihood</span> <span class="o">+=</span> <span class="n">log</span><span class="p">(</span><span class="n">trial_probability</span><span class="p">)</span></pre>
 <pre class='cython code score-0 '>      __pyx_v_log_likelihood = (__pyx_v_log_likelihood + log(__pyx_v_trial_probability));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">061</span>:             <span class="n">all_trial_prob</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial_probability</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">062</span>:             <span class="n">all_trial_prob</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial_probability</span></pre>
 <pre class='cython code score-0 '>      __pyx_t_6 = __pyx_v_i;
       *((double *) ( /* dim=0 */ (__pyx_v_all_trial_prob.data + __pyx_t_6 * __pyx_v_all_trial_prob.strides[0]) )) = __pyx_v_trial_probability;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">062</span>:             <span class="k">continue</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">063</span>:             <span class="k">continue</span></pre>
 <pre class='cython code score-0 '>      goto __pyx_L3_continue;
-</pre><pre class="cython line score-11" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">063</span>:         <span class="n">trial_probability</span> <span class="o">=</span> <span class="n">cprob_induct</span><span class="p">(</span></pre>
-<pre class='cython code score-11 '>    __pyx_t_11 = __pyx_f_6tesser_4cfit_cprob_induct((*((int *) ( /* dim=0 */ (__pyx_v_cue.data + __pyx_t_7 * __pyx_v_cue.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt1.data + __pyx_t_8 * __pyx_v_opt1.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt2.data + __pyx_t_9 * __pyx_v_opt2.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_response.data + __pyx_t_10 * __pyx_v_response.strides[0]) ))), __pyx_v_SR, __pyx_v_comm, __pyx_v_w, __pyx_v_tau);<span class='error_goto'> if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 63, __pyx_L1_error)</span>
+</pre><pre class="cython line score-11" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">064</span>:         <span class="n">trial_probability</span> <span class="o">=</span> <span class="n">cprob_choice</span><span class="p">(</span></pre>
+<pre class='cython code score-11 '>    __pyx_t_11 = __pyx_f_6tesser_4cfit_cprob_choice((*((int *) ( /* dim=0 */ (__pyx_v_cue.data + __pyx_t_7 * __pyx_v_cue.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt1.data + __pyx_t_8 * __pyx_v_opt1.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt2.data + __pyx_t_9 * __pyx_v_opt2.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_response.data + __pyx_t_10 * __pyx_v_response.strides[0]) ))), __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau);<span class='error_goto'> if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 64, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_11);
-    __pyx_t_12 = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(__pyx_t_11); if (unlikely((__pyx_t_12 == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 63, __pyx_L1_error)</span>
+    __pyx_t_12 = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(__pyx_t_11); if (unlikely((__pyx_t_12 == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 64, __pyx_L1_error)</span>
     <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_11); __pyx_t_11 = 0;
     __pyx_v_trial_probability = __pyx_t_12;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">064</span>:             <span class="n">cue</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">opt1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">opt2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">response</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">SR</span><span class="p">,</span> <span class="n">comm</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">065</span>:             <span class="n">cue</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">opt1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">opt2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">response</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">SR</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span></pre>
 <pre class='cython code score-0 '>    __pyx_t_7 = __pyx_v_i;
     __pyx_t_8 = __pyx_v_i;
     __pyx_t_9 = __pyx_v_i;
     __pyx_t_10 = __pyx_v_i;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">065</span>:         <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.000001</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">066</span>:         <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.000001</span></pre>
 <pre class='cython code score-0 '>    __pyx_v_eps = 0.000001;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">066</span>:         <span class="k">if</span> <span class="n">isnan</span><span class="p">(</span><span class="n">trial_probability</span><span class="p">):</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">067</span>:         <span class="k">if</span> <span class="n">isnan</span><span class="p">(</span><span class="n">trial_probability</span><span class="p">):</span></pre>
 <pre class='cython code score-0 '>    __pyx_t_5 = (isnan(__pyx_v_trial_probability) != 0);
     if (__pyx_t_5) {
 /* … */
       goto __pyx_L6;
     }
-</pre><pre class="cython line score-0">&#xA0;<span class="">067</span>:             <span class="c"># probability undefined; can occur if SR has zeros</span></pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">068</span>:             <span class="n">trial_probability</span> <span class="o">=</span> <span class="n">eps</span></pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">068</span>:             <span class="c"># probability undefined; can occur if SR has zeros</span></pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">069</span>:             <span class="n">trial_probability</span> <span class="o">=</span> <span class="n">eps</span></pre>
 <pre class='cython code score-0 '>      __pyx_v_trial_probability = __pyx_v_eps;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">069</span>:         <span class="k">elif</span> <span class="n">trial_probability</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">:</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">070</span>:         <span class="k">elif</span> <span class="n">trial_probability</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">:</span></pre>
 <pre class='cython code score-0 '>    __pyx_t_5 = ((__pyx_v_trial_probability &lt; __pyx_v_eps) != 0);
     if (__pyx_t_5) {
 /* … */
     }
     __pyx_L6:;
-</pre><pre class="cython line score-0">&#xA0;<span class="">070</span>:             <span class="c"># probability too close to zero; set to minimal value</span></pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">071</span>:             <span class="n">trial_probability</span> <span class="o">=</span> <span class="n">eps</span></pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">071</span>:             <span class="c"># probability too close to zero; set to minimal value</span></pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">072</span>:             <span class="n">trial_probability</span> <span class="o">=</span> <span class="n">eps</span></pre>
 <pre class='cython code score-0 '>      __pyx_v_trial_probability = __pyx_v_eps;
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">072</span>:         <span class="n">log_likelihood</span> <span class="o">+=</span> <span class="n">log</span><span class="p">(</span><span class="n">trial_probability</span><span class="p">)</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">073</span>:         <span class="n">log_likelihood</span> <span class="o">+=</span> <span class="n">log</span><span class="p">(</span><span class="n">trial_probability</span><span class="p">)</span></pre>
 <pre class='cython code score-0 '>    __pyx_v_log_likelihood = (__pyx_v_log_likelihood + log(__pyx_v_trial_probability));
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">073</span>:         <span class="n">all_trial_prob</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial_probability</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">074</span>:         <span class="n">all_trial_prob</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial_probability</span></pre>
 <pre class='cython code score-0 '>    __pyx_t_13 = __pyx_v_i;
     *((double *) ( /* dim=0 */ (__pyx_v_all_trial_prob.data + __pyx_t_13 * __pyx_v_all_trial_prob.strides[0]) )) = __pyx_v_trial_probability;
     __pyx_L3_continue:;
   }
-</pre><pre class="cython line score-0">&#xA0;<span class="">074</span>: </pre>
-<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">075</span>:     <span class="k">if</span> <span class="n">return_trial</span><span class="p">:</span></pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">075</span>: </pre>
+<pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">076</span>:     <span class="k">if</span> <span class="n">return_trial</span><span class="p">:</span></pre>
 <pre class='cython code score-0 '>  __pyx_t_5 = (__pyx_v_return_trial != 0);
   if (__pyx_t_5) {
 /* … */
   }
-</pre><pre class="cython line score-13" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">076</span>:         <span class="k">return</span> <span class="n">log_likelihood</span><span class="p">,</span> <span class="n">all_trial_prob</span></pre>
+</pre><pre class="cython line score-13" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">077</span>:         <span class="k">return</span> <span class="n">log_likelihood</span><span class="p">,</span> <span class="n">all_trial_prob</span></pre>
 <pre class='cython code score-13 '>    <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_r);
-    __pyx_t_11 = <span class='py_c_api'>PyFloat_FromDouble</span>(__pyx_v_log_likelihood);<span class='error_goto'> if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 76, __pyx_L1_error)</span>
+    __pyx_t_11 = <span class='py_c_api'>PyFloat_FromDouble</span>(__pyx_v_log_likelihood);<span class='error_goto'> if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 77, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_11);
-    __pyx_t_14 = __pyx_memoryview_fromslice(__pyx_v_all_trial_prob, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);;<span class='error_goto'> if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 76, __pyx_L1_error)</span>
+    __pyx_t_14 = __pyx_memoryview_fromslice(__pyx_v_all_trial_prob, 1, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);;<span class='error_goto'> if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 77, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_14);
-    __pyx_t_15 = <span class='py_c_api'>PyTuple_New</span>(2);<span class='error_goto'> if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 76, __pyx_L1_error)</span>
+    __pyx_t_15 = <span class='py_c_api'>PyTuple_New</span>(2);<span class='error_goto'> if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 77, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_15);
     <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_t_11);
     <span class='py_macro_api'>PyTuple_SET_ITEM</span>(__pyx_t_15, 0, __pyx_t_11);
@@ -746,18 +747,17 @@ static PyObject *__pyx_pf_6tesser_4cfit_cget_induc_ll(CYTHON_UNUSED PyObject *__
     __pyx_r = __pyx_t_15;
     __pyx_t_15 = 0;
     goto __pyx_L0;
-</pre><pre class="cython line score-0">&#xA0;<span class="">077</span>:     <span class="k">else</span><span class="p">:</span></pre>
-<pre class="cython line score-6" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">078</span>:         <span class="k">return</span> <span class="n">log_likelihood</span></pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">078</span>:     <span class="k">else</span><span class="p">:</span></pre>
+<pre class="cython line score-6" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">079</span>:         <span class="k">return</span> <span class="n">log_likelihood</span></pre>
 <pre class='cython code score-6 '>  /*else*/ {
     <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_r);
-    __pyx_t_15 = <span class='py_c_api'>PyFloat_FromDouble</span>(__pyx_v_log_likelihood);<span class='error_goto'> if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 78, __pyx_L1_error)</span>
+    __pyx_t_15 = <span class='py_c_api'>PyFloat_FromDouble</span>(__pyx_v_log_likelihood);<span class='error_goto'> if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 79, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_15);
     __pyx_r = __pyx_t_15;
     __pyx_t_15 = 0;
     goto __pyx_L0;
   }
-</pre><pre class="cython line score-0">&#xA0;<span class="">079</span>: </pre>
-<pre class="cython line score-0">&#xA0;<span class="">080</span>: </pre>
+</pre><pre class="cython line score-0">&#xA0;<span class="">080</span>: </pre>
 <pre class="cython line score-0">&#xA0;<span class="">081</span>: </pre>
 <pre class="cython line score-0">&#xA0;<span class="">082</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">083</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
@@ -773,13 +773,13 @@ static PyObject *__pyx_pw_6tesser_4cfit_3cprob_induct_subject(PyObject *__pyx_se
   __Pyx_memviewslice __pyx_v_response = { 0, 0, { 0 }, { 0 }, { 0 } };
   double __pyx_v_tau;
   double __pyx_v_w;
-  __Pyx_memviewslice __pyx_v_comm = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_model = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_trial_prob = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_r = 0;
   <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
   <span class='refnanny'>__Pyx_RefNannySetupContext</span>("cprob_induct_subject (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&amp;__pyx_n_s_SR,&amp;__pyx_n_s_cue,&amp;__pyx_n_s_opt1,&amp;__pyx_n_s_opt2,&amp;__pyx_n_s_response,&amp;__pyx_n_s_tau,&amp;__pyx_n_s_w,&amp;__pyx_n_s_comm,&amp;__pyx_n_s_trial_prob,0};
+    static PyObject **__pyx_pyargnames[] = {&amp;__pyx_n_s_SR,&amp;__pyx_n_s_cue,&amp;__pyx_n_s_opt1,&amp;__pyx_n_s_opt2,&amp;__pyx_n_s_response,&amp;__pyx_n_s_tau,&amp;__pyx_n_s_w,&amp;__pyx_n_s_model,&amp;__pyx_n_s_trial_prob,0};
     PyObject* values[9] = {0,0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
@@ -849,7 +849,7 @@ static PyObject *__pyx_pw_6tesser_4cfit_3cprob_induct_subject(PyObject *__pyx_se
         }
         CYTHON_FALLTHROUGH;
         case  7:
-        if (likely((values[7] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_comm)) != 0)) kw_args--;
+        if (likely((values[7] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_model)) != 0)) kw_args--;
         else {
           <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("cprob_induct_subject", 1, 9, 9, 7); <span class='error_goto'>__PYX_ERR(0, 84, __pyx_L3_error)</span>
         }
@@ -883,7 +883,7 @@ static PyObject *__pyx_pw_6tesser_4cfit_3cprob_induct_subject(PyObject *__pyx_se
     __pyx_v_response = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_int</span>(values[4], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_response.memview)) __PYX_ERR(0, 88, __pyx_L3_error)</span>
     __pyx_v_tau = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(values[5]); if (unlikely((__pyx_v_tau == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 89, __pyx_L3_error)</span>
     __pyx_v_w = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(values[6]); if (unlikely((__pyx_v_w == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 90, __pyx_L3_error)</span>
-    __pyx_v_comm = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_dsds_double</span>(values[7], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_comm.memview)) __PYX_ERR(0, 91, __pyx_L3_error)</span>
+    __pyx_v_model = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_dsds_double</span>(values[7], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_model.memview)) __PYX_ERR(0, 91, __pyx_L3_error)</span>
     __pyx_v_trial_prob = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_ds_double</span>(values[8], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_trial_prob.memview)) __PYX_ERR(0, 92, __pyx_L3_error)</span>
   }
   goto __pyx_L4_argument_unpacking_done;
@@ -894,14 +894,14 @@ static PyObject *__pyx_pw_6tesser_4cfit_3cprob_induct_subject(PyObject *__pyx_se
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_6tesser_4cfit_2cprob_induct_subject(__pyx_self, __pyx_v_SR, __pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_tau, __pyx_v_w, __pyx_v_comm, __pyx_v_trial_prob);
+  __pyx_r = __pyx_pf_6tesser_4cfit_2cprob_induct_subject(__pyx_self, __pyx_v_SR, __pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_tau, __pyx_v_w, __pyx_v_model, __pyx_v_trial_prob);
 
   /* function exit code */
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6tesser_4cfit_2cprob_induct_subject(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_cue, __Pyx_memviewslice __pyx_v_opt1, __Pyx_memviewslice __pyx_v_opt2, __Pyx_memviewslice __pyx_v_response, double __pyx_v_tau, double __pyx_v_w, __Pyx_memviewslice __pyx_v_comm, __Pyx_memviewslice __pyx_v_trial_prob) {
+static PyObject *__pyx_pf_6tesser_4cfit_2cprob_induct_subject(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_cue, __Pyx_memviewslice __pyx_v_opt1, __Pyx_memviewslice __pyx_v_opt2, __Pyx_memviewslice __pyx_v_response, double __pyx_v_tau, double __pyx_v_w, __Pyx_memviewslice __pyx_v_model, __Pyx_memviewslice __pyx_v_trial_prob) {
   Py_ssize_t __pyx_v_num_trials;
   Py_ssize_t __pyx_v_i;
   PyObject *__pyx_r = NULL;
@@ -920,14 +920,14 @@ static PyObject *__pyx_pf_6tesser_4cfit_2cprob_induct_subject(CYTHON_UNUSED PyOb
   __PYX_XDEC_MEMVIEW(&amp;__pyx_v_opt1, 1);
   __PYX_XDEC_MEMVIEW(&amp;__pyx_v_opt2, 1);
   __PYX_XDEC_MEMVIEW(&amp;__pyx_v_response, 1);
-  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_comm, 1);
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_model, 1);
   __PYX_XDEC_MEMVIEW(&amp;__pyx_v_trial_prob, 1);
   <span class='refnanny'>__Pyx_XGIVEREF</span>(__pyx_r);
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
 }
 /* … */
-  __pyx_tuple__21 = <span class='py_c_api'>PyTuple_Pack</span>(11, __pyx_n_s_SR, __pyx_n_s_cue, __pyx_n_s_opt1, __pyx_n_s_opt2, __pyx_n_s_response, __pyx_n_s_tau, __pyx_n_s_w, __pyx_n_s_comm, __pyx_n_s_trial_prob, __pyx_n_s_num_trials, __pyx_n_s_i);<span class='error_goto'> if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 84, __pyx_L1_error)</span>
+  __pyx_tuple__21 = <span class='py_c_api'>PyTuple_Pack</span>(11, __pyx_n_s_SR, __pyx_n_s_cue, __pyx_n_s_opt1, __pyx_n_s_opt2, __pyx_n_s_response, __pyx_n_s_tau, __pyx_n_s_w, __pyx_n_s_model, __pyx_n_s_trial_prob, __pyx_n_s_num_trials, __pyx_n_s_i);<span class='error_goto'> if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 84, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_tuple__21);
   <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_tuple__21);
 /* … */
@@ -935,14 +935,14 @@ static PyObject *__pyx_pf_6tesser_4cfit_2cprob_induct_subject(CYTHON_UNUSED PyOb
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
   if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_cprob_induct_subject, __pyx_t_1) &lt; 0) <span class='error_goto'>__PYX_ERR(0, 84, __pyx_L1_error)</span>
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_codeobj__22 = (PyObject*)<span class='pyx_c_api'>__Pyx_PyCode_New</span>(9, 0, 11, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_tesser_cfit_pyx, __pyx_n_s_cprob_induct_subject, 84, __pyx_empty_bytes);<span class='error_goto'> if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 84, __pyx_L1_error)</span>
+  __pyx_codeobj__22 = (PyObject*)<span class='pyx_c_api'>__Pyx_PyCode_New</span>(9, 0, 11, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cfit_pyx, __pyx_n_s_cprob_induct_subject, 84, __pyx_empty_bytes);<span class='error_goto'> if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 84, __pyx_L1_error)</span>
 </pre><pre class="cython line score-0">&#xA0;<span class="">085</span>:                   <span class="nb">int</span> <span class="p">[:]</span> <span class="n">cue</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">086</span>:                   <span class="nb">int</span> <span class="p">[:]</span> <span class="n">opt1</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">087</span>:                   <span class="nb">int</span> <span class="p">[:]</span> <span class="n">opt2</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">088</span>:                   <span class="nb">int</span><span class="p">[:]</span> <span class="n">response</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">089</span>:                   <span class="n">double</span> <span class="n">tau</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">090</span>:                   <span class="n">double</span> <span class="n">w</span><span class="p">,</span></pre>
-<pre class="cython line score-0">&#xA0;<span class="">091</span>:                   <span class="n">double</span> <span class="p">[:,:]</span> <span class="n">comm</span><span class="p">,</span></pre>
+<pre class="cython line score-0">&#xA0;<span class="">091</span>:                   <span class="n">double</span> <span class="p">[:,:]</span> <span class="n">model</span><span class="p">,</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">092</span>:                   <span class="n">double</span> <span class="p">[:]</span> <span class="n">trial_prob</span><span class="p">):</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">093</span>: </pre>
 <pre class="cython line score-0">&#xA0;<span class="">094</span>: </pre>
@@ -973,8 +973,8 @@ static PyObject *__pyx_pf_6tesser_4cfit_2cprob_induct_subject(CYTHON_UNUSED PyOb
 </pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">100</span>:             <span class="k">continue</span></pre>
 <pre class='cython code score-0 '>      goto __pyx_L3_continue;
 </pre><pre class="cython line score-0">&#xA0;<span class="">101</span>: </pre>
-<pre class="cython line score-11" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">102</span>:         <span class="n">trial_prob</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cprob_induct</span><span class="p">(</span></pre>
-<pre class='cython code score-11 '>    __pyx_t_7 = __pyx_f_6tesser_4cfit_cprob_induct((*((int *) ( /* dim=0 */ (__pyx_v_cue.data + __pyx_t_10 * __pyx_v_cue.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt1.data + __pyx_t_11 * __pyx_v_opt1.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt2.data + __pyx_t_12 * __pyx_v_opt2.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_response.data + __pyx_t_13 * __pyx_v_response.strides[0]) ))), __pyx_v_SR, __pyx_v_comm, __pyx_v_w, __pyx_v_tau);<span class='error_goto'> if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 102, __pyx_L1_error)</span>
+<pre class="cython line score-11" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">102</span>:         <span class="n">trial_prob</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cprob_choice</span><span class="p">(</span></pre>
+<pre class='cython code score-11 '>    __pyx_t_7 = __pyx_f_6tesser_4cfit_cprob_choice((*((int *) ( /* dim=0 */ (__pyx_v_cue.data + __pyx_t_10 * __pyx_v_cue.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt1.data + __pyx_t_11 * __pyx_v_opt1.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt2.data + __pyx_t_12 * __pyx_v_opt2.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_response.data + __pyx_t_13 * __pyx_v_response.strides[0]) ))), __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau);<span class='error_goto'> if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 102, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_7);
     __pyx_t_8 = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(__pyx_t_7); if (unlikely((__pyx_t_8 == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 102, __pyx_L1_error)</span>
     <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_7); __pyx_t_7 = 0;
@@ -982,7 +982,7 @@ static PyObject *__pyx_pf_6tesser_4cfit_2cprob_induct_subject(CYTHON_UNUSED PyOb
     *((double *) ( /* dim=0 */ (__pyx_v_trial_prob.data + __pyx_t_14 * __pyx_v_trial_prob.strides[0]) )) = __pyx_t_8;
     __pyx_L3_continue:;
   }
-</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">103</span>:             <span class="n">cue</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">opt1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">opt2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">response</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">SR</span><span class="p">,</span> <span class="n">comm</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span></pre>
+</pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">103</span>:             <span class="n">cue</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">opt1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">opt2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">response</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">SR</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span></pre>
 <pre class='cython code score-0 '>    __pyx_t_10 = __pyx_v_i;
     __pyx_t_11 = __pyx_v_i;
     __pyx_t_12 = __pyx_v_i;

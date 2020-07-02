@@ -38,23 +38,6 @@ import time
 def eu_dist(a, b, SR):
     return distance.euclidean(SR[a], SR[b])
 
-
-def cprob_choice(struc_df, induc_df, gamma, alpha, tau, w, n_states, return_trial, comm):
-    SR = sr.clearn_sr(struc_df, gamma, alpha, n_states)
-    induc_df = induc_df.reset_index()
-    num_trials = induc_df.shape[0]
-    cue = induc_df.cue.to_numpy()
-    cue = cue.astype(np.dtype('i'))
-    opt1 = induc_df.opt1.to_numpy()
-    opt1 = opt1.astype(np.dtype('i'))
-    opt2 = induc_df.opt2.to_numpy()
-    opt2 = opt2.astype(np.dtype('i'))
-    res = induc_df.response.to_numpy()
-    res = res.astype(np.dtype('i'))
-    all_trial_prob = np.zeros(num_trials)
-    return cfit.cget_induc_ll(cue, opt1, opt2, res , SR, comm, w, tau, return_trial, all_trial_prob)
-
-
 def prob_induct_choice_hybrid(cue, opt, response, SR, comm, w, tau, choice_rule):
     """Likelihood of induction response."""
 
@@ -476,10 +459,29 @@ def minimize_grouping_error(struc_df, group_df, option):
     # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max
 
+
+
+def cget_induc_ll(struc_df, induc_df, gamma, gamma2, alpha, tau, w, n_states, return_trial, gamma_model, model):
+    SR = sr.clearn_sr(struc_df, gamma, alpha, n_states)
+    if gamma_model:
+        model = sr.clearn_sr(struc_df, gamma2, alpha, n_states)
+    induc_df = induc_df.reset_index()
+    num_trials = induc_df.shape[0]
+    cue = induc_df.cue.to_numpy()
+    cue = cue.astype(np.dtype('i'))
+    opt1 = induc_df.opt1.to_numpy()
+    opt1 = opt1.astype(np.dtype('i'))
+    opt2 = induc_df.opt2.to_numpy()
+    opt2 = opt2.astype(np.dtype('i'))
+    res = induc_df.response.to_numpy()
+    res = res.astype(np.dtype('i'))
+    all_trial_prob = np.zeros(num_trials)
+    return cfit.cprob_induct(cue, opt1, opt2, res , SR, model, w, tau, return_trial, all_trial_prob)
+
     
 def cfit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
                f_optim=optimize.differential_evolution,
-               verbose=False, options=None, comm=[]):
+               verbose=False, options=None, model='comm', comm=[]):
     """Fit induction data for one subject faster cython improved version.
 
     For a given set of parameters, the structure learning task is used
@@ -529,7 +531,8 @@ def cfit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
 
     if options is None:
         options = {}
-
+    if model == 'gamma':
+        gamma_model = True
     param = fixed.copy()
     subjects = struct_df.SubjNum.unique()
 
@@ -541,8 +544,8 @@ def cfit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
             subj_filter = f'SubjNum == {subject}'
             subj_struct = struct_df.query(subj_filter)
             subj_induct = induct_df.query(subj_filter)
-            subj_logl = cprob_choice(subj_struct, subj_induct, **param, n_states=n_states,
-                                                     return_trial=False, comm=comm)
+            subj_logl = cget_induc_ll(subj_struct, subj_induct, **param, n_states=n_states,
+                                                     return_trial=False, gamma_model=gamma_model, model=model)
             logl += subj_logl
         # logl = get_induction_log_likelihood(struct_df, induct_df, **param,
         #                                     return_trial=False, use_run=use_run)
@@ -558,7 +561,8 @@ def cfit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
     logl = -res['fun']
     return param, logl
 
-def cfit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, comm=[]):
+
+def cfit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, model=[]):
     """Estimate parameters for individual subjects."""
 
     df_list = []
@@ -567,7 +571,7 @@ def cfit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, co
         subj_struct = struct.query(f'SubjNum == {sub}')
         subj_induct = induct.query(f'SubjNum == {sub}')
         param, logl = cfit_induct(subj_struct, subj_induct, fixed, var_names, var_bounds,
-                           n_states=n_states, verbose=False, comm=comm)
+                           n_states=n_states, verbose=False, model=model)
         param['subject'] = sub
         param['log_like'] = logl
         df = pd.DataFrame(param, index=[0])
@@ -575,3 +579,7 @@ def cfit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, co
     df = pd.concat(df_list, axis=0, ignore_index=True)
     #df = df.set_index('subject')
     return df
+
+############################################################
+########### python setup.py build_ext --inplace ############
+############################################################

@@ -8,12 +8,12 @@ import numpy as np
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True) 
-cdef cprob_induct(int cue, 
+cdef cprob_choice(int cue, 
                    int opt1, 
                    int opt2, 
                    int response, 
                    double [:,:] SR,
-                   double [:,:] comm,
+                   double [:,:] model,
                    double w,
                    double tau):
     
@@ -24,8 +24,8 @@ cdef cprob_induct(int cue,
 
 
     
-    support1 = w * SR[cue, opt1] + (1.0 - w) * comm[cue, opt1]
-    support2 = w * SR[cue, opt2] + (1.0 - w) * comm[cue, opt2]
+    support1 = w * SR[cue, opt1] + (1.0 - w) * model[cue, opt1]
+    support2 = w * SR[cue, opt2] + (1.0 - w) * model[cue, opt2]
     if response == 0:
         support = support1
     else:
@@ -34,14 +34,15 @@ cdef cprob_induct(int cue,
 
     return prob
 
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def cget_induc_ll(int [:] cue,
+def cprob_induct(int [:] cue,
                   int [:] opt1,
                   int [:] opt2,
                   int[:] response,
                   double [:,:] SR,
-                  double [:,:] comm,
+                  double [:,:] model,
                   double w,
                   double tau,
                   bint return_trial,
@@ -60,8 +61,8 @@ def cget_induc_ll(int [:] cue,
             log_likelihood += log(trial_probability)
             all_trial_prob[i] = trial_probability
             continue
-        trial_probability = cprob_induct(
-            cue[i], opt1[i], opt2[i], response[i], SR, comm, w, tau)
+        trial_probability = cprob_choice(
+            cue[i], opt1[i], opt2[i], response[i], SR, model, w, tau)
         eps = 0.000001
         if isnan(trial_probability):
             # probability undefined; can occur if SR has zeros
@@ -78,7 +79,6 @@ def cget_induc_ll(int [:] cue,
         return log_likelihood
 
 
-
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def cprob_induct_subject(double [:,:] SR,
@@ -88,7 +88,7 @@ def cprob_induct_subject(double [:,:] SR,
                   int[:] response,
                   double tau,
                   double w,
-                  double [:,:] comm,
+                  double [:,:] model,
                   double [:] trial_prob):
     
     
@@ -99,6 +99,6 @@ def cprob_induct_subject(double [:,:] SR,
             trial_prob[i] = np.nan
             continue
             
-        trial_prob[i] = cprob_induct(
-            cue[i], opt1[i], opt2[i], response[i], SR, comm, w, tau)
+        trial_prob[i] = cprob_choice(
+            cue[i], opt1[i], opt2[i], response[i], SR, model, w, tau)
     return trial_prob
