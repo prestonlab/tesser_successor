@@ -27,8 +27,6 @@ from . import util
 from . import sr
 from . import tasks
 from . import network
-from . import cfit
-from . import csr
 from scipy.spatial import distance
 from scipy import optimize
 from scipy.stats import linregress
@@ -113,32 +111,6 @@ def assess_induct_fit_subject_hybrid(struct, induct, param, comm, choice_rule):
                                      param['alpha'], param['tau'], param['w'],
                                      response_key='response', comm=comm, choice_rule=choice_rule)
     induct = induct.copy()
-    induct.loc[:, 'Data'] = induct['Acc']
-    induct.loc[:, 'Model'] = trial_prob
-    results = induct.melt(id_vars=['SubjNum', 'TrialNum', 'QuestType',
-                                   'Environment'], value_vars=['Data', 'Model'],
-                          var_name='Source', value_name='Accuracy')
-    return results
-
-def cassess_fit(struct, induct, param, n_states, comm):
-    """Compare model and data in fitting the induction task."""
-    
-    SR = sr.clearn_sr(struct, param['gamma'], param['alpha'], n_states=n_states)
-    induc_df = induct.reset_index()
-    num_trials = induc_df.shape[0]
-    cue = induc_df.cue.to_numpy()
-    cue = cue.astype(np.dtype('i'))
-    opt1 = induc_df.opt1.to_numpy()
-    opt1 = opt1.astype(np.dtype('i'))
-    opt2 = induc_df.opt2.to_numpy()
-    opt2 = opt2.astype(np.dtype('i'))
-    res = induc_df.response.to_numpy()
-    res = res.astype(np.dtype('i'))
-    trial_prob = np.zeros(num_trials)
-    trial_prob = cfit.cprob_induct_subject(SR, cue, opt1, opt2, res ,
-                                      param['tau'], param['w'],
-                                      comm=comm, trial_prob=trial_prob)
-    induct = induct_df.copy()
     induct.loc[:, 'Data'] = induct['Acc']
     induct.loc[:, 'Model'] = trial_prob
     results = induct.melt(id_vars=['SubjNum', 'TrialNum', 'QuestType',
@@ -459,127 +431,3 @@ def minimize_grouping_error(struc_df, group_df, option):
     # print("--- %s seconds ---" % (time.time() - start_time))
     return alpha_max, gamma_max
 
-
-
-def cget_induc_ll(struc_df, induc_df, gamma, gamma2, alpha, tau, w, n_states, return_trial, gamma_model, model):
-    SR = sr.clearn_sr(struc_df, gamma, alpha, n_states)
-    if gamma_model:
-        model = sr.clearn_sr(struc_df, gamma2, alpha, n_states)
-    induc_df = induc_df.reset_index()
-    num_trials = induc_df.shape[0]
-    cue = induc_df.cue.to_numpy()
-    cue = cue.astype(np.dtype('i'))
-    opt1 = induc_df.opt1.to_numpy()
-    opt1 = opt1.astype(np.dtype('i'))
-    opt2 = induc_df.opt2.to_numpy()
-    opt2 = opt2.astype(np.dtype('i'))
-    res = induc_df.response.to_numpy()
-    res = res.astype(np.dtype('i'))
-    all_trial_prob = np.zeros(num_trials)
-    return cfit.cprob_induct(cue, opt1, opt2, res , SR, model, w, tau, return_trial, all_trial_prob)
-
-    
-def cfit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
-               f_optim=optimize.differential_evolution,
-               verbose=False, options=None, model='comm', comm=[]):
-    """Fit induction data for one subject faster cython improved version.
-
-    For a given set of parameters, the structure learning task is used
-    to generate a simulated SR matrix. Then this matrix is used to 
-    simulate responses in the induction task. Parameters are optimized
-    to obtain the set that maximizes the probability of the responses
-    observed in the induction task.
-
-    Parameters
-    ----------
-    struct_df : DataFrame
-        Structure learning data.
-
-    induct_df : DataFrame
-        Induction test data.
-
-    fixed : dict
-        Parameter values for all fixed parameters.
-
-    var_names : list
-        String name for each variable parameter.
-
-    var_bounds : dict
-        Bounds (in low, high order) for each variable parameter.
-
-    f_optim : function
-        Function to use for parameter optimization.
-
-    verbose : Boolean
-        If true, more information about the search will be printed.
-
-    options : dict
-        Options to pass to f_optim.
-
-    use_run : tuple
-        Run to take the SR matrix from for predicting induction data,
-        specified as (part_number, run_number).
-
-    Returns
-    -------
-    param : dict
-        Best-fitting parameters.
-
-    logl : float
-        Maximum log likelihood.
-    """
-
-    if options is None:
-        options = {}
-    if model == 'gamma':
-        gamma_model = True
-    param = fixed.copy()
-    subjects = struct_df.SubjNum.unique()
-
-    def f_fit(x):
-        param.update(dict(zip(var_names, x)))
-        # draft code to fit at the group level:
-        logl = 0
-        for subject in subjects:
-            subj_filter = f'SubjNum == {subject}'
-            subj_struct = struct_df.query(subj_filter)
-            subj_induct = induct_df.query(subj_filter)
-            subj_logl = cget_induc_ll(subj_struct, subj_induct, **param, n_states=n_states,
-                                                     return_trial=False, gamma_model=gamma_model, model=model)
-            logl += subj_logl
-        # logl = get_induction_log_likelihood(struct_df, induct_df, **param,
-        #                                     return_trial=False, use_run=use_run)
-        return -logl
-
-    bounds = param_bounds(var_bounds, var_names)
-    res = f_optim(f_fit, bounds, disp=verbose, **options)
-
-    # fitted parameters
-    param = fixed.copy()
-    param.update(dict(zip(var_names, res['x'])))
-
-    logl = -res['fun']
-    return param, logl
-
-
-def cfit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, model=[]):
-    """Estimate parameters for individual subjects."""
-
-    df_list = []
-    for sub in struct['SubjNum'].unique():
-        print(f'Estimating parameters for {sub}...')
-        subj_struct = struct.query(f'SubjNum == {sub}')
-        subj_induct = induct.query(f'SubjNum == {sub}')
-        param, logl = cfit_induct(subj_struct, subj_induct, fixed, var_names, var_bounds,
-                           n_states=n_states, verbose=False, model=model)
-        param['subject'] = sub
-        param['log_like'] = logl
-        df = pd.DataFrame(param, index=[0])
-        df_list.append(df)
-    df = pd.concat(df_list, axis=0, ignore_index=True)
-    #df = df.set_index('subject')
-    return df
-
-############################################################
-########### python setup.py build_ext --inplace ############
-############################################################
