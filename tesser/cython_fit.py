@@ -24,6 +24,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from . import util
+from . import cython_sr
 from . import sr
 from . import tasks
 from . import network
@@ -55,10 +56,12 @@ def param_bounds(var_bounds, var_names):
 
 
 
-def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, model):
+def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, model_type, model):
     """Compare model and data in fitting the induction task."""
     
-    SR = sr.clearn_sr(struct, param['gamma'], param['alpha'], n_states=n_states)
+    SR = cython_sr.learn_sr(struct, param['gamma'], param['alpha'], n_states=n_states)
+    if model_type == 'gamma':
+        model = cython_sr.learn_sr(struct, param['gamma2'], param['alpha'], n_states=n_states)
     induct_df = induct.reset_index()
     num_trials = induct_df.shape[0]
     cue = induct_df.cue.to_numpy()
@@ -70,7 +73,7 @@ def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, model):
     res = induct_df.response.to_numpy()
     res = res.astype(np.dtype('i'))
     trial_prob = np.zeros(num_trials)
-    trial_prob = cfit.cprob_induct_subject(SR, cue, opt1, opt2, res ,
+    trial_prob = cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
                                       param['tau'], param['w'],
                                       model=model, trial_prob=trial_prob)
     induct = induct_df.copy()
@@ -103,10 +106,10 @@ def grouping_error(struc_df, group_df, alpha, gamma):
     return err
 
 
-def get_induction_log_likelihood_hybrid(struc_df, induc_df, gamma, gamma2, alpha, tau, w, n_states, return_trial, model_type, model):
-    SR = sr.clearn_sr(struc_df, gamma, alpha, n_states)
+def get_induction_log_likelihood_hybrid(struc_df, induc_df, gamma, alpha, tau, w, n_states, return_trial, model_type, model, gamma2=None):
+    SR = cython_sr.learn_sr(struc_df, gamma, alpha, n_states)
     if model_type == 'gamma':
-        model = sr.clearn_sr(struc_df, gamma2, alpha, n_states)
+        model = cython_sr.learn_sr(struc_df, gamma2, alpha, n_states)
     induc_df = induc_df.reset_index()
     num_trials = induc_df.shape[0]
     cue = induc_df.cue.to_numpy()
@@ -118,7 +121,7 @@ def get_induction_log_likelihood_hybrid(struc_df, induc_df, gamma, gamma2, alpha
     res = induc_df.response.to_numpy()
     res = res.astype(np.dtype('i'))
     all_trial_prob = np.zeros(num_trials)
-    return cfit.cprob_induct(cue, opt1, opt2, res , SR, model, w, tau, return_trial, all_trial_prob)
+    return cfit.prob_induct(cue, opt1, opt2, res , SR, model, w, tau, return_trial, all_trial_prob)
 
     
 def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
@@ -219,6 +222,44 @@ def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, ver
     df = pd.concat(df_list, axis=0, ignore_index=True)
     #df = df.set_index('subject')
     return df
+
+def plot_by_question(struct_all, induct_all, results, n_states=21, comm=[], fig_name='Unnamed', model_type=''):
+    '''Plots results for accuracy of individual fitting by question type.
+        INPUT:
+            results: DataFrame with param
+    '''
+    res_list = []
+    for subject in results.index.unique():
+        subj_filter = f'SubjNum == {subject}'
+        subj_struct = struct_all.query(subj_filter)
+        subj_induct = induct_all.query(subj_filter)
+        subj_param = results.loc[subject]
+        param = {'alpha': subj_param['alpha'], 'gamma': subj_param['gamma'],
+                 'tau': subj_param['tau'],'w': subj_param['w']}
+        if model_type=='gamma':
+            param['gamma2'] = subj_param['gamma2']
+        res = assess_induct_fit_subject_hybrid(subj_struct, subj_induct, param, n_states, model_type=model_type, model=comm)
+        res_list.append(res)
+    fitted = pd.concat(res_list, axis=0)
+    
+    fig, axes = plt.subplots(2, 2, figsize = (10,10),sharey=False)
+    fig.suptitle(fig_name)
+    names = [ 'Environment', 'QuestType']
+    for i,t in enumerate(names):
+        n = fitted.groupby(['Source', 'SubjNum', names[i]])['Accuracy'].mean()
+        m  = n.unstack(level=0)
+        g = sns.scatterplot(x='Model', y='Data', hue=names[i], data=m.reset_index(), ax=axes[0][i % 2]);
+        g.set_xlim(0, 1.02);
+        g.set_ylim(0, 1.02);
+        g.set_aspect(1);
+        g.set_title('Individual accuracies \n data vs model \n by '+names[i])
+        g.plot((0, 1), (0, 1), '-k');
+
+        f = sns.pointplot(kind='point', x=names[i], y='Accuracy', 
+                    hue='Source', dodge=True, data=n.reset_index(), ax=axes[1][i % 2]);
+        f.set(ylim=(0, 1.02));
+    fig.savefig('./Data/'+fig_name)
+#     return fig
 
 ############################################################
 ########### python setup.py build_ext --inplace ############

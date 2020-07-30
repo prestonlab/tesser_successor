@@ -38,7 +38,7 @@ import numpy.linalg as la
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from . import network
-from . import csr
+# from . import csr
 
 
 class SRMatrix:
@@ -173,39 +173,39 @@ def learn_sr(df, gamma, alpha):
     return SR_matrices
 
 
-def clearn_sr(df, gamma, alpha, n_states):
-    """
-    Train an SR matrix on the structure-learning task.
+# def clearn_sr(df, gamma, alpha, n_states):
+#     """
+#     Train an SR matrix on the structure-learning task.
 
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        Structure learning task trials. Must have fields:
-        objnum - object number (starting from 1)
-        part - part number
-        run - run number
+#     Parameters
+#     ----------
+#     df : pandas.DataFrame
+#         Structure learning task trials. Must have fields:
+#         objnum - object number (starting from 1)
+#         part - part number
+#         run - run number
 
-    gamma : float
-        Discounting factor.
+#     gamma : float
+#         Discounting factor.
 
-    alpha : float
-        Learning rate.
+#     alpha : float
+#         Learning rate.
         
-    n_states : int
-        The number of states in the environment to initialize matrices.
+#     n_states : int
+#         The number of states in the environment to initialize matrices.
 
-    Returns
-    -------
-    M : numpy.array
-        SR Matrix for all parts and run for a given subject.
-    """
-    M = np.zeros([n_states, n_states])
-    onehot= np.eye(n_states, dtype = np.dtype('i'))
+#     Returns
+#     -------
+#     M : numpy.array
+#         SR Matrix for all parts and run for a given subject.
+#     """
+#     M = np.zeros([n_states, n_states])
+#     onehot= np.eye(n_states, dtype = np.dtype('i'))
 
-    envstep = df.objnum.to_numpy() -1
-    envstep = envstep.astype(np.dtype('i'))
-    csr.SR(envstep, gamma, alpha, M, n_states, onehot)
-    return M
+#     envstep = df.objnum.to_numpy() -1
+#     envstep = envstep.astype(np.dtype('i'))
+#     csr.SR(envstep, gamma, alpha, M, n_states, onehot)
+#     return M
 
 
 def explore_runs(df, option, gamma, alpha):

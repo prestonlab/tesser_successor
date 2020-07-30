@@ -8,7 +8,7 @@ import numpy as np
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True) 
-cdef cprob_choice(int cue, 
+cdef prob_choice(int cue, 
                    int opt1, 
                    int opt2, 
                    int response, 
@@ -37,7 +37,7 @@ cdef cprob_choice(int cue,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def cprob_induct(int [:] cue,
+def prob_induct(int [:] cue,
                   int [:] opt1,
                   int [:] opt2,
                   int[:] response,
@@ -56,15 +56,15 @@ def cprob_induct(int [:] cue,
     
         
     for i in range(num_trials):
-        if isnan(response[i]):
+        if np.isnan(response[i]):
             trial_probability = 0.5
             log_likelihood += log(trial_probability)
             all_trial_prob[i] = trial_probability
             continue
-        trial_probability = cprob_choice(
+        trial_probability = prob_choice(
             cue[i], opt1[i], opt2[i], response[i], SR, model, w, tau)
         eps = 0.000001
-        if isnan(trial_probability):
+        if np.isnan(trial_probability):
             # probability undefined; can occur if SR has zeros
             trial_probability = eps
         elif trial_probability < eps:
@@ -81,7 +81,7 @@ def cprob_induct(int [:] cue,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def cprob_induct_subject(double [:,:] SR,
+def prob_induct_subject(double [:,:] SR,
                   int [:] cue,
                   int [:] opt1,
                   int [:] opt2,
@@ -95,10 +95,10 @@ def cprob_induct_subject(double [:,:] SR,
     cdef Py_ssize_t num_trials = cue.shape[0]    
         
     for i in range(num_trials):
-        if isnan(response[i]):
+        if np.isnan(response[i]):
             trial_prob[i] = np.nan
             continue
             
-        trial_prob[i] = cprob_choice(
+        trial_prob[i] = prob_choice(
             cue[i], opt1[i], opt2[i], response[i], SR, model, w, tau)
     return trial_prob
