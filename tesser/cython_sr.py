@@ -7,29 +7,9 @@ representation learning agent.
 
 These include:
 
-- Class that defines a reinforcement learning agent which learns the state-state
-  successor representation without taking actions.
-    SRMatrix()
-- Function uses the reinforcement learning agent class in SRMatrix to learn.
-    run_experiment(envstep, gamma, alpha, M, n_states)
-
 - Train an SR matrix on the structure-learning task.
     learn_sr(df, gamma, alpha)
-
-- Computes the matrix to which SR learning should converge, by summing a
-    geometric matrix series.
-    compute_limit_matrix(gamma, adjacency, n_states)
-
-- Computes the correlation matrix for a matrix's rows.
-    correlate_rows(matrix)
-
-- Computes the correlation matrix for a matrix's columns.
-    correlate_columns(matrix)
-
-- Computes the norm or correlation between the SR matrix and the limit matrix,
-  given a subject & values for gamma, alpha
-    compute_correlations(df, option, gamma, alpha)
-
+    
 """
 import numpy as np
 from . import csr
@@ -43,8 +23,6 @@ def learn_sr(df, gamma, alpha, n_states):
     df : pandas.DataFrame
         Structure learning task trials. Must have fields:
         objnum - object number (starting from 1)
-        part - part number
-        run - run number
 
     gamma : float
         Discounting factor.
@@ -67,3 +45,27 @@ def learn_sr(df, gamma, alpha, n_states):
     envstep = envstep.astype(np.dtype('i'))
     csr.SR(envstep, gamma, alpha, M, n_states, onehot)
     return M
+
+def transition_indiv(subj_df, n_states):
+    df=subj_df.reset_index()
+    df =df.objnum
+    matrix = np.zeros([n_states, n_states])
+    for i, j in enumerate(df):
+        try:
+            matrix[j-1,df[i+1]-1]+=1
+        except:
+            KeyError
+    matrix[matrix == 0] = 0.0000001
+    for row in range(n_states):
+        matrix[row] /= np.sum(matrix[row])
+    return matrix
+
+def transition_all(struct_df, n_states):
+    dict_array = {}
+    subjects = struct_df.SubjNum.unique()
+    for subject in subjects:
+        subj_filter = f'SubjNum == {subject}'
+        subj_struct = struct_df.query(subj_filter)
+        dict_array[subject] = transition_indiv(subj_struct, n_states)
+    return dict_array
+
