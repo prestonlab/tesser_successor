@@ -1,3 +1,5 @@
+## Code for implementing the Successor Representation model on the Tesser fMRI study data
+
 All code libraries for reading in behavioral data and simulations should be under tesser (e.g., `from tesser import network`). Notebooks can be placed in the main directory. Notebooks should generally not have function definitions; instead, add a function to the relevant module and import that module in your notebook.
 
 Module purposes:
