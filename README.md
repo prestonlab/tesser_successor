@@ -1,6 +1,7 @@
 ## Code for implementing the SR model on the Tesser fMRI data
 
-You can find more information about the study [here](https://github.com/prestonlab/tesser_successor/wiki).
+This is the repository for implementing successor representation (SR) model on behavioral and neuroimaging data from the Tesser experiment. 
+You can find more information about Tesser [here](https://github.com/prestonlab/tesser_successor/wiki).
 
 All code libraries for reading in behavioral data and simulations should be under tesser (e.g., `from tesser import network`). Notebooks can be placed in the main directory. Notebooks should generally not have function definitions; instead, add a function to the relevant module and import that module in your notebook.
 
