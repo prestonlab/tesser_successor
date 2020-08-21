@@ -12,6 +12,7 @@ def env_step():
 
 @pytest.fixture
 def env_step_sr():
+    # TODO: check that this is actually the correct answer
     expected = np.array(
         [[0.225, 0.85125, 0.1125, 0., 0., 0.],
          [0.25, 0.3375, 0.72625, 0., 0., 0.],
@@ -39,6 +40,7 @@ def env_df():
 
 @pytest.fixture
 def env_df_sr():
+    # TODO: check that this is actually the correct answer
     expected = {
         (1, 1): np.array(
             [[0., 0.9, 0., 0.],
@@ -75,7 +77,6 @@ def test_sr_trials(env_step, env_step_sr):
     SR_init = np.zeros((n_state, n_state))
     SR = sr.run_experiment(env_step, gamma, alpha, SR_init.copy(), n_state)
 
-    # TODO: check that this is actually the correct answer
     np.testing.assert_allclose(SR, env_step_sr)
 
 
