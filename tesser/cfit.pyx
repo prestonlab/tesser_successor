@@ -8,7 +8,7 @@ import numpy as np
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True) 
-cdef prob_choice(int cue, 
+cpdef prob_choice(int cue, 
                    int opt1, 
                    int opt2, 
                    int response, 

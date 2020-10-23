@@ -25,6 +25,7 @@ setuptools.setup(
         'matplotlib',
         'pandas',
         'seaborn',
+        'cython',
     ],
     ext_modules=cythonize(['tesser/csr.pyx',
                            'tesser/cfit.pyx']),

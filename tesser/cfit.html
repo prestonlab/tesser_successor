@@ -286,8 +286,13 @@ body.cython { font-family: courier; font-size: 12; }
 .cython.score-252 {background-color: #FFFF09;}
 .cython.score-253 {background-color: #FFFF09;}
 .cython.score-254 {background-color: #FFFF09;}
+pre { line-height: 125%; margin: 0; }
+td.linenos pre { color: #000000; background-color: #f0f0f0; padding: 0 5px 0 5px; }
+span.linenos { color: #000000; background-color: #f0f0f0; padding: 0 5px 0 5px; }
+td.linenos pre.special { color: #000000; background-color: #ffffc0; padding: 0 5px 0 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px 0 5px; }
 .cython .hll { background-color: #ffffcc }
-.cython  { background: #f8f8f8; }
+.cython { background: #f8f8f8; }
 .cython .c { color: #408080; font-style: italic } /* Comment */
 .cython .err { border: 1px solid #FF0000 } /* Error */
 .cython .k { color: #008000; font-weight: bold } /* Keyword */
@@ -382,8 +387,9 @@ body.cython { font-family: courier; font-size: 12; }
 <pre class="cython line score-0">&#xA0;<span class="">008</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">009</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
 <pre class="cython line score-0">&#xA0;<span class="">010</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">cdivision</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span></pre>
-<pre class="cython line score-3" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">011</span>: <span class="k">cdef</span> <span class="nf">prob_choice</span><span class="p">(</span><span class="nb">int</span> <span class="n">cue</span><span class="p">,</span></pre>
-<pre class='cython code score-3 '>static PyObject *__pyx_f_6tesser_4cfit_prob_choice(int __pyx_v_cue, int __pyx_v_opt1, int __pyx_v_opt2, int __pyx_v_response, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_model, double __pyx_v_w, double __pyx_v_tau) {
+<pre class="cython line score-123" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">011</span>: <span class="k">cpdef</span> <span class="nf">prob_choice</span><span class="p">(</span><span class="nb">int</span> <span class="n">cue</span><span class="p">,</span></pre>
+<pre class='cython code score-123 '>static PyObject *__pyx_pw_6tesser_4cfit_1prob_choice(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_f_6tesser_4cfit_prob_choice(int __pyx_v_cue, int __pyx_v_opt1, int __pyx_v_opt2, int __pyx_v_response, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_model, double __pyx_v_w, double __pyx_v_tau, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_support1;
   double __pyx_v_support2;
   double __pyx_v_support;
@@ -398,6 +404,162 @@ body.cython { font-family: courier; font-size: 12; }
   <span class='pyx_c_api'>__Pyx_AddTraceback</span>("tesser.cfit.prob_choice", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
+  <span class='refnanny'>__Pyx_XGIVEREF</span>(__pyx_r);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_6tesser_4cfit_1prob_choice(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_6tesser_4cfit_1prob_choice(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  int __pyx_v_cue;
+  int __pyx_v_opt1;
+  int __pyx_v_opt2;
+  int __pyx_v_response;
+  __Pyx_memviewslice __pyx_v_SR = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_model = { 0, 0, { 0 }, { 0 }, { 0 } };
+  double __pyx_v_w;
+  double __pyx_v_tau;
+  PyObject *__pyx_r = 0;
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("prob_choice (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&amp;__pyx_n_s_cue,&amp;__pyx_n_s_opt1,&amp;__pyx_n_s_opt2,&amp;__pyx_n_s_response,&amp;__pyx_n_s_SR,&amp;__pyx_n_s_model,&amp;__pyx_n_s_w,&amp;__pyx_n_s_tau,0};
+    PyObject* values[8] = {0,0,0,0,0,0,0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args);
+      switch (pos_args) {
+        case  8: values[7] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 7);
+        CYTHON_FALLTHROUGH;
+        case  7: values[6] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 6);
+        CYTHON_FALLTHROUGH;
+        case  6: values[5] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 5);
+        CYTHON_FALLTHROUGH;
+        case  5: values[4] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 4);
+        CYTHON_FALLTHROUGH;
+        case  4: values[3] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 3);
+        CYTHON_FALLTHROUGH;
+        case  3: values[2] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 2);
+        CYTHON_FALLTHROUGH;
+        case  2: values[1] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = <span class='py_c_api'>PyDict_Size</span>(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_cue)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_opt1)) != 0)) kw_args--;
+        else {
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prob_choice", 1, 8, 8, 1); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+        }
+        CYTHON_FALLTHROUGH;
+        case  2:
+        if (likely((values[2] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_opt2)) != 0)) kw_args--;
+        else {
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prob_choice", 1, 8, 8, 2); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+        }
+        CYTHON_FALLTHROUGH;
+        case  3:
+        if (likely((values[3] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_response)) != 0)) kw_args--;
+        else {
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prob_choice", 1, 8, 8, 3); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+        }
+        CYTHON_FALLTHROUGH;
+        case  4:
+        if (likely((values[4] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_SR)) != 0)) kw_args--;
+        else {
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prob_choice", 1, 8, 8, 4); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+        }
+        CYTHON_FALLTHROUGH;
+        case  5:
+        if (likely((values[5] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_model)) != 0)) kw_args--;
+        else {
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prob_choice", 1, 8, 8, 5); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+        }
+        CYTHON_FALLTHROUGH;
+        case  6:
+        if (likely((values[6] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_w)) != 0)) kw_args--;
+        else {
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prob_choice", 1, 8, 8, 6); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+        }
+        CYTHON_FALLTHROUGH;
+        case  7:
+        if (likely((values[7] = <span class='pyx_c_api'>__Pyx_PyDict_GetItemStr</span>(__pyx_kwds, __pyx_n_s_tau)) != 0)) kw_args--;
+        else {
+          <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prob_choice", 1, 8, 8, 7); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+        }
+      }
+      if (unlikely(kw_args &gt; 0)) {
+        if (unlikely(<span class='pyx_c_api'>__Pyx_ParseOptionalKeywords</span>(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "prob_choice") &lt; 0)) <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+      }
+    } else if (<span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args) != 8) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 0);
+      values[1] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 1);
+      values[2] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 2);
+      values[3] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 3);
+      values[4] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 4);
+      values[5] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 5);
+      values[6] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 6);
+      values[7] = <span class='py_macro_api'>PyTuple_GET_ITEM</span>(__pyx_args, 7);
+    }
+    __pyx_v_cue = <span class='pyx_c_api'>__Pyx_PyInt_As_int</span>(values[0]); if (unlikely((__pyx_v_cue == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+    __pyx_v_opt1 = <span class='pyx_c_api'>__Pyx_PyInt_As_int</span>(values[1]); if (unlikely((__pyx_v_opt1 == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 12, __pyx_L3_error)</span>
+    __pyx_v_opt2 = <span class='pyx_c_api'>__Pyx_PyInt_As_int</span>(values[2]); if (unlikely((__pyx_v_opt2 == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 13, __pyx_L3_error)</span>
+    __pyx_v_response = <span class='pyx_c_api'>__Pyx_PyInt_As_int</span>(values[3]); if (unlikely((__pyx_v_response == (int)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 14, __pyx_L3_error)</span>
+    __pyx_v_SR = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_dsds_double</span>(values[4], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_SR.memview)) __PYX_ERR(0, 15, __pyx_L3_error)</span>
+    __pyx_v_model = <span class='pyx_c_api'>__Pyx_PyObject_to_MemoryviewSlice_dsds_double</span>(values[5], PyBUF_WRITABLE);<span class='error_goto'> if (unlikely(!__pyx_v_model.memview)) __PYX_ERR(0, 16, __pyx_L3_error)</span>
+    __pyx_v_w = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(values[6]); if (unlikely((__pyx_v_w == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 17, __pyx_L3_error)</span>
+    __pyx_v_tau = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(values[7]); if (unlikely((__pyx_v_tau == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 18, __pyx_L3_error)</span>
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  <span class='pyx_c_api'>__Pyx_RaiseArgtupleInvalid</span>("prob_choice", 1, 8, 8, <span class='py_macro_api'>PyTuple_GET_SIZE</span>(__pyx_args)); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L3_error)</span>
+  __pyx_L3_error:;
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("tesser.cfit.prob_choice", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_6tesser_4cfit_prob_choice(__pyx_self, __pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau);
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+
+  /* function exit code */
+  <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_6tesser_4cfit_prob_choice(CYTHON_UNUSED PyObject *__pyx_self, int __pyx_v_cue, int __pyx_v_opt1, int __pyx_v_opt2, int __pyx_v_response, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_model, double __pyx_v_w, double __pyx_v_tau) {
+  PyObject *__pyx_r = NULL;
+  <span class='refnanny'>__Pyx_RefNannyDeclarations</span>
+  <span class='refnanny'>__Pyx_RefNannySetupContext</span>("prob_choice", 0);
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_r);
+  if (unlikely(!__pyx_v_SR.memview)) { <span class='pyx_c_api'>__Pyx_RaiseUnboundLocalError</span>("SR"); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L1_error)</span> }
+  if (unlikely(!__pyx_v_model.memview)) { <span class='pyx_c_api'>__Pyx_RaiseUnboundLocalError</span>("model"); <span class='error_goto'>__PYX_ERR(0, 11, __pyx_L1_error)</span> }
+  __pyx_t_1 = __pyx_f_6tesser_4cfit_prob_choice(__pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau, 0);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)</span>
+  <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  <span class='pyx_macro_api'>__Pyx_XDECREF</span>(__pyx_t_1);
+  <span class='pyx_c_api'>__Pyx_AddTraceback</span>("tesser.cfit.prob_choice", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_SR, 1);
+  __PYX_XDEC_MEMVIEW(&amp;__pyx_v_model, 1);
   <span class='refnanny'>__Pyx_XGIVEREF</span>(__pyx_r);
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return __pyx_r;
@@ -459,9 +621,9 @@ body.cython { font-family: courier; font-size: 12; }
 <pre class="cython line score-0">&#xA0;<span class="">039</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
 <pre class="cython line score-132" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">040</span>: <span class="k">def</span> <span class="nf">prob_induct</span><span class="p">(</span><span class="nb">int</span> <span class="p">[:]</span> <span class="n">cue</span><span class="p">,</span></pre>
 <pre class='cython code score-132 '>/* Python wrapper */
-static PyObject *__pyx_pw_6tesser_4cfit_1prob_induct(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_6tesser_4cfit_1prob_induct = {"prob_induct", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6tesser_4cfit_1prob_induct, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_6tesser_4cfit_1prob_induct(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6tesser_4cfit_3prob_induct(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_6tesser_4cfit_3prob_induct = {"prob_induct", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6tesser_4cfit_3prob_induct, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_6tesser_4cfit_3prob_induct(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_cue = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_opt1 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_opt2 = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -601,7 +763,7 @@ static PyObject *__pyx_pw_6tesser_4cfit_1prob_induct(PyObject *__pyx_self, PyObj
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_6tesser_4cfit_prob_induct(__pyx_self, __pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau, __pyx_v_return_trial, __pyx_v_all_trial_prob);
+  __pyx_r = __pyx_pf_6tesser_4cfit_2prob_induct(__pyx_self, __pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau, __pyx_v_return_trial, __pyx_v_all_trial_prob);
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -611,7 +773,7 @@ static PyObject *__pyx_pw_6tesser_4cfit_1prob_induct(PyObject *__pyx_self, PyObj
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6tesser_4cfit_prob_induct(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_cue, __Pyx_memviewslice __pyx_v_opt1, __Pyx_memviewslice __pyx_v_opt2, __Pyx_memviewslice __pyx_v_response, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_model, double __pyx_v_w, double __pyx_v_tau, int __pyx_v_return_trial, __Pyx_memviewslice __pyx_v_all_trial_prob) {
+static PyObject *__pyx_pf_6tesser_4cfit_2prob_induct(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_cue, __Pyx_memviewslice __pyx_v_opt1, __Pyx_memviewslice __pyx_v_opt2, __Pyx_memviewslice __pyx_v_response, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_model, double __pyx_v_w, double __pyx_v_tau, int __pyx_v_return_trial, __Pyx_memviewslice __pyx_v_all_trial_prob) {
   Py_ssize_t __pyx_v_num_trials;
   double __pyx_v_log_likelihood;
   double __pyx_v_trial_probability;
@@ -646,7 +808,7 @@ static PyObject *__pyx_pf_6tesser_4cfit_prob_induct(CYTHON_UNUSED PyObject *__py
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_tuple__19);
   <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_tuple__19);
 /* … */
-  __pyx_t_1 = PyCFunction_NewEx(&amp;__pyx_mdef_6tesser_4cfit_1prob_induct, NULL, __pyx_n_s_tesser_cfit);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)</span>
+  __pyx_t_1 = PyCFunction_NewEx(&amp;__pyx_mdef_6tesser_4cfit_3prob_induct, NULL, __pyx_n_s_tesser_cfit);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
   if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_prob_induct, __pyx_t_1) &lt; 0) <span class='error_goto'>__PYX_ERR(0, 40, __pyx_L1_error)</span>
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
@@ -715,7 +877,7 @@ static PyObject *__pyx_pf_6tesser_4cfit_prob_induct(CYTHON_UNUSED PyObject *__py
 </pre><pre class="cython line score-0" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">063</span>:             <span class="k">continue</span></pre>
 <pre class='cython code score-0 '>      goto __pyx_L3_continue;
 </pre><pre class="cython line score-11" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">064</span>:         <span class="n">trial_probability</span> <span class="o">=</span> <span class="n">prob_choice</span><span class="p">(</span></pre>
-<pre class='cython code score-11 '>    __pyx_t_4 = __pyx_f_6tesser_4cfit_prob_choice((*((int *) ( /* dim=0 */ (__pyx_v_cue.data + __pyx_t_7 * __pyx_v_cue.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt1.data + __pyx_t_10 * __pyx_v_opt1.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt2.data + __pyx_t_11 * __pyx_v_opt2.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_response.data + __pyx_t_12 * __pyx_v_response.strides[0]) ))), __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau);<span class='error_goto'> if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 64, __pyx_L1_error)</span>
+<pre class='cython code score-11 '>    __pyx_t_4 = __pyx_f_6tesser_4cfit_prob_choice((*((int *) ( /* dim=0 */ (__pyx_v_cue.data + __pyx_t_7 * __pyx_v_cue.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt1.data + __pyx_t_10 * __pyx_v_opt1.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt2.data + __pyx_t_11 * __pyx_v_opt2.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_response.data + __pyx_t_12 * __pyx_v_response.strides[0]) ))), __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau, 0);<span class='error_goto'> if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 64, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_4);
     __pyx_t_13 = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(__pyx_t_4); if (unlikely((__pyx_t_13 == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 64, __pyx_L1_error)</span>
     <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_4); __pyx_t_4 = 0;
@@ -815,9 +977,9 @@ static PyObject *__pyx_pf_6tesser_4cfit_prob_induct(CYTHON_UNUSED PyObject *__py
 <pre class="cython line score-0">&#xA0;<span class="">083</span>: <span class="nd">@cython</span><span class="o">.</span><span class="n">wraparound</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span></pre>
 <pre class="cython line score-119" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">084</span>: <span class="k">def</span> <span class="nf">prob_induct_subject</span><span class="p">(</span><span class="n">double</span> <span class="p">[:,:]</span> <span class="n">SR</span><span class="p">,</span></pre>
 <pre class='cython code score-119 '>/* Python wrapper */
-static PyObject *__pyx_pw_6tesser_4cfit_3prob_induct_subject(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_6tesser_4cfit_3prob_induct_subject = {"prob_induct_subject", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6tesser_4cfit_3prob_induct_subject, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_6tesser_4cfit_3prob_induct_subject(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6tesser_4cfit_5prob_induct_subject(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_6tesser_4cfit_5prob_induct_subject = {"prob_induct_subject", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_6tesser_4cfit_5prob_induct_subject, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_6tesser_4cfit_5prob_induct_subject(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_SR = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_cue = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_opt1 = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -946,7 +1108,7 @@ static PyObject *__pyx_pw_6tesser_4cfit_3prob_induct_subject(PyObject *__pyx_sel
   <span class='refnanny'>__Pyx_RefNannyFinishContext</span>();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_6tesser_4cfit_2prob_induct_subject(__pyx_self, __pyx_v_SR, __pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_tau, __pyx_v_w, __pyx_v_model, __pyx_v_trial_prob);
+  __pyx_r = __pyx_pf_6tesser_4cfit_4prob_induct_subject(__pyx_self, __pyx_v_SR, __pyx_v_cue, __pyx_v_opt1, __pyx_v_opt2, __pyx_v_response, __pyx_v_tau, __pyx_v_w, __pyx_v_model, __pyx_v_trial_prob);
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -956,7 +1118,7 @@ static PyObject *__pyx_pw_6tesser_4cfit_3prob_induct_subject(PyObject *__pyx_sel
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6tesser_4cfit_2prob_induct_subject(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_cue, __Pyx_memviewslice __pyx_v_opt1, __Pyx_memviewslice __pyx_v_opt2, __Pyx_memviewslice __pyx_v_response, double __pyx_v_tau, double __pyx_v_w, __Pyx_memviewslice __pyx_v_model, __Pyx_memviewslice __pyx_v_trial_prob) {
+static PyObject *__pyx_pf_6tesser_4cfit_4prob_induct_subject(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_SR, __Pyx_memviewslice __pyx_v_cue, __Pyx_memviewslice __pyx_v_opt1, __Pyx_memviewslice __pyx_v_opt2, __Pyx_memviewslice __pyx_v_response, double __pyx_v_tau, double __pyx_v_w, __Pyx_memviewslice __pyx_v_model, __Pyx_memviewslice __pyx_v_trial_prob) {
   Py_ssize_t __pyx_v_num_trials;
   Py_ssize_t __pyx_v_i;
   PyObject *__pyx_r = NULL;
@@ -988,7 +1150,7 @@ static PyObject *__pyx_pf_6tesser_4cfit_2prob_induct_subject(CYTHON_UNUSED PyObj
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_tuple__21);
   <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_tuple__21);
 /* … */
-  __pyx_t_1 = PyCFunction_NewEx(&amp;__pyx_mdef_6tesser_4cfit_3prob_induct_subject, NULL, __pyx_n_s_tesser_cfit);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)</span>
+  __pyx_t_1 = PyCFunction_NewEx(&amp;__pyx_mdef_6tesser_4cfit_5prob_induct_subject, NULL, __pyx_n_s_tesser_cfit);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
   if (<span class='py_c_api'>PyDict_SetItem</span>(__pyx_d, __pyx_n_s_prob_induct_subject, __pyx_t_1) &lt; 0) <span class='error_goto'>__PYX_ERR(0, 84, __pyx_L1_error)</span>
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_1); __pyx_t_1 = 0;
@@ -1055,7 +1217,7 @@ static PyObject *__pyx_pf_6tesser_4cfit_2prob_induct_subject(CYTHON_UNUSED PyObj
 <pre class='cython code score-0 '>      goto __pyx_L3_continue;
 </pre><pre class="cython line score-0">&#xA0;<span class="">101</span>: </pre>
 <pre class="cython line score-11" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">102</span>:         <span class="n">trial_prob</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">prob_choice</span><span class="p">(</span></pre>
-<pre class='cython code score-11 '>    __pyx_t_6 = __pyx_f_6tesser_4cfit_prob_choice((*((int *) ( /* dim=0 */ (__pyx_v_cue.data + __pyx_t_7 * __pyx_v_cue.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt1.data + __pyx_t_11 * __pyx_v_opt1.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt2.data + __pyx_t_12 * __pyx_v_opt2.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_response.data + __pyx_t_13 * __pyx_v_response.strides[0]) ))), __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau);<span class='error_goto'> if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 102, __pyx_L1_error)</span>
+<pre class='cython code score-11 '>    __pyx_t_6 = __pyx_f_6tesser_4cfit_prob_choice((*((int *) ( /* dim=0 */ (__pyx_v_cue.data + __pyx_t_7 * __pyx_v_cue.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt1.data + __pyx_t_11 * __pyx_v_opt1.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_opt2.data + __pyx_t_12 * __pyx_v_opt2.strides[0]) ))), (*((int *) ( /* dim=0 */ (__pyx_v_response.data + __pyx_t_13 * __pyx_v_response.strides[0]) ))), __pyx_v_SR, __pyx_v_model, __pyx_v_w, __pyx_v_tau, 0);<span class='error_goto'> if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 102, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_6);
     __pyx_t_10 = __pyx_<span class='py_c_api'>PyFloat_AsDouble</span>(__pyx_t_6); if (unlikely((__pyx_t_10 == (double)-1) &amp;&amp; <span class='py_c_api'>PyErr_Occurred</span>())) <span class='error_goto'>__PYX_ERR(0, 102, __pyx_L1_error)</span>
     <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_6); __pyx_t_6 = 0;
