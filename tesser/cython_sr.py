@@ -55,7 +55,6 @@ def transition_indiv(subj_df, n_states):
             matrix[j-1,df[i+1]-1]+=1
         except:
             KeyError
-    matrix[matrix == 0] = 0.0000001
     for row in range(n_states):
         matrix[row] /= np.sum(matrix[row])
     return matrix

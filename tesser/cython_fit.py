@@ -235,7 +235,7 @@ def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, ver
     #df = df.set_index('subject')
     return df
 
-def plot_by_question(struct_all, induct_all, results, n_states=21, model=[], fig_name='Unnamed', model_type=''):
+def plot_by_question(struct_all, induct_all, results, n_states=21, model=[], path='./Data/', fig_name='Unnamed', model_type=''):
     '''Plots results for accuracy of individual fitting by question type.
         INPUT:
             results: DataFrame with param
@@ -270,8 +270,8 @@ def plot_by_question(struct_all, induct_all, results, n_states=21, model=[], fig
         f = sns.pointplot(kind='point', x=names[i], y='Accuracy', 
                     hue='Source', dodge=True, data=n.reset_index(), ax=axes[1][i % 2]);
         f.set(ylim=(0, 1.02));
-    fig.savefig('./Data/'+fig_name)
-#     return fig
+#     fig.savefig(path+fig_name)
+    return fig
 
 ############################################################
 ########### python setup.py build_ext --inplace ############
