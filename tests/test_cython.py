@@ -54,7 +54,7 @@ def transition_matrix():
     )
     return expected
 
-def test_prob_choice(transition_matrix):
+def test_prob_choice(transition_matrix): # test what happens for nans
     sr = np.array(
         [[0.140625 , 0.1640625, 0.  ],
          [0.       , 0.       , 0.  ],
@@ -67,4 +67,5 @@ def test_prob_choice(transition_matrix):
     w = 0.0
     tau= 1.0
     prob = cfit.prob_choice(cue, opt1, opt2, resp,sr,transition_matrix, w, tau)
-    breakpoint()
+    
+#     breakpoint()
