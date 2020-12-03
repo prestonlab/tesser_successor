@@ -1,5 +1,5 @@
-# creating and testing model RDMs
-# creating and testing model RDMs
+"""Representational similarity analysis of objects after learning."""
+
 from scipy.spatial import distance
 import os
 from glob import glob
