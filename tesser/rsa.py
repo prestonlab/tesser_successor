@@ -4,6 +4,7 @@ from scipy.spatial import distance
 import os
 from glob import glob
 import numpy as np
+import pandas as pd
 import scipy.spatial.distance as sd
 
 
@@ -76,6 +77,24 @@ def load_betas(data_dir, subject_num, roi):
     # (these are just filler trials, i.e. the 4 null trials above)
     this_reformat_pattern = np.delete(this_pattern, null_list, axis=0)
     return this_reformat_pattern
+
+
+def load_vol_info(study_dir, subject):
+    """Load volume information for all runs for a subject."""
+    data_list = []
+    columns = ['trial', 'onset', 'tr', 'sequence_type', 'trial_type', 'duration']
+    runs = list(range(1, 7))
+    for i, run in enumerate(runs):
+        vol_file = os.path.join(
+            study_dir, 'batch', 'analysis', 'rsa_beta', 'rsa_event_textfiles',
+            f'tesser_{subject}_run{run}_info.txt'
+        )
+        run_data = pd.read_csv(vol_file, names=columns)
+        run_data['duration'] = 1
+        run_data['run'] = run
+        data_list.append(run_data)
+    data = pd.concat(data_list, axis=0)
+    return data
 
 
 def exclude_rsa(rsa, exclude_n):
