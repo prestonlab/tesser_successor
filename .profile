@@ -8,7 +8,7 @@ case $USER in
 
     mortonne)
         STUDYDIR=/corral-repl/utexas/prestonlab/tesser
-        . $WORK/venv/tesser/bin/activate
+        . $STOCKYARD/lonestar/venv/tesser/bin/activate
         ;;
 
     *)
