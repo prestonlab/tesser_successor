@@ -9,6 +9,7 @@ case $USER in
     mortonne)
         STUDYDIR=/corral-repl/utexas/prestonlab/tesser
         . $STOCKYARD/lonestar/venv/tesser/bin/activate
+        export BATCHDIR=$STOCKYARD/lonestar/tesser/batch/launchscripts
         ;;
 
     *)
