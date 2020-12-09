@@ -70,11 +70,9 @@ def main(study_dir, subject, roi, res_dir):
         'U', 'L', 'C', 'nSNR', 'sigma', 'rho', 'beta', 'beta0',
         'X0', 'beta0_null', 'X0_null', 'n_nureg'
     ]
-    h5_file = os.path.join(res_dir, f'sub-{subject}_brsa.hdf5')
-    with h5py.File(h5_file, 'w') as f:
-        for var in var_names:
-            val = getattr(model, var + '_')
-            f.create_dataset(var, data=val)
+    results = {var: getattr(model, var + '_') for var in var_names}
+    out_file = os.path.join(res_dir, f'sub-{subject}_brsa.npz')
+    np.savez(out_file, **results)
 
 
 if __name__ == '__main__':
