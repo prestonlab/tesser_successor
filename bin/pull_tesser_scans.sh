@@ -2,10 +2,11 @@
 #
 # Pull tesser scan data for local analysis.
 
-dest="$1"
-shift 1
+src=$1
+dest=$2
+shift 2
 
-rsync -azvu lonestar:/corral-repl/utexas/prestonlab/tesser/ "$dest" \
+rsync -azvu "$src" "$dest" \
     --include="batch/" \
     --include="batch/analysis/" \
     --include="batch/analysis/rsa_beta/" \
