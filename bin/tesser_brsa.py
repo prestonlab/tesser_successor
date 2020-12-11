@@ -46,14 +46,18 @@ def main(study_dir, subject, roi, res_dir):
 
     # create full design matrix
     frame_times = np.arange(image.shape[0] / len(runs)) * 2
-    df_mat = pd.concat(
-        [
-            fl.make_first_level_design_matrix(
-                frame_times, events=events.query(f'run == {run}'),
-                add_regs=confound[run]
-            ) for run in runs
-        ], axis=0
-    )
+    df_list = [
+        fl.make_first_level_design_matrix(
+            frame_times, events=events.query(f'run == {run}'),
+            add_regs=confound[run]
+        ) for run in runs
+    ]
+    df_mat = pd.concat(df_list, axis=0)
+
+    # with confounds included, the number of regressors varies by run.
+    # Columns missing between runs are set to NaN
+    df_mat.fillna(0, inplace=True)
+
     mat = df_mat.to_numpy()[:, :21]
     nuisance = df_mat.to_numpy()[:, 21:]
 
