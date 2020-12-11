@@ -7,7 +7,7 @@ case $USER in
         ;;
 
     mortonne)
-        STUDYDIR=/corral-repl/utexas/prestonlab/tesser
+        STUDYDIR=$STOCKYARD/lonestar/tesser
         unset PYTHONPATH  # remove global site-packages directory
         . $STOCKYARD/lonestar/venv/tesser/bin/activate
         export BATCHDIR=$STOCKYARD/lonestar/tesser/batch/launchscripts
