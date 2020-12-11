@@ -4,7 +4,6 @@
 
 import os
 import argparse
-import h5py
 import numpy as np
 import pandas as pd
 from nilearn import input_data
