@@ -46,9 +46,9 @@ def rsa_run(rsa_df, run):
     return rsa_run_df
 
 
-def load_betas(data_dir, subject_num, roi):
+def load_zrep(data_dir, subject_num, roi):
     """ Computes the representational dissimilarity matrix for one matrix. """
-    roi_dir = os.path.join(data_dir, 'item_betas', 'roi')
+    roi_dir = os.path.join(data_dir, 'item_zrep', 'roi')
 
     # look for directories with the correct pattern
     file_search = glob(
