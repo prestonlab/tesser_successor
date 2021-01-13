@@ -88,6 +88,23 @@ def load_struct_run(data_dir, subject_num, part_num, run_num):
     df = df.astype({'objnum': 'int'})
     return df
 
+def load_struct_run_info(event_dir, subject, run):
+    """Load event info for one structured learning run."""
+
+    # search for a file with the correct name formatting
+    file_pattern = f'tesser_{subject}_run{run}_info.txt'
+    file_search = glob(os.path.join(event_dir, file_pattern))
+    if len(file_search) != 1:
+        raise IOError(f'Problem finding data for {subject}, run {run}.')
+    run_file = file_search[0]
+
+    # read log, fixing problem with spaces in column names
+    run_info = pd.read_csv(run_file, sep='\,', skipinitialspace=True, header=None)
+    
+    #name the columns:
+    run_info = run_info.rename({0:'trial_num', 1:'onset', 2:'TR', 3:'seq_type', 4:'item', 5:'dur'}, axis=1)
+        
+    return run_info
 
 def load_struct_subject(data_dir, subject_num):
     """Load dataframe with structured learning task for one subject."""

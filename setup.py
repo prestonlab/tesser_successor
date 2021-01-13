@@ -1,12 +1,18 @@
 import setuptools
+import glob
 from Cython.Build import cythonize
 
 import Cython.Compiler.Options
 Cython.Compiler.Options.annotate = True
 
+
 def readme():
     with open('README.md') as f:
         return f.read()
+
+
+def scripts():
+    return glob.glob('bin/*.sh') + glob.glob('bin/*.py')
 
 
 setuptools.setup(
@@ -27,6 +33,7 @@ setuptools.setup(
         'seaborn',
         'cython',
     ],
+    scripts=scripts(),
     ext_modules=cythonize(['tesser/csr.pyx',
                            'tesser/cfit.pyx']),
     classifiers=[
