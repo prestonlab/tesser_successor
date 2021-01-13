@@ -13,6 +13,7 @@ These include:
 """
 import numpy as np
 from . import csr
+import os
 
 def learn_sr(df, gamma, alpha, n_states):
     """
@@ -68,3 +69,11 @@ def transition_all(struct_df, n_states):
         dict_array[subject] = transition_indiv(subj_struct, n_states)
     return dict_array
 
+def transition_multiple(subjects, directory):
+    '''
+    subjects = list of integers representing the number assigned to each participant
+    directory = string that describes the path for where to find trasitional matrices
+    
+    '''
+    
+    return  {subject: np.loadtxt(os.path.join(directory, f"Subject_{subject}_tmatrix.txt")) for subject in subjects}
