@@ -111,16 +111,11 @@ def grouping_error(struc_df, group_df, alpha, gamma):
     return err
 
 
-def get_induction_log_likelihood_hybrid(SR, induc_df, gamma, alpha, tau, w, n_states, return_trial, model_type, model, gamma2=None):
+def get_induction_log_likelihood_hybrid(SR, induc_df, tau, w, n_states, return_trial, model):
     
     subject = induc_df.SubjNum.unique()[0] #get subject number from dataframe
     
-    if model_type == 'gamma':
-        model = cython_sr.learn_sr(struc_df, gamma2, alpha, n_states)
-#     if model_type == 'true transitional':
-#         model = cython_sr.transition_indiv(struc_df, n_states)
-    if model_type=='true transitional':
-        model = model[0][subject]
+
     induc_df = induc_df.reset_index()
     num_trials = induc_df.shape[0]
     cue = induc_df.cue.to_numpy()
@@ -198,9 +193,16 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
             subj_filter = f'SubjNum == {subject}'
             subj_struct = struct_df.query(subj_filter)
             subj_induct = induct_df.query(subj_filter)
-            SR = cython_sr.learn_sr(subj_struct, gamma, alpha, n_states)
-            subj_logl = get_induction_log_likelihood_hybrid(SR, subj_induct, **param, n_states=n_states,
-                                                     return_trial=False, model_type=model_type, model=model)
+            SR = cython_sr.learn_sr(subj_struct, param["gamma"], param["alpha"], n_states)
+            if model_type == 'gamma':
+                model = cython_sr.learn_sr(struc_df, param["gamma2"], param["alpha"], n_states)
+
+            if model_type=='true transitional':
+                model = model[0][subject]
+             
+                
+            subj_logl = get_induction_log_likelihood_hybrid(SR, subj_induct, param["tau"], param["w"], n_states=n_states,
+                                                     return_trial=False, model=model)
             logl += subj_logl
         # logl = get_induction_log_likelihood(struct_df, induct_df, **param,
         #                                     return_trial=False, use_run=use_run)
