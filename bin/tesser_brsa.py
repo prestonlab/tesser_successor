@@ -12,10 +12,24 @@ from brainiak.reprsimil import brsa
 from tesser import rsa
 
 
-def main(study_dir, subject, roi, res_dir):
+def main(study_dir, subject, roi, res_dir, blocks='combined'):
     # load task information
     vols = rsa.load_vol_info(study_dir, subject)
-    events = vols.query('sequence_type > 0').copy()
+
+    if blocks == 'walk':
+        events = vols.query('sequence_type == 1').copy()
+    elif blocks == 'random':
+        events = vols.query('sequence_type == 2').copy()
+    elif blocks in ['combined', 'separate']:
+        events = vols.query('sequence_type > 0').copy()
+        if blocks == 'separate':
+            # separately model trials in walk and random blocks
+            n_item = events['trial_type'].nunique()
+            events['trial_type'] = (
+                events['trial_type'] + (events['sequence_type'] - 1) * n_item
+            )
+    else:
+        raise ValueError(f'Invalid blocks option: {blocks}')
 
     # get mask image
     subject_dir = os.path.join(study_dir, f'tesser_{subject}')
@@ -34,7 +48,9 @@ def main(study_dir, subject, roi, res_dir):
         ) for run in runs
     ]
     masker = input_data.NiftiMasker(mask_img=mask_image, standardize='zscore')
-    image = np.vstack([masker.fit_transform(bold_image) for bold_image in bold_images])
+    image = np.vstack(
+        [masker.fit_transform(bold_image) for bold_image in bold_images]
+    )
 
     # load confound files
     confound = {}
@@ -46,20 +62,26 @@ def main(study_dir, subject, roi, res_dir):
 
     # create full design matrix
     frame_times = np.arange(image.shape[0] / len(runs)) * 2
-    df_list = [
-        fl.make_first_level_design_matrix(
+    n_ev = events['trial_type'].nunique()
+    evs = np.arange(1, n_ev + 1)
+    df_list = []
+    for run in runs:
+        df_run = fl.make_first_level_design_matrix(
             frame_times, events=events.query(f'run == {run}'),
             add_regs=confound[run]
-        ) for run in runs
-    ]
+        )
+        regs = df_run.filter(like='reg', axis=1).columns
+        drifts = df_run.filter(like='drift', axis=1).columns
+        columns = np.hstack((evs, drifts, ['constant'], regs))
+        df_list.append(df_run.reindex(columns=columns))
     df_mat = pd.concat(df_list, axis=0)
 
     # with confounds included, the number of regressors varies by run.
     # Columns missing between runs are set to NaN
     df_mat.fillna(0, inplace=True)
 
-    mat = df_mat.to_numpy()[:, :21]
-    nuisance = df_mat.to_numpy()[:, 21:]
+    mat = df_mat.to_numpy()[:, :n_ev]
+    nuisance = df_mat.to_numpy()[:, n_ev:]
 
     # run Bayesian RSA
     scan_onsets = np.arange(0, image.shape[0], image.shape[0] / len(runs))
@@ -84,6 +106,10 @@ if __name__ == '__main__':
     parser.add_argument('roi', help="name of mask to use.")
     parser.add_argument('res_dir', help="path to directory to save results.")
     parser.add_argument('--study-dir', help="path to main study data directory.")
+    parser.add_argument(
+        '--blocks', '-b',
+        help="blocks to include in model ['walk'|'random'|'combined'|'separate']"
+    )
     args = parser.parse_args()
 
     if args.study_dir is None:
@@ -93,4 +119,4 @@ if __name__ == '__main__':
     else:
         env_study_dir = args.study_dir
 
-    main(env_study_dir, args.subject, args.roi, args.res_dir)
+    main(env_study_dir, args.subject, args.roi, args.res_dir, blocks=args.blocks)
