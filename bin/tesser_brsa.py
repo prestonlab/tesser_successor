@@ -34,7 +34,9 @@ def main(study_dir, subject, roi, res_dir):
         ) for run in runs
     ]
     masker = input_data.NiftiMasker(mask_img=mask_image, standardize='zscore')
-    image = np.vstack([masker.fit_transform(bold_image) for bold_image in bold_images])
+    image = np.vstack(
+        [masker.fit_transform(bold_image) for bold_image in bold_images]
+    )
 
     # load confound files
     confound = {}
