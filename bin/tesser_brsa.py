@@ -12,10 +12,24 @@ from brainiak.reprsimil import brsa
 from tesser import rsa
 
 
-def main(study_dir, subject, roi, res_dir):
+def main(study_dir, subject, roi, res_dir, blocks='combined'):
     # load task information
     vols = rsa.load_vol_info(study_dir, subject)
-    events = vols.query('sequence_type > 0').copy()
+
+    if blocks == 'walk':
+        events = vols.query('sequence_type == 1').copy()
+    elif blocks == 'random':
+        events = vols.query('sequence_type == 2').copy()
+    elif blocks in ['combined', 'separate']:
+        events = vols.query('sequence_type > 0').copy()
+        if blocks == 'separate':
+            # separately model trials in walk and random blocks
+            n_item = events['trial_type'].nunique()
+            events['trial_type'] = (
+                events['trial_type'] + (events['sequence_type'] - 1) * n_item
+            )
+    else:
+        raise ValueError(f'Invalid blocks option: {blocks}')
 
     # get mask image
     subject_dir = os.path.join(study_dir, f'tesser_{subject}')
@@ -92,6 +106,10 @@ if __name__ == '__main__':
     parser.add_argument('roi', help="name of mask to use.")
     parser.add_argument('res_dir', help="path to directory to save results.")
     parser.add_argument('--study-dir', help="path to main study data directory.")
+    parser.add_argument(
+        '--blocks', '-b',
+        help="blocks to include in model ['walk'|'random'|'combined'|'separate']"
+    )
     args = parser.parse_args()
 
     if args.study_dir is None:
@@ -101,4 +119,4 @@ if __name__ == '__main__':
     else:
         env_study_dir = args.study_dir
 
-    main(env_study_dir, args.subject, args.roi, args.res_dir)
+    main(env_study_dir, args.subject, args.roi, args.res_dir, blocks=args.blocks)
