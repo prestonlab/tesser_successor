@@ -130,9 +130,9 @@ def get_induction_log_likelihood_hybrid(SR, induc_df, tau, w, n_states, return_t
     return cfit.prob_induct(cue, opt1, opt2, res , SR, model, w, tau, return_trial, all_trial_prob)
 
     
-def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
+def fit_induct(struct_df, induct_df, fixed, split, var_names, var_bounds, n_states,
                f_optim=optimize.differential_evolution,
-               verbose=False, options=None, model_type='comm', model=[]):
+               verbose=False, options=None, model_type='comm', model=[], split_list = []):
     """Fit induction data for one subject faster cython improved version.
 
     For a given set of parameters, the structure learning task is used
@@ -184,7 +184,7 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
         options = {}
     param = fixed.copy()
     subjects = struct_df.SubjNum.unique()
-
+    questions = induct_df.QuestType.unique()
     def f_fit(x):
         param.update(dict(zip(var_names, x)))
         # draft code to fit at the group level:
@@ -193,19 +193,37 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
             subj_filter = f'SubjNum == {subject}'
             subj_struct = struct_df.query(subj_filter)
             subj_induct = induct_df.query(subj_filter)
+            
             SR = cython_sr.learn_sr(subj_struct, param["gamma"], param["alpha"], n_states)
-            if model_type == 'gamma':
-                model = cython_sr.learn_sr(struc_df, param["gamma2"], param["alpha"], n_states)
+            if model_type == 'multiple gamma':
+                model_subj = cython_sr.learn_sr(subj_struct, param["gamma2"], param["alpha"], n_states)
 
             if model_type=='true transitional':
-                model = model[0][subject]
-             
-                
-            subj_logl = get_induction_log_likelihood_hybrid(SR, subj_induct, param["tau"], param["w"], n_states=n_states,
-                                                     return_trial=False, model=model)
+                model_subj = model[subject]
+
+            if split:
+                subj_logl = 0
+                for question in questions:
+                    question_param = param.copy()
+                    question_induct = subj_induct.query(f'QuestType == "{question}"')
+                    for sp in split_list:
+                        param_name = f"{sp}_{question.lower()}"
+
+                        question_param[sp] = param[param_name]
+                        
+                    w = question_param["w"]
+                    tau = question_param["tau"]
+                    subj_logl += get_induction_log_likelihood_hybrid(SR, question_induct, tau, w, n_states=n_states,
+                                                     return_trial=False, model=model_subj)
+            else:
+                w = param["w"]
+                tau = param["tau"]
+                subj_logl = get_induction_log_likelihood_hybrid(SR, subj_induct, tau , w, n_states=n_states,
+                                                         return_trial=False, model=model_subj)
+
             logl += subj_logl
-        # logl = get_induction_log_likelihood(struct_df, induct_df, **param,
-        #                                     return_trial=False, use_run=use_run)
+        # logl = get_induction_log_likelihood_hybrid(SR, subj_induct, tau = param["tau"], param["w"], n_states=n_states,
+#                                                          return_trial=False, model=model_subj)
         return -logl
 
     bounds = param_bounds(var_bounds, var_names)
@@ -219,7 +237,7 @@ def fit_induct(struct_df, induct_df, fixed, var_names, var_bounds, n_states,
     return param, logl
 
 
-def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, verbose=False, model_type='gamma', model =[]):
+def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_states, verbose=False, model_type='gamma', model =[], split_list = []):
     """Estimate parameters for individual subjects."""
 
     df_list = []
@@ -227,8 +245,10 @@ def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, ver
         print(f'Estimating parameters for {sub}...')
         subj_struct = struct.query(f'SubjNum == {sub}')
         subj_induct = induct.query(f'SubjNum == {sub}')
-        param, logl = fit_induct(subj_struct, subj_induct, fixed, var_names, var_bounds,
-                           n_states=n_states, verbose=False, model_type=model_type, model=model)
+        param, logl = fit_induct(
+                subj_struct, subj_induct, fixed, split, var_names, var_bounds, n_states,
+                f_optim=optimize.differential_evolution, verbose=False, options=None,
+                model_type=model_type, model=model, split_list=split_list)
         param['subject'] = sub
         param['log_like'] = logl
         df = pd.DataFrame(param, index=[0])
@@ -237,7 +257,7 @@ def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, n_states, ver
     #df = df.set_index('subject')
     return df
 
-def plot_by_question(struct_all, induct_all, results, n_states=21, model=[], path='./Data/', fig_name='Unnamed', model_type=''):
+def plot_by_question(struct_all, induct_all, results, split, n_states=21, model=[], path='./Data/', fig_name='Unnamed', model_type=''):
     '''Plots results for accuracy of individual fitting by question type.
         INPUT:
             results: DataFrame with param
