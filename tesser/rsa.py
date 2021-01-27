@@ -96,6 +96,7 @@ def load_vol_info(study_dir, subject):
     data = pd.concat(data_list, axis=0)
     return data
 
+
 def load_scram_info(event_dir):
     """Load event info for all runs."""
     
