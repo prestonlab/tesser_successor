@@ -96,6 +96,24 @@ def load_vol_info(study_dir, subject):
     data = pd.concat(data_list, axis=0)
     return data
 
+def load_scram_info(event_dir):
+    """Load event info for all runs."""
+    
+       # search for a file with the correct name formatting
+    file_pattern = 'tesser_scram_volinfo.txt'
+    file_search = glob(os.path.join(event_dir, file_pattern))
+    if len(file_search) != 1:
+        raise IOError(f'Problem finding event info.')
+    event_file = file_search[0]
+    
+    # read log, fixing problem with spaces in column names
+    event_info = pd.read_csv(event_file, sep='\,', skipinitialspace=True, header=None)
+    
+    #name the columns:
+    event_info = event_info.rename({0:'run', 1:'item', 2:'comm', 3:'bound'}, axis=1)
+        
+    return event_info
+
 
 def exclude_rsa(rsa, exclude_n):
     for d in range(0, exclude_n):
