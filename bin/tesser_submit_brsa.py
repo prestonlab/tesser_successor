@@ -11,7 +11,7 @@ def submit_brsa(subjects, rois, study_dir, res_dir, blocks):
     if subjects is None:
         subjects = util.subj_list()
 
-    options = f'--study-dir={study_dir} --blocks={blocks}'
+    options = f'--study-dir={study_dir} -b {blocks}'
     for roi in rois:
         roi_dir = os.path.join(res_dir, roi)
         for subject in subjects:
