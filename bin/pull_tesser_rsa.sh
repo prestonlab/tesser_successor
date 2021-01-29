@@ -17,4 +17,4 @@ rsync -azvu "$src" "$dest" \
     --include="batch/rsa/*/" \
     --include="batch/rsa/*/*/" \
     --include="*.npz" \
-    --exclude="*"
+    --exclude="*" "$@"
