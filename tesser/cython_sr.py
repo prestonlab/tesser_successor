@@ -42,7 +42,10 @@ def learn_sr(df, gamma, alpha, n_states):
     M = np.zeros([n_states, n_states])
     onehot= np.eye(n_states, dtype = np.dtype('i'))
 
-    envstep = df.objnum.to_numpy() -1
+    if 'objnum' in df:
+        envstep = df.objnum.to_numpy() -1
+    else:
+        envstep = df['object'].to_numpy() - 1
     envstep = envstep.astype(np.dtype('i'))
     csr.SR(envstep, gamma, alpha, M, n_states, onehot)
     return M
