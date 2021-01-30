@@ -139,6 +139,28 @@ def load_struct(data_dir, subjects=None):
     return df
 
 
+def load_struct_bids(data_dir, subjects=None):
+    """Load structure learning data for multiple subjects in BIDS format."""
+    raw = load_struct(data_dir, subjects)
+    orientation = {'cor': 'canonical', 'rot': 'rotated'}
+    response = {'c': 'canonical', 'n': 'rotated'}
+    df = pd.DataFrame(
+        {
+            'subject': raw['SubjNum'],
+            'part': raw['part'],
+            'run': raw['run'],
+            'trial': raw['trial'],
+            'trial_type': raw['seqtype'].astype('Int64'),
+            'object': raw['objnum'],
+            'orientation': raw['orientnam'].map(orientation).astype('category'),
+            'response': raw['resp'].map(response).astype('category'),
+            'response_time': raw['rt'],
+            'correct': raw['acc'].astype('Int64'),
+        }
+    )
+    return df
+
+
 def drop_struct_df_nan(struct_dframe):
     """Remove null trials (NaNs) at the beginning of structure task scans."""
 
