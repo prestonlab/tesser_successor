@@ -136,6 +136,8 @@ def load_struct(data_dir, subjects=None):
         df_subj = load_struct_subject(data_dir, subject)
         df_all.append(df_subj)
     df = pd.concat(df_all, axis=0, ignore_index=True)
+    nodes = network.temp_node_info()
+    df['community'] = nodes.loc[df['objnum'], 'comm'].to_numpy()
     return df
 
 
@@ -151,6 +153,7 @@ def load_struct_bids(data_dir, subjects=None):
             'run': raw['run'],
             'trial': raw['trial'],
             'trial_type': raw['seqtype'].astype('Int64'),
+            'community': raw['community'],
             'object': raw['objnum'],
             'orientation': raw['orientnam'].map(orientation).astype('category'),
             'response': raw['resp'].map(response).astype('category'),
