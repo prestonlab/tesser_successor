@@ -7,19 +7,21 @@ import argparse
 from tesser import util
 
 
-def main(subjects, rois, study_dir, res_name, block):
+def main(subjects, rois, study_dir, rsa_name, res_name, block):
     if subjects is None:
         subjects = util.subj_list()
 
     beh_dir = os.path.join(study_dir, 'batch', 'behav')
     options = f'--study-dir={study_dir} -b {block}'
     for roi in rois:
+        inputs = f'{beh_dir} {rsa_name} {roi} {res_name}'
         for subject in subjects:
-            print(f'tesser_roi_prsa.py {subject} {beh_dir} {roi} {res_name} {options}')
+            print(f'tesser_roi_prsa.py {subject} {inputs} {options}')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('rsa_name', help='name for rsa results')
     parser.add_argument('rois', help="name of mask to use.")
     parser.add_argument('res_name', help="name of directory to save results.")
     parser.add_argument('--block', '-b', help='block to include (walk, random)')
@@ -40,4 +42,7 @@ if __name__ == '__main__':
         inc_subjects = None
 
     inc_rois = args.rois.split(',')
-    main(inc_subjects, inc_rois, env_study_dir, args.res_name, block=args.block)
+    main(
+        inc_subjects, inc_rois, env_study_dir, args.rsa_name, args.res_name,
+        block=args.block
+    )
