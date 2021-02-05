@@ -75,7 +75,7 @@ def main(
 if __name__ == '__main__':
     parser = subjutil.SubjParser(include_log=False)
     parser.add_argument('beh_dir', help='path to behavioral data directory')
-    parser.add_argument('rsa_name', help='path to rsa results')
+    parser.add_argument('rsa_name', help='name for rsa results')
     parser.add_argument('roi', help='name of roi to analyze')
     parser.add_argument('res_name', help='name for results')
     parser.add_argument('--block', '-b', help='block to include (walk, random)')
