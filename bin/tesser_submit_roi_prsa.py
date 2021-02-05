@@ -12,7 +12,7 @@ def main(subjects, rois, study_dir, rsa_name, res_name, block):
         subjects = util.subj_list()
 
     beh_dir = os.path.join(study_dir, 'batch', 'behav')
-    options = f'--study-dir={study_dir} -b {block}'
+    options = f'--study-dir={study_dir} -b {block} -p 100000'
     for roi in rois:
         inputs = f'{beh_dir} {rsa_name} {roi} {res_name}'
         for subject in subjects:
