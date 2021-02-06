@@ -5,6 +5,7 @@
 import os
 import argparse
 from tesser import util
+from tesser import rsa
 
 
 def main(subjects, rois, study_dir, rsa_name, res_name, block):
@@ -41,7 +42,11 @@ if __name__ == '__main__':
     else:
         inc_subjects = None
 
-    inc_rois = args.rois.split(',')
+    roi_sets = rsa.get_roi_sets()
+    if args.rois in roi_sets:
+        inc_rois = roi_sets[args.rois]
+    else:
+        inc_rois = args.rois.split(',')
     main(
         inc_subjects, inc_rois, env_study_dir, args.rsa_name, args.res_name,
         block=args.block
