@@ -6,6 +6,7 @@ from glob import glob
 import numpy as np
 import pandas as pd
 import scipy.spatial.distance as sd
+from tesser import util
 
 
 def get_roi_sets():
@@ -168,3 +169,37 @@ def make_sym_matrix(asym_mat):
     vm = (v1 + v2) / 2
     sym_mat = sd.squareform(vm)
     return sym_mat
+
+
+def load_roi_prsa(res_dir, roi, subjects=None):
+    """Load z-statistic from permutation test results."""
+    if subjects is None:
+        subjects = util.subj_list()
+
+    z = []
+    for subject in subjects:
+        subj_file = os.path.join(res_dir, roi, f'zstat_{subject}.csv')
+        zdf = pd.read_csv(subj_file, index_col=0).T
+        zdf.index = [subject]
+        z.append(zdf)
+    df = pd.concat(z)
+    return df
+
+
+def load_net_prsa(rsa_dir, block, model_set, rois, subjects=None):
+    """Load z-statistics for a model for a set of ROIs."""
+    # get the directory with results for this model set and block
+    res_dir = os.path.join(rsa_dir, f'prsa_{block}_{model_set}')
+    if not os.path.exists(res_dir):
+        raise IOError(f'Results directory not found: {res_dir}')
+
+    # load each ROI
+    df_list = []
+    for roi in rois:
+        rdf = load_roi_prsa(res_dir, roi, subjects)
+        mdf = pd.DataFrame({'subject': rdf.index, 'roi': roi}, index=rdf.index)
+        full = pd.concat((mdf, rdf), axis=1)
+
+        df_list.append(full)
+    df = pd.concat(df_list, ignore_index=True)
+    return df
