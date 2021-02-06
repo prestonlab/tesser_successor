@@ -228,6 +228,28 @@ def load_induct(data_dir, subjects=None):
     return df
 
 
+def load_induct_bids(data_dir, subjects=None):
+    """Load induction data in BIDs format."""
+    raw = load_induct(data_dir, subjects)
+    trial_type = {'Prim': 'primary', 'Bound1': 'boundary1', 'Bound2': 'boundary2'}
+    df = pd.DataFrame(
+        {
+            'subject': raw['SubjNum'],
+            'trial': raw['TrialNum'],
+            'trial_type': raw['QuestType'].map(trial_type).astype('category'),
+            'environment': raw['Environment'],
+            'community': raw['community'],
+            'cue': raw['CueNum'],
+            'opt1': raw['Opt1Num'],
+            'opt2': raw['Opt2Num'],
+            'response': raw['Resp'].astype('Int64'),
+            'response_time': raw['RT'],
+            'correct': raw['Acc'].astype('Int64'),
+        }
+    )
+    return df
+
+
 def load_induct_array_all(induct_dframe):
     """Unpack induction data into separate arrays.
 
