@@ -67,12 +67,14 @@ def load_struct_run(data_dir, subject_num, part_num, run_num):
     subj_dir = get_subj_dir(data_dir, subject_num)
 
     # search for a file with the correct name formatting
-    file_pattern = (f'tesserScan_{subject_num}_*_StructLearn' 
-                    f'_Part{part_num}_Run_{run_num}.txt')
+    file_pattern = (
+        f'tesserScan_{subject_num}_*_StructLearn_Part{part_num}_Run_{run_num}.txt'
+    )
     file_search = glob(os.path.join(subj_dir, file_pattern))
     if len(file_search) != 1:
-        raise IOError(f'Problem finding data for {subject_num}, ' 
-                      f'part {part_num}, run {run_num}.')
+        raise IOError(
+            f'Problem finding data for {subject_num}, part {part_num}, run {run_num}.'
+        )
     run_file = file_search[0]
 
     # read log, fixing problem with spaces in column names
@@ -88,6 +90,7 @@ def load_struct_run(data_dir, subject_num, part_num, run_num):
     df = df.astype({'objnum': 'int'})
     return df
 
+
 def load_struct_run_info(event_dir, subject, run):
     """Load event info for one structured learning run."""
 
@@ -100,11 +103,14 @@ def load_struct_run_info(event_dir, subject, run):
 
     # read log, fixing problem with spaces in column names
     run_info = pd.read_csv(run_file, sep='\,', skipinitialspace=True, header=None)
-    
-    #name the columns:
-    run_info = run_info.rename({0:'trial_num', 1:'onset', 2:'TR', 3:'seq_type', 4:'item', 5:'dur'}, axis=1)
-        
+
+    # name the columns:
+    run_info = run_info.rename(
+        {0: 'trial_num', 1: 'onset', 2: 'TR', 3: 'seq_type', 4: 'item', 5: 'dur'},
+        axis=1,
+    )
     return run_info
+
 
 def load_struct_subject(data_dir, subject_num):
     """Load dataframe with structured learning task for one subject."""
@@ -184,7 +190,7 @@ def object_count_run(this_run_info):
     this_run = this_run_info.reset_index(drop=True)
     all_count = []
     for item in range(1, 22):
-        these_items = this_run[this_run["objnum"]==item]
+        these_items = this_run[this_run["objnum"] == item]
         count = len(these_items)
         all_count.append(count)
     return all_count
@@ -280,6 +286,7 @@ def load_group_subject(data_dir, subject_num):
     # read log, fixing problem with spaces in column names
     mat = np.loadtxt(run_file)
     return mat.astype(int)
+
 
 def score_induct(induct):
     """Score induction task data."""
