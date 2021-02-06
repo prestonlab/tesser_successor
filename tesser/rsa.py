@@ -6,6 +6,7 @@ from glob import glob
 import numpy as np
 import pandas as pd
 import scipy.spatial.distance as sd
+from mindstorm import prsa
 from tesser import util
 
 
@@ -203,3 +204,16 @@ def load_net_prsa(rsa_dir, block, model_set, rois, subjects=None):
         df_list.append(full)
     df = pd.concat(df_list, ignore_index=True)
     return df
+
+
+def net_prsa_perm(df, model, n_perm=1000, beta=0.05):
+    """Test ROI correlations using a permutation test."""
+    # shape into matrix format
+    rois = df.roi.unique()
+    mat = df.pivot(index='subject', columns='roi', values=model)
+    mat = mat.reindex(columns=rois)
+
+    # run sign flipping test
+    results = prsa.sign_perm(mat.to_numpy(), n_perm, beta)
+    results.index = mat.columns
+    return results
