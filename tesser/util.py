@@ -223,6 +223,8 @@ def load_induct(data_dir, subjects=None):
         df_subj = load_induct_subject(data_dir, subject)
         df_all.append(df_subj)
     df = pd.concat(df_all, axis=0, ignore_index=True)
+    nodes = network.temp_node_info()
+    df['community'] = nodes.loc[df['cue'] + 1, 'comm'].to_numpy()
     return df
 
 
