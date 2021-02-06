@@ -8,6 +8,17 @@ import pandas as pd
 import scipy.spatial.distance as sd
 
 
+def get_rois(roi_set):
+    """Get a list of rois included in a set."""
+    rois = {
+        'hpc3': ['b_hip_ant', 'b_hip_body', 'b_hip_tail'],
+        'mpfc9': ['10m', '10p', '10r', '11m', '14c', '14r', '24', '25', '32pl'],
+    }
+    if roi_set not in rois:
+        raise ValueError(f'Invalid roi set: {roi_set}')
+    return rois[roi_set]
+
+
 def rdm(matrix):
     """ Computes the representational dissimilarity matrix for one matrix. """
     return distance.squareform(distance.pdist(matrix, 'correlation'))
