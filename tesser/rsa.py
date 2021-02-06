@@ -53,7 +53,7 @@ def load_rsa(data_dir, subject, roi):
 def rsa_run(rsa_df, run):
     """Load RSA data by run."""
     this = list(range(0, 1057, 151))
-    rsa_run_df = rsa_df[this[run - 1]:this[run], this[run - 1]:this[run]]
+    rsa_run_df = rsa_df[this[run - 1]: this[run], this[run - 1]: this[run]]
     return rsa_run_df
 
 
@@ -62,11 +62,11 @@ def load_zrep(data_dir, subject_num, roi):
     roi_dir = os.path.join(data_dir, 'item_zrep', 'roi')
 
     # look for directories with the correct pattern
-    file_search = glob(
-        os.path.join(roi_dir + '/' + roi, f'pattern_{subject_num}.txt'))
+    file_search = glob(os.path.join(roi_dir + '/' + roi, f'pattern_{subject_num}.txt'))
     if len(file_search) != 1:
-        raise IOError(f'Problem finding ROI or subject directory for '
-                      f'{roi} and {subject_num}')
+        raise IOError(
+            f'Problem finding ROI or subject directory for {roi} and {subject_num}'
+        )
     pattern_file = file_search[0]
 
     # read log, fixing problem with spaces in column names
@@ -110,20 +110,19 @@ def load_vol_info(study_dir, subject):
 
 def load_scram_info(event_dir):
     """Load event info for all runs."""
-    
-       # search for a file with the correct name formatting
+
+    # search for a file with the correct name formatting
     file_pattern = 'tesser_scram_volinfo.txt'
     file_search = glob(os.path.join(event_dir, file_pattern))
     if len(file_search) != 1:
         raise IOError(f'Problem finding event info.')
     event_file = file_search[0]
-    
+
     # read log, fixing problem with spaces in column names
     event_info = pd.read_csv(event_file, sep='\,', skipinitialspace=True, header=None)
-    
-    #name the columns:
-    event_info = event_info.rename({0:'run', 1:'item', 2:'comm', 3:'bound'}, axis=1)
-        
+
+    # name the columns:
+    event_info = event_info.rename({0: 'run', 1: 'item', 2: 'comm', 3: 'bound'}, axis=1)
     return event_info
 
 
