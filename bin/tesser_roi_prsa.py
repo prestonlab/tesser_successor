@@ -56,18 +56,20 @@ def main(
     n_model = len(model_rdms)
 
     # calculate permutation correlations
+    rho = np.zeros(n_model)
     zstat = np.zeros(n_model)
     for i in range(n_model):
         stat = prsa.perm_partial(
             data_vec, perm['model_mats'][i], perm['model_resid'][i]
         )
+        rho[i] = stat[0]
         zstat[i] = prsa.perm_z(stat)
 
     # save results
     res_dir = os.path.join(study_dir, 'batch', 'prsa', res_name, roi)
     if not os.path.exists(res_dir):
         os.makedirs(res_dir, exist_ok=True)
-    df = pd.DataFrame({'zstat': zstat}, index=model_names)
+    df = pd.DataFrame({'rho': rho, 'zstat': zstat}, index=model_names)
     res_file = os.path.join(res_dir, f'zstat_{subject}.csv')
     df.to_csv(res_file)
 
