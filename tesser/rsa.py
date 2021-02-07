@@ -171,6 +171,19 @@ def make_sym_matrix(asym_mat):
     return sym_mat
 
 
+def load_roi_brsa(res_dir, rois, subjects=None):
+    """Load correlation matrices from BRSA results."""
+    if subjects is None:
+        subjects = util.subj_list()
+    rdms = {
+        roi: [
+            np.load(os.path.join(res_dir, roi, f'sub-{subject}_brsa.npz'))['C']
+            for subject in subjects
+        ] for roi in rois
+    }
+    return rdms
+
+
 def load_roi_prsa(res_dir, roi, subjects=None):
     """Load z-statistic from permutation test results."""
     if subjects is None:
