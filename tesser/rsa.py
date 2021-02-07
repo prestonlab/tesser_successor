@@ -184,6 +184,19 @@ def load_roi_brsa(res_dir, rois, subjects=None):
     return rdms
 
 
+def load_roi_mean_brsa(res_dir, rois, subjects=None):
+    if subjects is None:
+        subjects = util.subj_list()
+    rdms = load_roi_brsa(res_dir, rois, subjects)
+    n_subj = len(subjects)
+    mrdm = {
+        roi: np.mean(
+            np.dstack([rdms[roi][subject] for subject in range(n_subj)]), axis=2
+        ) for roi in rois
+    }
+    return mrdm
+
+
 def load_roi_prsa(res_dir, roi, subjects=None):
     """Load z-statistic from permutation test results."""
     if subjects is None:
