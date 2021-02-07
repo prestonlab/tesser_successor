@@ -42,11 +42,7 @@ if __name__ == '__main__':
     else:
         inc_subjects = None
 
-    roi_sets = rsa.get_roi_sets()
-    if args.rois in roi_sets:
-        inc_rois = roi_sets[args.rois]
-    else:
-        inc_rois = args.rois.split(',')
+    inc_rois = rsa.parse_rois(args.rois)
     main(
         inc_subjects, inc_rois, env_study_dir, args.rsa_name, args.res_name,
         block=args.block
