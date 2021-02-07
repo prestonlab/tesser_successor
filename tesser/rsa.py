@@ -19,6 +19,19 @@ def get_roi_sets():
     return rois
 
 
+def parse_rois(roi_list):
+    """Parse an roi spec list."""
+    roi_sets = get_roi_sets()
+    split_rois = roi_list.split(',')
+    rois = []
+    for roi in split_rois:
+        if roi in roi_sets:
+            rois.extend(roi_sets[roi])
+        else:
+            rois.append(roi)
+    return rois
+
+
 def rdm(matrix):
     """ Computes the representational dissimilarity matrix for one matrix. """
     return distance.squareform(distance.pdist(matrix, 'correlation'))
