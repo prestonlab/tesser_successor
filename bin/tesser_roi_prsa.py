@@ -41,14 +41,14 @@ def main(
     # learning models based on part 1
     # dissimilarity is inversely proportionate to association strength
     struct1 = struct.query('part == 1').copy()
-    gamma = [0, .45, .9]
+    gamma = [0, .9]
     alpha = 0.05
     sr_mat = [cython_sr.learn_sr(struct1, g, alpha, n_state) for g in gamma]
     sr_rdm = [rsa.make_sym_matrix(1 - sr / np.sum(sr)) for sr in sr_mat]
 
     # create model set
     model_rdms = [comm_rdm] + sr_rdm
-    model_names = ['community', 'sr0', 'sr45', 'sr90']
+    model_names = ['community', 'sr0', 'sr90']
 
     # initialize the permutation test
     perm = prsa.init_pRSA(n_perm, model_rdms, rank=False)
