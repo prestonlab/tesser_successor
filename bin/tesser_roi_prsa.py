@@ -15,7 +15,7 @@ from tesser import rsa
 
 
 def main(
-        subject, study_dir, beh_dir, rsa_name, roi, res_name, block=None, n_perm=1000
+    subject, study_dir, beh_dir, rsa_name, roi, res_name, block=None, n_perm=1000
 ):
     # load dissimilarity matrix
     rsa_dir = os.path.join(study_dir, 'batch', 'rsa', rsa_name, roi)
