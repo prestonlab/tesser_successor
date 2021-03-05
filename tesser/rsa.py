@@ -210,7 +210,7 @@ def load_roi_mean_brsa(res_dir, rois, subjects=None):
     return mrdm
 
 
-def load_roi_prsa(res_dir, roi, subjects=None):
+def load_roi_prsa(res_dir, roi, subjects=None, stat='zstat'):
     """Load z-statistic from permutation test results."""
     if subjects is None:
         subjects = util.subj_list()
@@ -219,13 +219,14 @@ def load_roi_prsa(res_dir, roi, subjects=None):
     for subject in subjects:
         subj_file = os.path.join(res_dir, roi, f'zstat_{subject}.csv')
         zdf = pd.read_csv(subj_file, index_col=0).T
-        zdf.index = [subject]
-        z.append(zdf)
+        sdf = zdf.loc[[stat]]
+        sdf.index = [subject]
+        z.append(sdf)
     df = pd.concat(z)
     return df
 
 
-def load_net_prsa(rsa_dir, block, model_set, rois, subjects=None):
+def load_net_prsa(rsa_dir, block, model_set, rois, subjects=None, stat='zstat'):
     """Load z-statistics for a model for a set of ROIs."""
     # get the directory with results for this model set and block
     res_dir = os.path.join(rsa_dir, f'prsa_{block}_{model_set}')
@@ -235,7 +236,7 @@ def load_net_prsa(rsa_dir, block, model_set, rois, subjects=None):
     # load each ROI
     df_list = []
     for roi in rois:
-        rdf = load_roi_prsa(res_dir, roi, subjects)
+        rdf = load_roi_prsa(res_dir, roi, subjects, stat=stat)
         mdf = pd.DataFrame({'subject': rdf.index, 'roi': roi}, index=rdf.index)
         full = pd.concat((mdf, rdf), axis=1)
 
