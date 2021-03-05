@@ -6,6 +6,7 @@ from glob import glob
 import numpy as np
 import pandas as pd
 import scipy.spatial.distance as sd
+from nilearn.glm import first_level
 from mindstorm import prsa
 from tesser import util
 
@@ -256,3 +257,46 @@ def net_prsa_perm(df, model, n_perm=1000, beta=0.05):
     results = prsa.sign_perm(mat.to_numpy(), n_perm, beta)
     results.index = mat.columns
     return results
+
+
+def create_brsa_matrix(subject_dir, events, n_vol):
+    """Create a design matrix for Bayesian RSA."""
+    # load confound files
+    runs = events['run'].unique()
+    n_run = len(runs)
+    confound = {}
+    for run in runs:
+        confound_file = os.path.join(
+            subject_dir, 'BOLD', f'functional_run_{run}', 'QA', 'confound.txt'
+        )
+        confound[run] = np.loadtxt(confound_file)
+
+    # explanatory variables of interest
+    n_ev = events['trial_type'].nunique()
+    evs = np.arange(1, n_ev + 1)
+
+    # create full design matrix
+    df_list = []
+    frame_times = np.arange(n_vol / n_run) * 2
+    for run in runs:
+        # create a design matrix with one column per trial type and confounds
+        df_run = first_level.make_first_level_design_matrix(
+            frame_times, events=events.query(f'run == {run}'), add_regs=confound[run]
+        )
+
+        # reorder columns for consistency across runs; confounds go last
+        regs = df_run.filter(like='reg', axis=1).columns
+        drifts = df_run.filter(like='drift', axis=1).columns
+        columns = np.hstack((evs, drifts, ['constant'], regs))
+        df_list.append(df_run.reindex(columns=columns))
+    df_mat = pd.concat(df_list, axis=0)
+
+    # with confounds included, the number of regressors varies by run.
+    # Columns missing between runs are set to NaN
+    df_mat.fillna(0, inplace=True)
+
+    # package for use with BRSA
+    mat = df_mat.to_numpy()[:, :n_ev]
+    nuisance = df_mat.to_numpy()[:, n_ev:]
+    scan_onsets = np.arange(0, n_vol, n_vol / n_run)
+    return mat, nuisance, scan_onsets
