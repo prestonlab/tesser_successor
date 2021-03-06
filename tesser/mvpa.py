@@ -50,7 +50,7 @@ def load_struct_timeseries(
     ds_list = []
     for run, bold_image in zip(runs, bold_images):
         ds_run = fmri_dataset(bold_image, mask=mask_file, add_fa=add_fa)
-        ds_run.sa['run'] = run
+        ds_run.sa['run'] = np.tile(run, ds_run.shape[0])
         ds_list.append(ds_run)
     ds = vstack(ds_list)
 
