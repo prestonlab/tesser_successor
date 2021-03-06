@@ -37,7 +37,7 @@ def load_struct_timeseries(
 
     # feature mask, if specified
     if feature_mask is not None:
-        feature_file = os.path.join(mask_dir, 'f{feature_mask}.nii.gz')
+        feature_file = os.path.join(mask_dir, f'{feature_mask}.nii.gz')
         if not os.path.exists(feature_file):
             raise IOError(f'Feature mask does not exist: {feature_file}')
         if verbose:
