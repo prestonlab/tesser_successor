@@ -12,11 +12,12 @@ def load_struct_timeseries(
 ):
     """Load structure learning timeseries as a dataset."""
     # functional timeseries for each run
+    subject_dir = os.path.join(study_dir, f'tesser_{subject}')
     runs = list(range(1, 7))
     bold_images = []
     for run in runs:
         bold = os.path.join(
-            study_dir, subject, 'BOLD', 'antsreg', 'data',
+            subject_dir, 'BOLD', 'antsreg', 'data',
             f'functional_run_{run}_bold_mcf_brain_corr_notemp.feat',
             'filtered_func_data.nii.gz'
         )
@@ -25,7 +26,6 @@ def load_struct_timeseries(
         bold_images.append(bold)
 
     # mask image to select voxels to load
-    subject_dir = os.path.join(study_dir, f'tesser_{subject}')
     mask_dir = os.path.join(
         subject_dir, 'anatomy', 'antsreg', 'data', 'funcunwarpspace', 'rois', 'mni'
     )
