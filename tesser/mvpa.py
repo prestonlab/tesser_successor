@@ -60,7 +60,7 @@ def load_struct_timeseries(
 
     # set the include feature attribute
     if feature_mask is not None:
-        ds.fa['include'] = ds.fa['include'].astype(bool)
+        ds.fa.include = ds.fa.include.astype(bool)
     else:
         ds.fa['include'] = np.ones(ds.shape[1], dtype=bool)
     return ds
