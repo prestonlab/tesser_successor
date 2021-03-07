@@ -2,9 +2,11 @@
 
 import os
 import numpy as np
+from scipy.spatial import distance
 from mvpa2.datasets.mri import fmri_dataset
 from mvpa2.base.dataset import vstack
 from mvpa2.mappers.zscore import zscore
+from mvpa2.measures.base import Measure
 
 
 def load_struct_timeseries(
@@ -64,3 +66,36 @@ def load_struct_timeseries(
     else:
         ds.fa['include'] = np.ones(ds.shape[1], dtype=bool)
     return ds
+
+
+class ItemBRSA(Measure):
+    """Bayesian RSA of item patterns."""
+    def _call(self, ds):
+        pass
+
+    def __init__(self, model, n_ev, mat, nuisance, scan_onsets, min_voxels=10):
+        Measure.__init__(self)
+        self.model = model
+        self.n_ev = n_ev
+        self.n = (n_ev ** 2 - n_ev) // 2
+        self.mat = mat
+        self.nuisance = nuisance
+        self.scan_onsets = scan_onsets
+        self.min_voxels = min_voxels
+
+    def __call__(self, dataset):
+        corr = np.zeros(self.n)
+        if np.count_nonzero(dataset.fa.include) < 10:
+            return (*corr, 0)
+        dataset = dataset[:, dataset.fa.include]
+
+        # fit Bayesian RSA model
+        model = self.model
+        image = dataset.samples
+        model.fit(
+            [image], [self.mat], nuisance=self.nuisance, scan_onsets=self.scan_onsets
+        )
+
+        # pack correlation results
+        corr = distance.squareform(model.C_, checks=False)
+        return (*corr, 1)
