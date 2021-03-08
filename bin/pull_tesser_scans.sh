@@ -27,6 +27,7 @@ rsync -azvu "$src" "$dest" \
     --include="tesser_*/anatomy/antsreg/data/funcunwarpspace/" \
     --include="tesser_*/anatomy/antsreg/data/funcunwarpspace/rois/" \
     --include="tesser_*/anatomy/antsreg/data/funcunwarpspace/rois/mni/" \
+    --include="tesser_*/anatomy/antsreg/data/funcunwarpspace/rois/freesurfer/" \
     --include="?_hip*.nii.gz" \
     --include="1*.nii.gz" \
     --include="2*.nii.gz" \
