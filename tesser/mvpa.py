@@ -56,6 +56,9 @@ def load_struct_timeseries(
         ds_list.append(ds_run)
     ds = vstack(ds_list)
 
+    # copy attributes needed for reverse mapping to nifti images
+    ds.a = ds_run.a
+
     # normalize within run
     if zscore_run:
         zscore(ds, chunks_attr='run')
