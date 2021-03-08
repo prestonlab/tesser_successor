@@ -31,4 +31,5 @@ rsync -azvu "$src" "$dest" \
     --include="1*.nii.gz" \
     --include="2*.nii.gz" \
     --include="3*.nii.gz" \
+    --include="aparc+aseg.nii.gz" \
     --exclude="*" "$@"
