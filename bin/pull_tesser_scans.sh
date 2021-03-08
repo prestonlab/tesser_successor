@@ -33,4 +33,7 @@ rsync -azvu "$src" "$dest" \
     --include="2*.nii.gz" \
     --include="3*.nii.gz" \
     --include="aparc+aseg.nii.gz" \
+    --include="brain_mask.nii.gz" \
+    --include="brain.nii.gz" \
+    --include="coronal_mean_brain.nii.gz" \
     --exclude="*" "$@"
