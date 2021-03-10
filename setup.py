@@ -32,6 +32,7 @@ setuptools.setup(
         'pandas',
         'seaborn',
         'cython',
+        'mindstorm',
     ],
     scripts=scripts(),
     ext_modules=cythonize(['tesser/csr.pyx',

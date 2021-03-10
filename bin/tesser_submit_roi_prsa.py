@@ -1,33 +1,33 @@
 #!/usr/bin/env python
 #
-# Submit Bayesian representational similarity analysis.
+# Submit partial representational similarity analysis.
 
 import os
 import argparse
 from tesser import util
+from tesser import rsa
 
 
-def submit_brsa(subjects, rois, study_dir, res_dir, blocks):
+def main(subjects, rois, study_dir, rsa_name, res_name, block):
     if subjects is None:
         subjects = util.subj_list()
 
-    options = f'--study-dir={study_dir} -b {blocks}'
+    beh_dir = os.path.join(study_dir, 'batch', 'behav')
+    options = f'--study-dir={study_dir} -b {block} -p 100000'
     for roi in rois:
-        roi_dir = os.path.join(res_dir, roi)
+        inputs = f'{beh_dir} {rsa_name} {roi} {res_name}'
         for subject in subjects:
-            print(f'tesser_brsa.py {subject} {roi} {roi_dir} {options}')
+            print(f'tesser_roi_prsa.py {subject} {inputs} {options}')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('rsa_name', help='name for rsa results')
     parser.add_argument('rois', help="name of mask to use.")
-    parser.add_argument('res_dir', help="path to directory to save results.")
+    parser.add_argument('res_name', help="name of directory to save results.")
+    parser.add_argument('--block', '-b', help='block to include (walk, random)')
     parser.add_argument('--study-dir', help="path to main study data directory.")
     parser.add_argument('--subjects', '-s', help="ID of subjects to process.")
-    parser.add_argument(
-        '--blocks', '-b',
-        help="blocks to include in model ['walk'|'random'|'combined'|'separate']"
-    )
     args = parser.parse_args()
 
     if args.study_dir is None:
@@ -42,5 +42,8 @@ if __name__ == '__main__':
     else:
         inc_subjects = None
 
-    inc_rois = args.rois.split(',')
-    submit_brsa(inc_subjects, inc_rois, env_study_dir, args.res_dir, args.blocks)
+    inc_rois = rsa.parse_rois(args.rois)
+    main(
+        inc_subjects, inc_rois, env_study_dir, args.rsa_name, args.res_name,
+        block=args.block
+    )

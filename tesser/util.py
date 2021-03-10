@@ -67,12 +67,14 @@ def load_struct_run(data_dir, subject_num, part_num, run_num):
     subj_dir = get_subj_dir(data_dir, subject_num)
 
     # search for a file with the correct name formatting
-    file_pattern = (f'tesserScan_{subject_num}_*_StructLearn' 
-                    f'_Part{part_num}_Run_{run_num}.txt')
+    file_pattern = (
+        f'tesserScan_{subject_num}_*_StructLearn_Part{part_num}_Run_{run_num}.txt'
+    )
     file_search = glob(os.path.join(subj_dir, file_pattern))
     if len(file_search) != 1:
-        raise IOError(f'Problem finding data for {subject_num}, ' 
-                      f'part {part_num}, run {run_num}.')
+        raise IOError(
+            f'Problem finding data for {subject_num}, part {part_num}, run {run_num}.'
+        )
     run_file = file_search[0]
 
     # read log, fixing problem with spaces in column names
@@ -88,6 +90,7 @@ def load_struct_run(data_dir, subject_num, part_num, run_num):
     df = df.astype({'objnum': 'int'})
     return df
 
+
 def load_struct_run_info(event_dir, subject, run):
     """Load event info for one structured learning run."""
 
@@ -100,11 +103,14 @@ def load_struct_run_info(event_dir, subject, run):
 
     # read log, fixing problem with spaces in column names
     run_info = pd.read_csv(run_file, sep='\,', skipinitialspace=True, header=None)
-    
-    #name the columns:
-    run_info = run_info.rename({0:'trial_num', 1:'onset', 2:'TR', 3:'seq_type', 4:'item', 5:'dur'}, axis=1)
-        
+
+    # name the columns:
+    run_info = run_info.rename(
+        {0: 'trial_num', 1: 'onset', 2: 'TR', 3: 'seq_type', 4: 'item', 5: 'dur'},
+        axis=1,
+    )
     return run_info
+
 
 def load_struct_subject(data_dir, subject_num):
     """Load dataframe with structured learning task for one subject."""
@@ -136,6 +142,31 @@ def load_struct(data_dir, subjects=None):
         df_subj = load_struct_subject(data_dir, subject)
         df_all.append(df_subj)
     df = pd.concat(df_all, axis=0, ignore_index=True)
+    nodes = network.temp_node_info()
+    df['community'] = nodes.loc[df['objnum'], 'comm'].to_numpy()
+    return df
+
+
+def load_struct_bids(data_dir, subjects=None):
+    """Load structure learning data for multiple subjects in BIDS format."""
+    raw = load_struct(data_dir, subjects)
+    orientation = {'cor': 'canonical', 'rot': 'rotated'}
+    response = {'c': 'canonical', 'n': 'rotated'}
+    df = pd.DataFrame(
+        {
+            'subject': raw['SubjNum'],
+            'part': raw['part'],
+            'run': raw['run'],
+            'trial': raw['trial'],
+            'trial_type': raw['seqtype'].astype('Int64'),
+            'community': raw['community'],
+            'object': raw['objnum'],
+            'orientation': raw['orientnam'].map(orientation).astype('category'),
+            'response': raw['resp'].map(response).astype('category'),
+            'response_time': raw['rt'],
+            'correct': raw['acc'].astype('Int64'),
+        }
+    )
     return df
 
 
@@ -159,7 +190,7 @@ def object_count_run(this_run_info):
     this_run = this_run_info.reset_index(drop=True)
     all_count = []
     for item in range(1, 22):
-        these_items = this_run[this_run["objnum"]==item]
+        these_items = this_run[this_run["objnum"] == item]
         count = len(these_items)
         all_count.append(count)
     return all_count
@@ -198,6 +229,30 @@ def load_induct(data_dir, subjects=None):
         df_subj = load_induct_subject(data_dir, subject)
         df_all.append(df_subj)
     df = pd.concat(df_all, axis=0, ignore_index=True)
+    nodes = network.temp_node_info()
+    df['community'] = nodes.loc[df['cue'] + 1, 'comm'].to_numpy()
+    return df
+
+
+def load_induct_bids(data_dir, subjects=None):
+    """Load induction data in BIDs format."""
+    raw = load_induct(data_dir, subjects)
+    trial_type = {'Prim': 'primary', 'Bound1': 'boundary1', 'Bound2': 'boundary2'}
+    df = pd.DataFrame(
+        {
+            'subject': raw['SubjNum'],
+            'trial': raw['TrialNum'],
+            'trial_type': raw['QuestType'].map(trial_type).astype('category'),
+            'environment': raw['Environment'],
+            'community': raw['community'],
+            'cue': raw['CueNum'],
+            'opt1': raw['Opt1Num'],
+            'opt2': raw['Opt2Num'],
+            'response': raw['Resp'].astype('Int64'),
+            'response_time': raw['RT'],
+            'correct': raw['Acc'].astype('Int64'),
+        }
+    )
     return df
 
 
@@ -231,6 +286,7 @@ def load_group_subject(data_dir, subject_num):
     # read log, fixing problem with spaces in column names
     mat = np.loadtxt(run_file)
     return mat.astype(int)
+
 
 def score_induct(induct):
     """Score induction task data."""
