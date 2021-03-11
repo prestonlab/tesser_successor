@@ -56,17 +56,9 @@ def param_bounds(var_bounds, var_names):
 
 
 
-def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, model_type, model):
+def assess_induct_fit_subject_hybrid(SR, induct, param, n_states, split, model):
     """Compare model and data in fitting the induction task."""
-    
-    subject = struct.SubjNum.unique()[0] #get subject number from dataframe
-    SR = cython_sr.learn_sr(struct, param['gamma'], param['alpha'], n_states=n_states)
-    if model_type == 'gamma':
-        model = cython_sr.learn_sr(struct, param['gamma2'], param['alpha'], n_states=n_states)
-#     if model_type == 'true transitional':
-#         model = cython_sr.transition_indiv(struct, n_states)
-    if model_type=='true transitional':
-        model = model[0][subject]
+
     induct_df = induct.reset_index()
     num_trials = induct_df.shape[0]
     cue = induct_df.cue.to_numpy()
@@ -78,9 +70,21 @@ def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, model_type
     res = induct_df.response.to_numpy()
     res = res.astype(np.dtype('i'))
     trial_prob = np.zeros(num_trials)
-    trial_prob = cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
-                                      param['tau'], param['w'],
+    questions = induct.QuestType.unique()
+    if split:
+        for question in questions:
+            for p in param.keys():
+                if question.lower() in p:
+                    
+                    w = param[p]
+                    trial_prob += cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
+                                      param['tau'], w,
                                       model=model, trial_prob=trial_prob)
+            
+    else:
+        trial_prob = cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
+                                          param['tau'], param['w'],
+                                          model=model, trial_prob=trial_prob)
     induct = induct_df.copy()
     induct.loc[:, 'Data'] = induct['Acc']
     induct.loc[:, 'Model'] = trial_prob
@@ -112,8 +116,6 @@ def grouping_error(struc_df, group_df, alpha, gamma):
 
 
 def get_induction_log_likelihood_hybrid(SR, induc_df, tau, w, n_states, return_trial, model):
-    
-    subject = induc_df.SubjNum.unique()[0] #get subject number from dataframe
     
 
     induc_df = induc_df.reset_index()
@@ -198,8 +200,11 @@ def fit_induct(struct_df, induct_df, fixed, split, var_names, var_bounds, n_stat
             if model_type == 'multiple gamma':
                 model_subj = cython_sr.learn_sr(subj_struct, param["gamma2"], param["alpha"], n_states)
 
-            if model_type=='true transitional':
+            if model_type =='true transitional':
                 model_subj = model[subject]
+                
+            if model_type =='comm':
+                model_subj = model
 
             if split:
                 subj_logl = 0
@@ -213,13 +218,13 @@ def fit_induct(struct_df, induct_df, fixed, split, var_names, var_bounds, n_stat
                         
                     w = question_param["w"]
                     tau = question_param["tau"]
-                    subj_logl += get_induction_log_likelihood_hybrid(SR, question_induct, tau, w, n_states=n_states,
-                                                     return_trial=False, model=model_subj)
+                    subj_logl += get_induction_log_likelihood_hybrid(SR, question_induct, tau, w, n_states,
+                                                     False, model_subj)
             else:
                 w = param["w"]
                 tau = param["tau"]
-                subj_logl = get_induction_log_likelihood_hybrid(SR, subj_induct, tau , w, n_states=n_states,
-                                                         return_trial=False, model=model_subj)
+                subj_logl = get_induction_log_likelihood_hybrid(SR, question_induct, tau, w, n_states,
+                                                     False, model_subj)
 
             logl += subj_logl
         # logl = get_induction_log_likelihood_hybrid(SR, subj_induct, tau = param["tau"], param["w"], n_states=n_states,
@@ -237,7 +242,7 @@ def fit_induct(struct_df, induct_df, fixed, split, var_names, var_bounds, n_stat
     return param, logl
 
 
-def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_states, verbose=False, model_type='gamma', model =[], split_list = []):
+def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_states, verbose, model_type, model, split_list):
     """Estimate parameters for individual subjects."""
 
     df_list = []
@@ -257,7 +262,7 @@ def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_stat
     #df = df.set_index('subject')
     return df
 
-def plot_by_question(struct_all, induct_all, results, split, n_states=21, model=[], path='./Data/', fig_name='Unnamed', model_type=''):
+def plot_by_question(struct_all, induct_all, results, split, n_states, model_type, model, fig_name='Unnamed'):
     '''Plots results for accuracy of individual fitting by question type.
         INPUT:
             results: DataFrame with param
@@ -268,11 +273,27 @@ def plot_by_question(struct_all, induct_all, results, split, n_states=21, model=
         subj_struct = struct_all.query(subj_filter)
         subj_induct = induct_all.query(subj_filter)
         subj_param = results.loc[subject]
-        param = {'alpha': subj_param['alpha'], 'gamma': subj_param['gamma'],
-                 'tau': subj_param['tau'],'w': subj_param['w']}
-        if model_type=='gamma':
-            param['gamma2'] = subj_param['gamma2']
-        res = assess_induct_fit_subject_hybrid(subj_struct, subj_induct, param, n_states, model_type=model_type, model=model)
+
+#         print(subject)
+        param={}
+        for name in results.columns:
+            if name == 'log_like':
+                continue
+
+            param[name] = subj_param[name]
+        SR = cython_sr.learn_sr(subj_struct, param["gamma"], param["alpha"], n_states)
+        if model_type == 'multiple gamma':
+            model_subj = cython_sr.learn_sr(subj_struct, param["gamma2"], param["alpha"], n_states)
+
+        if model_type == 'true transitional':
+            model_subj = model[subject]
+            
+        else:
+            model_subj = np.zeros((n_states,n_states))
+        
+#         print(model_subj)
+
+        res = assess_induct_fit_subject_hybrid(SR , subj_induct, param, n_states , split, model_subj)
         res_list.append(res)
     fitted = pd.concat(res_list, axis=0)
     
