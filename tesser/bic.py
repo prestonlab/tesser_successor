@@ -12,7 +12,7 @@ def mean_stu_conf(array):
 def params(results, error = False):
     d ={}
     for s in results.keys():
-        if s == 'subject' or s == 'gamma2' or s == 'w_prim' or s == 'w_bound1' or s == 'w_bound2':
+        if s == 'subject' or s == 'gamma2' or s == 'w' or s == 'w_prim' or s == 'w_bound1' or s == 'w_bound2':
             continue
         m, e =mean_stu_conf(results[s])
         d[s] =[m]
