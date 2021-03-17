@@ -56,8 +56,9 @@ def param_bounds(var_bounds, var_names):
 
 
 
-def assess_induct_fit_subject_hybrid(SR, induct, param, n_states, split, model):
+def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, split, model):
     """Compare model and data in fitting the induction task."""
+    SR = cython_sr.learn_sr(struct, param["gamma"], param["alpha"], n_states) # will break code if called by plotting function below
 
     induct_df = induct.reset_index()
     num_trials = induct_df.shape[0]
@@ -82,6 +83,7 @@ def assess_induct_fit_subject_hybrid(SR, induct, param, n_states, split, model):
                                       model=model, trial_prob=trial_prob)
             
     else:
+#         print(type(cue)) # use to debug 
         trial_prob = cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
                                           param['tau'], param['w'],
                                           model=model, trial_prob=trial_prob)
@@ -203,7 +205,7 @@ def fit_induct(struct_df, induct_df, fixed, split, var_names, var_bounds, n_stat
             if model_type =='true transitional':
                 model_subj = model[subject]
                 
-            if model_type =='comm':
+            if model_type =='comm' or 'SR only':
                 model_subj = model
 
             if split:
@@ -223,7 +225,7 @@ def fit_induct(struct_df, induct_df, fixed, split, var_names, var_bounds, n_stat
             else:
                 w = param["w"]
                 tau = param["tau"]
-                subj_logl = get_induction_log_likelihood_hybrid(SR, question_induct, tau, w, n_states,
+                subj_logl = get_induction_log_likelihood_hybrid(SR, subj_induct, tau, w, n_states,
                                                      False, model_subj)
 
             logl += subj_logl
