@@ -31,7 +31,7 @@ def bic(k, n, L):
     return k*np.log(n) - 2*L
     
     
-def get_bic(results, k, n, all_log=False):
+def get_bic(results, k, n, subject_BIC=False, array=True):
     # Sum of all log likelihoods 
     L = np.sum(results.log_like)
     
@@ -40,11 +40,14 @@ def get_bic(results, k, n, all_log=False):
     N = len(subjects)
     
     # BIC at an individual level
-    if all_log:
+    if subject_BIC:
         logs = np.array([results.query(f"subject == {sub}").log_like for sub in subjects])
         BIC = [bic(k,n, l[0]) for l in logs]
-        df = pd.DataFrame({'log_like':BIC}, subjects)
-        return df
+        if array:
+            bics = np.array(BIC)
+        else:
+            bics = pd.DataFrame({'BIC':BIC},subjects)
+        return bics
     else:
         # BIC at a group level
         return bic(N*k, N*n, L)
