@@ -106,28 +106,6 @@ def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, split, mod
     return results
 
 
-
-def grouping_error(struc_df, group_df, alpha, gamma):
-    SR = sr.learn_sr(struc_df, gamma, alpha)[(1, 5)]
-    
-
-    euclid_matrix = tasks.group_dist_mat(group_df)
-    euclid_vector = distance.squareform(euclid_matrix)
-
-    sr_matrix = util.make_sym_matrix(SR)
-    sr_vector = distance.squareform(sr_matrix, checks=False)
-
-    slope, intercept, r_value, p_value, std_err = linregress(sr_vector,
-                                                             euclid_vector)
-
-    euclid_estimates = np.array([slope * x + intercept for x in sr_vector])
-    err = np.square(euclid_vector - euclid_estimates)
-    err = np.mean(err)
-    err = np.sqrt(err)
-
-    return err
-
-
 def get_induction_log_likelihood_hybrid(SR, induc_df, tau, w, n_states, return_trial, model):
     
 
