@@ -60,8 +60,9 @@ def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, split, mod
     """Compare model and data in fitting the induction task."""
     subject = int(struct.SubjNum.unique())
     SR = cython_sr.learn_sr(struct, param["gamma"], param["alpha"], n_states)
-    model_subj = model
-    if model_type == 'multiple gamma':
+    if model_type =='comm':
+        model_subj = model
+    if (model_type == 'multiple gamma') or (model_type == 'multiple zero'):
         model_subj = cython_sr.learn_sr(struct, param["gamma2"], param["alpha"], n_states)
     if model_type =='true transitional':
         model_subj = model[subject]
@@ -237,7 +238,7 @@ def fit_induct(struct_df, induct_df, fixed, split, var_names, var_bounds, n_stat
     return param, logl
 
 
-def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_states, verbose, model_type, model, split_list):
+def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_states, verbose, model_type, model, split_list, free_params):
     """Estimate parameters for individual subjects."""
 
     df_list = []
@@ -254,13 +255,16 @@ def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_stat
         df = pd.DataFrame(param, index=[0])
         df_list.append(df)
     df = pd.concat(df_list, axis=0, ignore_index=True)
+    df['k'] = free_params
     #df = df.set_index('subject')
     return df
 
-def plot_by_question(struct_all, induct_all, results, n_states, split, model_type, model=[], split_list=[]):
-    '''Plots results for accuracy of individual fitting by question type.
+def fitted_results(struct_all, induct_all, results, n_states, split, model_type, model=[]):
+    ''' Results for accuracy of individual fitting by question type.
         INPUT:
             results: DataFrame with param
+        OUTPUT:
+            fitted: Results fitted by accuracy
     '''
     res_list = []
     for subject in results.index.unique():
@@ -269,35 +273,64 @@ def plot_by_question(struct_all, induct_all, results, n_states, split, model_typ
         subj_induct = induct_all.query(subj_filter)
         subj_param = results.loc[subject]
 
-#         print(subject)
         param={}
         for name in results.columns:
-            if name == 'log_like':
+            if (name == 'log_like') or (name == 'k'):
                 continue
 
             param[name] = subj_param[name]
         res = assess_induct_fit_subject_hybrid(subj_struct , subj_induct, param, n_states, split, model_type, model)
         res_list.append(res)
     fitted = pd.concat(res_list, axis=0)
-    fig_name = model_type.upper()
+    return fitted
+
+
+def plot_by_question(fitted, split, fig_name):
+    '''Plots fitted results for accuracy of individual fitting by question type.
+        INPUT:
+            fitted: DataFrame with paramarmets fitted by accuracy
+        OUTPUT:
+            fig: Accuracy plots by question type
+    '''
+    ########################################################################### make into function
+#     res_list = []
+#     for subject in results.index.unique():
+#         subj_filter = f'SubjNum == {subject}'
+#         subj_struct = struct_all.query(subj_filter)
+#         subj_induct = induct_all.query(subj_filter)
+#         subj_param = results.loc[subject]
+
+# #         print(subject)
+#         param={}
+#         for name in results.columns:
+#             if name == 'log_like':
+#                 continue
+
+#             param[name] = subj_param[name]
+#         res = assess_induct_fit_subject_hybrid(subj_struct , subj_induct, param, n_states, split, model_type, model)
+#         res_list.append(res)
+#     fitted = pd.concat(res_list, axis=0)
+    
+    ###########################################################################
+    fig_name = fig_name.upper()
     if split:
         fig_name += '_weighted' 
     fig, axes = plt.subplots(2, 2, figsize = (10,10),sharey=False)
     fig.suptitle(fig_name) 
     names = [ 'Environment', 'QuestType']
-    for i,t in enumerate(names):
-        n = fitted.groupby(['Source', 'SubjNum', names[i]])['Accuracy'].mean()
+    for i, name in enumerate(names):
+        n = fitted.groupby(['Source', 'SubjNum', name])['Accuracy'].mean()
         m  = n.unstack(level=0)
-        g = sns.scatterplot(x='Model', y='Data', hue=names[i], data=m.reset_index(), ax=axes[0][i % 2]);
-        g.set_xlim(0, 1.02);
-        g.set_ylim(0, 1.02);
-        g.set_aspect(1);
-        g.set_title('Individual accuracies \n data vs model \n by '+names[i])
-        g.plot((0, 1), (0, 1), '-k');
+        g = sns.scatterplot(x='Model', y='Data', hue=name, data=m.reset_index(), ax=axes[0][i % 2])
+        g.set_xlim(0, 1.02)
+        g.set_ylim(0, 1.02)
+        g.set_aspect(1)
+        g.set_title('Individual accuracies \n data vs model \n by '+name)
+        g.plot((0, 1), (0, 1), '-k')
 
-        f = sns.pointplot(kind='point', x=names[i], y='Accuracy', 
-                    hue='Source', dodge=True, data=n.reset_index(), ax=axes[1][i % 2]);
-        f.set(ylim=(0, 1.02));
+        f = sns.pointplot(kind='point', x=name, y='Accuracy', 
+                    hue='Source', dodge=True, data=n.reset_index(), ax=axes[1][i % 2])
+        f.set(ylim=(0, 1.02))
 #     fig.savefig(path+fig_name)
     return fig
 
