@@ -238,7 +238,7 @@ def fit_induct(struct_df, induct_df, fixed, split, var_names, var_bounds, n_stat
     return param, logl
 
 
-def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_states, verbose, model_type, model, split_list, free_params):
+def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_states, verbose, model_type, model, split_list):
     """Estimate parameters for individual subjects."""
 
     df_list = []
@@ -255,7 +255,9 @@ def fit_induct_indiv(struct, induct, fixed, var_names, var_bounds, split, n_stat
         df = pd.DataFrame(param, index=[0])
         df_list.append(df)
     df = pd.concat(df_list, axis=0, ignore_index=True)
-    df['k'] = free_params
+    df['k'] = len(var_names)
+    df['n'] = int(induct.TrialNum.max())
+
     #df = df.set_index('subject')
     return df
 
@@ -275,7 +277,7 @@ def fitted_results(struct_all, induct_all, results, n_states, split, model_type,
 
         param={}
         for name in results.columns:
-            if (name == 'log_like') or (name == 'k'):
+            if (name == 'log_like') or (name == 'k') or (name == 'n'):
                 continue
 
             param[name] = subj_param[name]
@@ -331,7 +333,6 @@ def plot_by_question(fitted, split, fig_name):
         f = sns.pointplot(kind='point', x=name, y='Accuracy', 
                     hue='Source', dodge=True, data=n.reset_index(), ax=axes[1][i % 2])
         f.set(ylim=(0, 1.02))
-#     fig.savefig(path+fig_name)
     return fig
 
 ############################################################
