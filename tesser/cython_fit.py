@@ -83,21 +83,24 @@ def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, split, mod
     trial_prob = np.zeros(num_trials)
     questions = induct.QuestType.unique()
     if split:
-        trial_prob = 0
+#         trial_prob = 0.0
         for question in questions:
             for p in param.keys():
                 if question.lower() in p:
                     
                     w = param[p]
                     trial_prob += cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
-                                      param['tau'], w,
-                                      model=model_subj, trial_prob=trial_prob)
+                                                           param['tau'], w, model=model_subj,
+                                                           trial_prob=trial_prob)
             
     else:
 #         print(type(cue)) # use to debug 
         trial_prob = cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
                                           param['tau'], param['w'],
                                           model=model_subj, trial_prob=trial_prob)
+#     print('')
+#     print(len(trial_prob))
+#     print('')
     induct = induct_df.copy()
     induct.loc[:, 'Data'] = induct['Acc']
     induct.loc[:, 'Model'] = trial_prob
@@ -287,36 +290,15 @@ def fitted_results(struct_all, induct_all, results, n_states, split, model_type,
     return fitted
 
 
-def plot_by_question(fitted, split, fig_name):
+def plot_by_question(fitted, fig_name):
     '''Plots fitted results for accuracy of individual fitting by question type.
         INPUT:
             fitted: DataFrame with paramarmets fitted by accuracy
         OUTPUT:
             fig: Accuracy plots by question type
     '''
-    ########################################################################### make into function
-#     res_list = []
-#     for subject in results.index.unique():
-#         subj_filter = f'SubjNum == {subject}'
-#         subj_struct = struct_all.query(subj_filter)
-#         subj_induct = induct_all.query(subj_filter)
-#         subj_param = results.loc[subject]
 
-# #         print(subject)
-#         param={}
-#         for name in results.columns:
-#             if name == 'log_like':
-#                 continue
-
-#             param[name] = subj_param[name]
-#         res = assess_induct_fit_subject_hybrid(subj_struct , subj_induct, param, n_states, split, model_type, model)
-#         res_list.append(res)
-#     fitted = pd.concat(res_list, axis=0)
-    
-    ###########################################################################
     fig_name = fig_name.upper()
-    if split:
-        fig_name += '_weighted' 
     fig, axes = plt.subplots(2, 2, figsize = (10,10),sharey=False)
     fig.suptitle(fig_name) 
     names = [ 'Environment', 'QuestType']
