@@ -82,20 +82,26 @@ def assess_induct_fit_subject_hybrid(struct, induct, param, n_states, split, mod
     res = res.astype(np.dtype('i'))
     trial_prob = np.zeros(num_trials)
     questions = induct.QuestType.unique()
+    by_question_type = induct.QuestType.to_numpy()
     if split:
 #         trial_prob = 0.0
         for question in questions:
+
             for p in param.keys():
                 if question.lower() in p:
                     
                     w = param[p]
-                    trial_prob += cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
+            idx = (by_question_type == question)
+            trial_prob_question = np.zeros(np.count_nonzero(idx))
+
+            cfit.prob_induct_subject(SR, cue[idx], opt1[idx], opt2[idx], res[idx],
                                                            param['tau'], w, model=model_subj,
-                                                           trial_prob=trial_prob)
+                                                           trial_prob=trial_prob_question)
+            trial_prob[idx] = trial_prob_question
             
     else:
 #         print(type(cue)) # use to debug 
-        trial_prob = cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
+        cfit.prob_induct_subject(SR, cue, opt1, opt2, res ,
                                           param['tau'], param['w'],
                                           model=model_subj, trial_prob=trial_prob)
 #     print('')
