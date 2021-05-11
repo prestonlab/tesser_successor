@@ -109,6 +109,23 @@ def load_struct_run_info(event_dir, subject, run):
         {0: 'trial_num', 1: 'onset', 2: 'TR', 3: 'seq_type', 4: 'item', 5: 'dur'},
         axis=1,
     )
+    
+    # adding run number as a column 
+    run_num = [run]*len(run_info)
+    run_info['run'] = run_num
+    
+    #adding community ID as a column
+    run_all_comms = []
+    node_info = network.temp_node_info()
+    for i in range(len(run_info)):
+        item  = run_info.item[i]
+        if item != 0:
+            item_comm = node_info.comm[item]
+        else:
+            item_comm = 'NaN'   
+        run_all_comms.append(item_comm)
+    run_info['comm'] = run_all_comms
+    
     return run_info
 
 
